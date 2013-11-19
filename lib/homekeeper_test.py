@@ -1,1 +1,7 @@
-# Test class!
+import unittest
+
+import homekeeper
+
+
+class HomekeeperTest(unittest.TestCase):
+    pass
