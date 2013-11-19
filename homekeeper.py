@@ -26,3 +26,6 @@ def branch():
 def commit():
     return sh(['git', 'show', 'HEAD']).split('\n')[0].split(' ')[1]
 
+if len(sys.argv) == 1:
+    print_usage()
+    sys.exit(0)
