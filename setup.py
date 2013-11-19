@@ -11,7 +11,7 @@ setup(
     package_dir={'': 'lib'},
     scripts=['bin/homekeeper'],
     test_suite='homekeeper_test',
-    version='2.0',
+    version='2.0.0',
     classifiers=[
       'Development Status :: 4 - Beta',
       'Topic :: Utilities',
