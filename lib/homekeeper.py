@@ -106,7 +106,7 @@ class Homekeeper(object):
         if os.path.exists(self.CONFIG_PATHNAME):
             print 'overwriting %s' % self.CONFIG_PATHNAME
             shutil.rmtree(self.CONFIG_PATHNAME)
-        config = open(self.CONFIG_PATHNAME)
+        config = open(self.CONFIG_PATHNAME, 'w')
         config.write(serialized)
         config.close()
         print 'wrote configuration to %s' % self.CONFIG_PATHNAME
