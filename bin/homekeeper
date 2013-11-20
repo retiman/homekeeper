@@ -1,12 +1,14 @@
 #!/usr/bin/env python2
+import homekeeper
 import os
 import sys
 
-import homekeeper
+from pkg_resources import get_distribution
 
+version = get_distribution('homekeeper').version
 
 def print_usage():
-    print 'homekeeper 2.0.0 by Min Huang (min.huang@alumni.usc.edu)'
+    print 'homekeeper %s by Min Huang (min.huang@alumni.usc.edu)' % version
     print ''
     print 'Usage: homekeeper <command>'
     print ''
