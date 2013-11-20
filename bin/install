@@ -1,0 +1,5 @@
+#!/bin/sh
+python2 setup.py clean
+python2 setup.py sdist
+sudo pip2 uninstall homekeeper 2>&1
+sudo pip2 install dist/homekeeper-*.tar.gz
