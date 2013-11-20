@@ -136,6 +136,9 @@ class Homekeeper(object):
         with _cd(self.config['dotfiles_directory']):
             b = self.branch()
             c = self.commit_id()
+            if c == 'master':
+                print "nothing to save; you're already on master."
+                return
             _sh('git checkout master')
             _sh('git cherry-pick %s' % c)
             _sh('git checkout %s' % b)
