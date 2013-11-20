@@ -81,6 +81,7 @@ class Homekeeper(object):
         with _cd(source_directory):
             for pathname in os.listdir('.'):
                 basename = os.path.basename(pathname)
+                source = os.path.join(source_directory, basename)
                 if initial_dot:
                     basename = '.' + basename
                 target = os.path.join(target_directory, basename)
@@ -88,7 +89,7 @@ class Homekeeper(object):
                     os.unlink(target)
                 if os.path.exists(target):
                     shutil.rmtree(target)
-                os.symlink(pathname, target)
+                os.symlink(source, target)
                 print 'symlinked %s' % target
 
     def branch(self):
