@@ -32,4 +32,13 @@ class HomekeeperTest(unittest.TestCase):
                           self.homekeeper.commit_id())
 
     def test_remove_broken_symlinks(self):
-        pass
+        self.filesystem.CreateFile('/a.txt')
+        os.symlink('/a.txt', '/exists.txt')
+        os.symlink('/b.txt', '/nonexistent1.txt')
+        os.symlink('/c.txt', '/nonexistent2.txt')
+        self.assertTrue(os.path.islink('/nonexistent1.txt'))
+        self.assertTrue(os.path.islink('/nonexistent2.txt'))
+        self.homekeeper._Homekeeper__remove_broken_symlinks('/')
+        self.assertFalse(os.path.exists('/nonexistent1.txt'))
+        self.assertFalse(os.path.exists('/nonexistent2.txt'))
+        self.assertTrue(os.path.exists('/exists.txt'))
