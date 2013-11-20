@@ -1,3 +1,4 @@
+v2.1.2, 2013-11-20 -- Suppress spurious messages.
 v2.1.1, 2013-11-20 -- Bugfix release.
 v2.1.0, 2013-11-20 -- Initial release.
 v2.0.0, 2013-11-18 -- Beta for 2.0.0 release.
