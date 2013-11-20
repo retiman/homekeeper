@@ -148,7 +148,7 @@ class Homekeeper(object):
         if not os.path.exists(pathname):
             print "pathname not found; won't track %s" % pathname
             return
-        basename = os.basename(pathname)
+        basename = os.path.basename(pathname)
         target = os.path.join(self.config['dotfiles_directory'], basename)
         if os.path.exists(target):
             print 'this path is already tracked at %s' % target
