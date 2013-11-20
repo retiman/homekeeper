@@ -26,8 +26,10 @@ elif len(sys.argv) == 2 and sys.argv[1] == 'save':
     h.save()
 elif len(sys.argv) == 3 and sys.argv[1] == 'track':
     h.track(sys.argv[2])
+    h.link()
 elif len(sys.argv) == 2 and sys.argv[1] == 'update':
     h.update()
+    h.link()
 elif len(sys.argv) == 2 and sys.argv[1] == 'link':
     h.link()
 else:
