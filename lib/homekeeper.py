@@ -104,6 +104,9 @@ class Homekeeper(object):
         already.  If configuration already exists, the new dotfiles directory
         path will be merged into existing configuration.
         """
+        if os.path.realpath(os.getcwd()) == os.realpath(os.getenv('HOME')):
+            print 'this is your home directory; your dotfiles are already here.'
+            return
         self.config['dotfiles_directory'] = os.path.realpath(os.getcwd())
         serialized = json.dumps(self.config, sort_keys=True, indent=4)
         if os.path.exists(self.CONFIG_PATHNAME):
