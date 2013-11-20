@@ -4,21 +4,40 @@ import subprocess
 import sys
 
 
+class _cd(object):
+    def __init__(self, pathname):
+        self.pathname = pathname
+
+    def __enter__(self):
+        self.saved_pathname = os.getcwd()
+        os.chdir(self.pathname)
+
+    def __exit__(self, etype, value, traceback):
+        os.chdir(self.saved_pathname)
+
+
+def sh(command):
+    """Prints a command executes it.
+
+    Args:
+        command: The command to execute.
+
+    Returns:
+        The output of the command, discarding anything printed to standard
+        error.
+    """
+    print command
+    p = subprocess.Popen(command.split(' '), stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE)
+    out, err = p.communicate()
+    return out
+
+
 class ConfigurationError(Exception):
     pass
 
 
 class Homekeeper(object):
-    class _cd(object):
-        def __init__(self, pathname):
-            self.pathname = pathname
-
-        def __enter__(self):
-            self.saved_pathname = os.getcwd()
-            os.chdir(self.pathname)
-
-        def __exit__(self, etype, value, traceback):
-            os.chdir(self.saved_pathname)
 
     def __init__(self, config_pathname=None):
         self.config_pathname = config_pathname
@@ -70,32 +89,16 @@ class Homekeeper(object):
             os.symlink(pathname, original)
             print 'symlinked %s' % original
 
-    def sh(self, command):
-        """Prints a command executes it.
-
-        Args:
-            command: The command to execute.
-
-        Returns:
-            The output of the command, discarding anything printed to standard
-            error.
-        """
-        print command
-        p = subprocess.Popen(command.split(' '), stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE)
-        out, err = p.communicate()
-        return out
-
     def branch(self):
-        with self._cd(self.dotfiles_directory):
-            return sh(['git', 'status']).split('\n')[0].split('# On branch ')[1]
+        with _cd(self.dotfiles_directory):
+            return sh('git status').split('\n')[0].split('# On branch ')[1]
 
     def commit(self):
-        with self._cd(self.dotfiles_directory):
-            return sh(['git', 'show', 'HEAD']).split('\n')[0].split(' ')[1]
+        with _cd(self.dotfiles_directory):
+            return sh('git show HEAD').split('\n')[0].split(' ')[1]
 
     def update(self):
-        with self._cd(self.dotfiles_directory):
+        with _cd(self.dotfiles_directory):
             b = branch()
             sh('git fetch')
             sh('git merge origin/%s' % b)
@@ -105,7 +108,7 @@ class Homekeeper(object):
             sh('git merge master')
 
     def save(self):
-        with self._cd(self.dotfiles_directory):
+        with _cd(self.dotfiles_directory):
             b = branch
             c = commit
             sh('git checkout master')
@@ -114,8 +117,8 @@ class Homekeeper(object):
             sh('git merge master')
 
     def link(self):
-        with self._cd(self.dotfiles_directory):
+        with _cd(self.dotfiles_directory):
             self.__symlink_files(initial_dot=self.initial_dot)
-        with self._cd(self.scripts_directory):
+        with _cd(self.scripts_directory):
             self.__symlink_files(initial_dot=False)
         self.__remove_broken_symlinks()
