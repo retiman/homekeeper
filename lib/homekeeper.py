@@ -3,125 +3,111 @@ import os
 import subprocess
 import sys
 
-class cd(object):
-    """Context manager for changing directories."""
-    def __init__(self, pathname):
-        self.pathname = pathname
+class ConfigurationError(Error):
+    pass
 
-    def __enter__(self):
-        self.saved_pathname = os.getcwd()
-        os.chdir(self.pathname)
+class Homekeeper(object):
+    class _cd(object):
+        def __init__(self, pathname):
+            self.pathname = pathname
 
-    def __exit__(self, etype, value, traceback):
-        os.chdir(self.saved_pathname)
+        def __enter__(self):
+            self.saved_pathname = os.getcwd()
+            os.chdir(self.pathname)
 
-def mkdir_p(pathname):
-    try:
-        os.makedirs(pathname)
-    except OSError as e:
-        if e.errno == errno.EEXIST:
-            pass
-        else:
-            raise
+        def __exit__(self, etype, value, traceback):
+            os.chdir(self.saved_pathname)
 
-def remove_broken_symlinks(directory):
-    for pathname in os.listdir(directory):
-        if not os.path.islink(pathname):
-            continue
-        if os.path.exists(os.readlink(pathname)):
-            continue
-        print 'removing broken link: %s' % pathname
-        os.unlink(pathname)
+    def __init__(self, config_pathname):
+        self.config_pathname = config_pathname
+        if not config_pathname:
+            self.config_pathname = os.path.join(os.getenv('HOME'),
+                                                '.homekeeper.conf')
+        if not os.path.exists(self.config_pathname):
+            raise ConfigurationError(".homekeeper.conf doesn't exist.")
+        self.config = {}
+        execfile(config_pathname, self.config)
+        if 'dotfiles_directory' not in self.config:
+            raise ConfigurationError('homekeeper configuration requires a '
+                                     '"dotfiles_dir" variable set.'
+        self.dotfiles_directory = self.config['dotfiles_directory']
+        self.scripts_directory = self.config.get('scripts_directory', '')
+        self.initial_dot = self.config.get('initial_dot', False)
 
-def print_usage():
-    print 'Usage: homekeeper [command]'
-    print 'Commands:'
-    print '  link              symlink dotfiles and remove broken symlinks.'
-    print '  save              save the last commit in master branch.'
-    print '  track             track the dotfile with homekeeper.'
-    print '  update            pull from master and merge into this branch.'
+    def __mkdir_p(pathname):
+        try:
+            os.makedirs(pathname)
+        except OSError as e:
+            if e.errno == errno.EEXIST:
+                pass
+            else:
+                raise
 
-def sh(command):
-    """Prints a command executes it.
+    def __remove_broken_symlinks(directory):
+        for pathname in os.listdir(directory):
+            if not os.path.islink(pathname):
+                continue
+            if os.path.exists(os.readlink(pathname)):
+                continue
+            print 'removing broken link: %s' % pathname
+            os.unlink(pathname)
 
-    Args:
-        command: The command to execute.
+    def __symlink_files(source_directory, initial_dot):
+        print 'symlinking files in %s' % source_directory
+        home_directory = os.getenv('HOME')
+        for pathname in os.listdir(source_directory):
+                basename = os.path.basename(pathname)
+                original = os.path.join(home_directory, 'bin', basename)
+                if os.path.exists(original):
+                    shutil.rmtree(original)
+                os.symlink(pathname, original)
+                print 'symlinked %s' % original
 
-    Returns:
-        The output of the command, discarding anything printed to standard
-        error.
-    """
-    print command
-    p = subprocess.Popen(command.split(' '), stdout=subprocess.PIPE,
-                         stderr=subprocess.PIPE)
-    out, err = p.communicate()
-    return out
+    def sh(command):
+        """Prints a command executes it.
 
-def parse_config():
-    config_pathname = os.path.join(os.getenv('HOME'), '.homekeeper.conf')
-    if not os.path.exists(config_pathname):
-        print 'please create a .homekeeper.conf file in your home directory.'
-        sys.exit(1)
-    config = {}
-    execfile(config_pathname, config)
-    if 'dotfiles' not in config:
-        print 'homekeeper configuration requires a "dotfiles" variable set.'
-        sys.exit(1)
-    return config
+        Args:
+            command: The command to execute.
 
-def branch(config):
-    with cd(config['dotfiles']):
-        return sh(['git', 'status']).split('\n')[0].split('# On branch ')[1]
+        Returns:
+            The output of the command, discarding anything printed to standard
+            error.
+        """
+        print command
+        p = subprocess.Popen(command.split(' '), stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE)
+        out, err = p.communicate()
+        return out
 
-def commit(config):
-    with cd(config['dotfiles']):
-        return sh(['git', 'show', 'HEAD']).split('\n')[0].split(' ')[1]
+    def branch():
+        with _cd(self.dotfiles_directory):
+            return sh(['git', 'status']).split('\n')[0].split('# On branch ')[1]
 
-def update(config):
-    with cd(config['dotfiles']):
-        b = branch()
-        sh('git fetch')
-        sh('git merge origin/%s' % b)
-        sh('git checkout master')
-        sh('git merge origin/master')
-        sh('git checkout %s' % b)
-        sh('git merge master')
+    def commit():
+        with _cd(self.dotfiles_directory):
+            return sh(['git', 'show', 'HEAD']).split('\n')[0].split(' ')[1]
 
-def save(config):
-    with cd(config['dotfiles']):
-        b = branch
-        c = commit
-        sh('git checkout master')
-        sh('git cherry-pick %s' % c)
-        sh('git checkout %s' % b)
-        sh('git merge master')
+    def update():
+        with _cd(self.dotfiles_directory):
+            b = branch()
+            sh('git fetch')
+            sh('git merge origin/%s' % b)
+            sh('git checkout master')
+            sh('git merge origin/master')
+            sh('git checkout %s' % b)
+            sh('git merge master')
 
-def link(config):
-    with cd(config['dotfiles']):
-        shutil.rmtree('tmp')
-        mkdir_p(os.path.join('originals', 'bin'))
-        mkdir_p(os.path.join('originals', 'dotfiles'))
-        home = os.getenv('HOME')
+    def save():
+        with _cd(self.dotfiles_directory):
+            b = branch
+            c = commit
+            sh('git checkout master')
+            sh('git cherry-pick %s' % c)
+            sh('git checkout %s' % b)
+            sh('git merge master')
 
-        print 'symlinking bin files.'
-        for pathname in os.listdir('bin'):
-            basename = os.path.basename(pathname)
-            original = os.path.join(home, 'bin', basename).strip()
-            if os.path.exists(original):
-                shutil.copyfile(original, os.path.join('originals', 'bin'))
-                shutil.rmtree(original)
-            os.symlink(pathname, original)
-            print 'symlinked %s' % original
-
-        print 'symlinking dotfiles.'
-        for pathname in os.listdir('dotfiles'):
-            basename = os.path.basename(pathname)
-            original = os.path.join(home, 'bin', '.' + basename).strip()
-            if os.path.exists(original):
-                shutil.copyfile(original, os.path.join('originals', 'dotfiles'))
-                shutil.rmtree(original)
-            os.symlink(pathname, original)
-            print 'symlinked %s' % original
-
-        print 'removing broken symlinks.'
-        remove_broken_symlinks
+    def link():
+        with _cd(self.dotfiles_directory):
+            self.__symlink_files('bin')
+            self.__symlink_files('dotfiles')
+            self.__remove_broken_symlinks()
