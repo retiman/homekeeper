@@ -13,6 +13,7 @@ def print_usage():
     print 'Usage: homekeeper <command>'
     print ''
     print '<commands>'
+    print '  init    set dotfiles directory to current directory'
     print '  link    symlink dotfiles to home directory'
     print '  save    save last commit to master branch'
     print '  track   track a dotfile with homekeeper'
@@ -29,6 +30,8 @@ def parse_config():
 
 config = parse_config()
 h = homekeeper.Homekeeper(config)
+if len(sys.argv) == 2 and sys.argv[1] == 'init':
+    h.init()
 if len(sys.argv) == 2 and sys.argv[1] == 'save':
     h.save()
 elif len(sys.argv) == 3 and sys.argv[1] == 'track':
