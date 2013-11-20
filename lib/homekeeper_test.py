@@ -1,3 +1,4 @@
+import mox
 import unittest
 
 import homekeeper
@@ -5,7 +6,10 @@ import homekeeper
 
 class HomekeeperTest(unittest.TestCase):
     def setUp(self):
-        self.homekeeper = homekeeper.Homekeeper()
+        config = {
+            'dotfiles_directory': '.'
+        }
+        self.homekeeper = homekeeper.Homekeeper(config)
 
     def tearDown(self):
         pass
