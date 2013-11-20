@@ -45,7 +45,10 @@ class Homekeeper(object):
             raise ConfigurationError('homekeeper configuration requires a '
                                      '"dotfiles_directory" variable set.')
         self.dotfiles_directory = self.config['dotfiles_directory']
-        self.scripts_directory = self.config.get('scripts_directory', '')
+        default_scripts_directory = os.path.join(self.dotfiles_directory,
+                                                 'scripts')
+        self.scripts_directory = self.config.get('scripts_directory',
+                                                 default_scripts_directory)
 
     def __mkdir_p(self, pathname):
         try:
@@ -116,7 +119,8 @@ class Homekeeper(object):
         home_directory = os.getenv('HOME')
         self.__symlink_files(self.dotfiles_directory, home_directory,
                              initial_dot=True)
-        self.__symlink_files(self.scripts_directory,
-                             os.path.join(home_directory, 'bin'),
-                             initial_dot=False)
+        if self.scripts_directory:
+            self.__symlink_files(self.scripts_directory,
+                                os.path.join(home_directory, 'bin'),
+                                initial_dot=False)
         self.__remove_broken_symlinks(home_directory)

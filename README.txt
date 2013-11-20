@@ -2,24 +2,26 @@ Homekeeper
 ----------
 This project helps me organize and version my dotfiles.  You may find it useful.
 
-I have a Git repository with a ``bin`` directory and a ``dotfiles`` directory, containing my
-scripts and dotfiles, respectively.  They are versioned and symlinked to my home directory.
+I have a Git repository with a ``bin`` directory and a ``dotfiles`` directory,
+containing my scripts and dotfiles, respectively.  They are versioned and
+symlinked to my home directory.
 
-Your dotfiles should contain a ``.homekeeper.conf`` that describes where your dotfiles are,
-as well as some other information.
+Your dotfiles should contain a ``.homekeeper.conf`` that describes where your
+dotfiles are.
 
 Here is a sample ``.homekeeper.conf``:
 
-``dotfiles_dir = '/home/minhuang/proj/dotfiles'
-initial_dot = False``
+``dotfiles_directory = '/home/minhuang/proj/personal/dotfiles'``
 
-Setting ``initial_dot = False`` means homekeeper will assume you have saved your dotfiles
-without the initial dot.  For example, instead of ``.bash_profile``, you have saved it as
-``bash_profile``.
+A special exception is made for a scripts directory; if you have one, it will
+be symlinked to ``bin`` in your home directory unless you specify:
+
+``scripts_directory = '/home/minhuang/scripts`` or something else.  Setting this
+value to ``None`` will disable this feature.
 
 Here is a sample run:
 
-``Symlinking bin files
+``Symlinking scripts
 Symlinked: /home/minhuang/bin/pushkey
 Symlinked: /home/minhuang/bin/lein
 Symlinked: /home/minhuang/bin/define
