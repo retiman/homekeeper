@@ -4,4 +4,8 @@ import homekeeper
 
 
 class HomekeeperTest(unittest.TestCase):
-    pass
+    def setUp(self):
+        self.homekeeper = homekeeper.Homekeeper()
+
+    def tearDown(self):
+        pass

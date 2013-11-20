@@ -29,7 +29,7 @@ class Homekeeper(object):
         execfile(config_pathname, self.config)
         if 'dotfiles_directory' not in self.config:
             raise ConfigurationError('homekeeper configuration requires a '
-                                     '"dotfiles_dir" variable set.'
+                                     '"dotfiles_dir" variable set.')
         self.dotfiles_directory = self.config['dotfiles_directory']
         self.scripts_directory = self.config.get('scripts_directory', '')
         self.initial_dot = self.config.get('initial_dot', False)
