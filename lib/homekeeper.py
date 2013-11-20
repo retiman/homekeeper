@@ -144,6 +144,18 @@ class Homekeeper(object):
             _sh('git checkout %s' % b)
             _sh('git merge master')
 
+    def track(self, pathname):
+        if not os.path.exists(pathname):
+            print "pathname not found; won't track %s" % pathname
+            return
+        basename = os.basename(pathname)
+        target = os.path.join(self.config['dotfiles_directory'], basename)
+        if os.path.exists(target):
+            print 'this path is already tracked at %s' % target
+            return
+        print 'moved %s to %s' % (pathname, target)
+        shutil.move(pathname, target)
+
     def link(self):
         home_directory = os.getenv('HOME')
         self.__symlink_files(self.config['dotfiles_directory'], home_directory)
