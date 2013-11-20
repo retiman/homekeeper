@@ -42,6 +42,7 @@ class HomekeeperTest(unittest.TestCase):
         self.assertTrue(os.path.exists('/exists.txt'))
 
     def test_link_dotfiles(self):
+        homekeeper.os.getenv = lambda var: '/home/johndoe'
         dotfiles_directory = '/home/johndoe/dotfiles'
         config = {'dotfiles_directory': dotfiles_directory}
         self.filesystem.CreateFile(dotfiles_directory + '/vimrc')
@@ -51,4 +52,4 @@ class HomekeeperTest(unittest.TestCase):
         self.assertTrue(os.path.islink('/home/johndoe/.vimrc'))
         self.assertTrue(os.path.exists('/home/johndoe/.vimrc'))
         self.assertEquals('/home/johndoe/dotfiles/vimrc',
-                          os.path.readlink('/home/johndoe/.vimrc'))
+                          os.readlink('/home/johndoe/.vimrc'))
