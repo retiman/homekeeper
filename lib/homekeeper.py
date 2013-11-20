@@ -105,7 +105,7 @@ class Homekeeper(object):
         serialized = json.dumps(self.config, sort_keys=True, indent=4)
         if os.path.exists(self.CONFIG_PATHNAME):
             print 'overwriting %s' % self.CONFIG_PATHNAME
-            shutil.rmtree(self.CONFIG_PATHNAME)
+            os.remove(self.CONFIG_PATHNAME)
         config = open(self.CONFIG_PATHNAME, 'w')
         config.write(serialized)
         config.close()
