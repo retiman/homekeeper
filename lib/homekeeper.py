@@ -99,7 +99,7 @@ class Homekeeper(object):
 
     def update(self):
         with _cd(self.dotfiles_directory):
-            b = branch()
+            b = self.branch()
             _sh('git fetch')
             _sh('git merge origin/%s' % b)
             _sh('git checkout master')
@@ -109,8 +109,8 @@ class Homekeeper(object):
 
     def save(self):
         with _cd(self.dotfiles_directory):
-            b = branch
-            c = commit
+            b = self.branch()
+            c = self.commit()
             _sh('git checkout master')
             _sh('git cherry-pick %s' % c)
             _sh('git checkout %s' % b)
