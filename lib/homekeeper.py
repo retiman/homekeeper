@@ -20,15 +20,15 @@ class Homekeeper(object):
         def __exit__(self, etype, value, traceback):
             os.chdir(self.saved_pathname)
 
-    def __init__(self, config_pathname):
+    def __init__(self, config_pathname=None):
         self.config_pathname = config_pathname
-        if not config_pathname:
+        if not self.config_pathname:
             self.config_pathname = os.path.join(os.getenv('HOME'),
                                                 '.homekeeper.conf')
         if not os.path.exists(self.config_pathname):
             raise ConfigurationError(".homekeeper.conf doesn't exist.")
         self.config = {}
-        execfile(config_pathname, self.config)
+        execfile(self.config_pathname, self.config)
         if 'dotfiles_directory' not in self.config:
             raise ConfigurationError('homekeeper configuration requires a '
                                      '"dotfiles_dir" variable set.')
