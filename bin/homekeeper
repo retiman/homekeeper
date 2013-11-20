@@ -17,12 +17,12 @@ def print_usage():
     print '  update  update dotfiles from git'
 
 def parse_config():
-    pathname = os.path.join(os.getenv('HOME'), '.homekeeper.conf')
-    if not os.path.exists(pathname):
-        print 'please create ~/.homekeeper.conf'
-        sys.exit(1)
     config = {}
-    execfile(pathname, config)
+    pathname = os.path.join(os.getenv('HOME'), '.homekeeper.conf')
+    if os.path.exists(pathname):
+        execfile(pathname, config)
+    else:
+        print "the ~/.homekeeper.conf doesn't exist; assuming defaults"
     return config
 
 config = parse_config()
