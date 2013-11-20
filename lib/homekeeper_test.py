@@ -1,4 +1,4 @@
-import mox
+import fake_filesystem
 import unittest
 
 import homekeeper
@@ -6,13 +6,16 @@ import homekeeper
 
 class HomekeeperTest(unittest.TestCase):
     def setUp(self):
+        global os
+        self.filesystem = fake_filesystem.FakeFilesystem()
+        os = fake_filesystem.FakeOsModule(self.filesystem)
         config = {
             'dotfiles_directory': '.'
         }
         self.homekeeper = homekeeper.Homekeeper(config)
 
     def tearDown(self):
-        pass
+        del self.filesystem
 
     def test_branch(self):
         messages = ['# On branch foobar',
@@ -27,3 +30,6 @@ class HomekeeperTest(unittest.TestCase):
         homekeeper._sh = lambda command: '\n'.join(messages)
         self.assertEquals('a5f97835c71153123c10a664ff7d539dac02aada',
                           self.homekeeper.commit_id())
+
+    def test_remove_broken_symlinks(self):
+        pass
