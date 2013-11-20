@@ -22,7 +22,7 @@ def print_usage():
 h = homekeeper.Homekeeper()
 if len(sys.argv) == 2 and sys.argv[1] == 'init':
     h.init()
-if len(sys.argv) == 2 and sys.argv[1] == 'save':
+elif len(sys.argv) == 2 and sys.argv[1] == 'save':
     h.save()
 elif len(sys.argv) == 3 and sys.argv[1] == 'track':
     h.track(sys.argv[2])
