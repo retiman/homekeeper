@@ -79,17 +79,17 @@ class Homekeeper(object):
             print 'removing broken link: %s' % pathname
             os.unlink(pathname)
 
-    def __symlink_files(self, source_directory, target_directory,
-                        initial_dot=False):
+    def __symlink_files(self, source_directory, target_directory):
         if not os.path.isdir(source_directory):
             return
         print 'symlinking files from %s' % source_directory
         with _cd(source_directory):
+            excludes = set(self.config['excludes'])
             for pathname in os.listdir('.'):
                 basename = os.path.basename(pathname)
+                if basename in excludes:
+                    continue
                 source = os.path.join(source_directory, basename)
-                if initial_dot:
-                    basename = '.' + basename
                 target = os.path.join(target_directory, basename)
                 if os.path.islink(target):
                     os.unlink(target)
@@ -144,10 +144,5 @@ class Homekeeper(object):
 
     def link(self):
         home_directory = os.getenv('HOME')
-        self.__symlink_files(self.dotfiles_directory, home_directory,
-                             initial_dot=True)
-        if self.scripts_directory:
-            self.__symlink_files(self.scripts_directory,
-                                os.path.join(home_directory, 'bin'),
-                                initial_dot=False)
+        self.__symlink_files(self.dotfiles_directory, home_directory)
         self.__remove_broken_symlinks(home_directory)
