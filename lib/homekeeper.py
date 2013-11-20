@@ -81,6 +81,7 @@ class Homekeeper(object):
 
     def __symlink_files(self, source_directory, target_directory):
         if not os.path.isdir(source_directory):
+            print 'dotfiles directory not found: %s' % source_directory
             return
         print 'symlinking files from %s' % source_directory
         with _cd(source_directory):
