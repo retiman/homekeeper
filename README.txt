@@ -52,3 +52,14 @@ Symlinked: /home/minhuang/.gtkrc-2.0
 Symlinked: /home/minhuang/.gitconfig
 Symlinked: /home/minhuang/.muttrc
 Removing broken symlinks``
+
+Multiple Computers
+------------------
+You can have multiple computers share a base configuration that is in master.
+Other computers should have their own branches in git; calling
+``homekeeper save`` will save any changes in the branch to master.
+
+
+More Documentation
+------------------
+There isn't any.  I don't think anybody will use this except me.
