@@ -16,7 +16,7 @@ class _cd(object):
         os.chdir(self.saved_pathname)
 
 
-def sh(command):
+def _sh(command):
     """Prints a command executes it.
 
     Args:
@@ -91,30 +91,30 @@ class Homekeeper(object):
 
     def branch(self):
         with _cd(self.dotfiles_directory):
-            return sh('git status').split('\n')[0].split('# On branch ')[1]
+            return _sh('git status').split('\n')[0].split('# On branch ')[1]
 
     def commit(self):
         with _cd(self.dotfiles_directory):
-            return sh('git show HEAD').split('\n')[0].split(' ')[1]
+            return _sh('git show HEAD').split('\n')[0].split(' ')[1]
 
     def update(self):
         with _cd(self.dotfiles_directory):
             b = branch()
-            sh('git fetch')
-            sh('git merge origin/%s' % b)
-            sh('git checkout master')
-            sh('git merge origin/master')
-            sh('git checkout %s' % b)
-            sh('git merge master')
+            _sh('git fetch')
+            _sh('git merge origin/%s' % b)
+            _sh('git checkout master')
+            _sh('git merge origin/master')
+            _sh('git checkout %s' % b)
+            _sh('git merge master')
 
     def save(self):
         with _cd(self.dotfiles_directory):
             b = branch
             c = commit
-            sh('git checkout master')
-            sh('git cherry-pick %s' % c)
-            sh('git checkout %s' % b)
-            sh('git merge master')
+            _sh('git checkout master')
+            _sh('git cherry-pick %s' % c)
+            _sh('git checkout %s' % b)
+            _sh('git merge master')
 
     def link(self):
         with _cd(self.dotfiles_directory):
