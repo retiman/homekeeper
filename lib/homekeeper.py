@@ -116,15 +116,15 @@ class Homekeeper(object):
         print 'wrote configuration to %s' % self.CONFIG_PATHNAME
 
     def branch(self):
-        with _cd(self.dotfiles_directory):
+        with _cd(self.config['dotfiles_directory']):
             return _sh('git status').split('\n')[0].split('# On branch ')[1]
 
     def commit_id(self):
-        with _cd(self.dotfiles_directory):
+        with _cd(self.config['dotfiles_directory']):
             return _sh('git show HEAD').split('\n')[0].split(' ')[1]
 
     def update(self):
-        with _cd(self.dotfiles_directory):
+        with _cd(self.config['dotfiles_directory']):
             b = self.branch()
             _sh('git fetch')
             _sh('git merge origin/%s' % b)
@@ -134,7 +134,7 @@ class Homekeeper(object):
             _sh('git merge master')
 
     def save(self):
-        with _cd(self.dotfiles_directory):
+        with _cd(self.config['dotfiles_directory']):
             b = self.branch()
             c = self.commit_id()
             _sh('git checkout master')
@@ -144,5 +144,5 @@ class Homekeeper(object):
 
     def link(self):
         home_directory = os.getenv('HOME')
-        self.__symlink_files(self.dotfiles_directory, home_directory)
+        self.__symlink_files(self.config['dotfiles_directory'], home_directory)
         self.__remove_broken_symlinks(home_directory)
