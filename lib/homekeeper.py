@@ -34,17 +34,14 @@ def _sh(command):
     return out
 
 
-class ConfigurationError(Exception):
-    pass
-
-
 class Homekeeper(object):
     def __init__(self, config={}):
+        defaults = {
+            'dotfiles_directory': os.path.join(os.getenv('HOME'), 'dotfiles'),
+            'excludes' = ['.gitignore', 'LICENSE', 'README.md']
+        }
         self.config = config
-        default = os.path.join(os.getenv('HOME'), 'proj', 'dotfiles', 'lib')
-        self.dotfiles_directory = self.config.get('dotfiles_directory', default)
-        default = os.path.join(self.dotfiles_directory, 'scripts')
-        self.scripts_directory = self.config.get('scripts_directory', default)
+        self.config.update(defaults)
 
     def __mkdir_p(self, pathname):
         try:
