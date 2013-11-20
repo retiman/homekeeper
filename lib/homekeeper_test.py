@@ -43,13 +43,29 @@ class HomekeeperTest(unittest.TestCase):
 
     def test_link_dotfiles(self):
         homekeeper.os.getenv = lambda var: '/home/johndoe'
-        dotfiles_directory = '/home/johndoe/dotfiles'
+        dotfiles_directory = '/home/johndoe/personal/dotfiles'
         config = {'dotfiles_directory': dotfiles_directory}
         self.filesystem.CreateFile(dotfiles_directory + '/vimrc')
         self.homekeeper = homekeeper.Homekeeper(config)
         self.homekeeper.link()
-        self.assertTrue(os.path.exists('/home/johndoe/dotfiles/vimrc'))
+        self.assertTrue(os.path.exists('/home/johndoe/personal/dotfiles/vimrc'))
         self.assertTrue(os.path.islink('/home/johndoe/.vimrc'))
         self.assertTrue(os.path.exists('/home/johndoe/.vimrc'))
-        self.assertEquals('/home/johndoe/dotfiles/vimrc',
+        self.assertEquals('/home/johndoe/personal/dotfiles/vimrc',
                           os.readlink('/home/johndoe/.vimrc'))
+
+    def test_link_scripts(self):
+        homekeeper.os.getenv = lambda var: '/home/johndoe'
+        dotfiles_directory = '/home/johndoe/personal/dotfiles'
+        scripts_directory = '/home/johndoe/personal/scripts'
+        config = {
+            'dotfiles_directory': dotfiles_directory,
+            'scripts_directory': scripts_directory
+        }
+        self.filesystem.CreateFile(scripts_directory + '/myscript')
+        self.homekeeper = homekeeper.Homekeeper(config)
+        self.homekeeper.link()
+        self.assertTrue(os.path.islink('/home/johndoe/bin/myscript'))
+        self.assertTrue(os.path.exists('/home/johndoe/bin/myscript'))
+        self.assertEquals('/home/johndoe/personal/scripts/myscript',
+                          os.readlink('/home/johndoe/bin/myscript'))
