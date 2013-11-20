@@ -41,7 +41,7 @@ class Homekeeper(object):
     def __init__(self, config={}):
         defaults = {
             'dotfiles_directory': os.path.join(os.getenv('HOME'), 'dotfiles'),
-            'excludes' = ['.gitignore', 'LICENSE', 'README.md']
+            'excludes': ['.gitignore', 'LICENSE', 'README.md']
         }
         self.config = config
         self.config.update(defaults)
