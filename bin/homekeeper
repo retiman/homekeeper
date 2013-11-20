@@ -19,17 +19,7 @@ def print_usage():
     print '  track   track a dotfile with homekeeper'
     print '  update  update dotfiles from git'
 
-def parse_config():
-    config = {}
-    pathname = os.path.join(os.getenv('HOME'), '.homekeeper.conf')
-    if os.path.exists(pathname):
-        execfile(pathname, config)
-    else:
-        print "the ~/.homekeeper.conf doesn't exist; assuming defaults"
-    return config
-
-config = parse_config()
-h = homekeeper.Homekeeper(config)
+h = homekeeper.Homekeeper()
 if len(sys.argv) == 2 and sys.argv[1] == 'init':
     h.init()
 if len(sys.argv) == 2 and sys.argv[1] == 'save':

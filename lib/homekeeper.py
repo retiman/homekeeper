@@ -38,13 +38,23 @@ def _sh(command):
 class Homekeeper(object):
     CONFIG_PATHNAME = os.path.join(os.getenv('HOME'), '.homekeeper.json')
 
-    def __init__(self, config={}):
+    def __init__(self, overrides={}):
         defaults = {
             'dotfiles_directory': os.path.join(os.getenv('HOME'), 'dotfiles'),
             'excludes': ['.gitignore', 'LICENSE', 'README.md']
         }
-        self.config = config
+        config_file = self.__parse_config()
+        self.config = overrides
+        self.config.update(config_file)
         self.config.update(defaults)
+
+    def __parse_config(self):
+        if not os.path.exists(self.CONFIG_PATHNAME):
+            return {}
+        try:
+            return json.loads(self.CONFIG_PATHNAME)
+        except ValueError:
+            return {}
 
     def __mkdir_p(self, pathname):
         try:
