@@ -3,7 +3,7 @@ import os
 import subprocess
 import sys
 
-class ConfigurationError(Error):
+class ConfigurationError(Exception):
     pass
 
 class Homekeeper(object):
