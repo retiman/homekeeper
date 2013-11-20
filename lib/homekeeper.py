@@ -39,14 +39,12 @@ class Homekeeper(object):
     CONFIG_PATHNAME = os.path.join(os.getenv('HOME'), '.homekeeper.json')
 
     def __init__(self, overrides={}):
-        defaults = {
+        self.config = {
             'dotfiles_directory': os.path.join(os.getenv('HOME'), 'dotfiles'),
             'excludes': ['.gitignore', 'LICENSE', 'README.md']
         }
-        config_file = self.__parse_config()
-        self.config = overrides
-        self.config.update(config_file)
-        self.config.update(defaults)
+        self.config.update(self.__parse_config())
+        self.config.update(overrides)
 
     def __parse_config(self):
         if not os.path.exists(self.CONFIG_PATHNAME):
