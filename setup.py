@@ -6,7 +6,7 @@ setup(
     author='Min Huang',
     author_email='min.huang@alumni.usc.edu',
     description='Homekeeper can version your dotfiles with Git.',
-    long_description=open('README.md').read(),
+    long_description=open('README.txt').read(),
     name='homekeeper',
     package_dir={'': 'lib'},
     py_modules=['homekeeper'],
