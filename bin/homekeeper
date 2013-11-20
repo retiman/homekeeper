@@ -19,18 +19,22 @@ def print_usage():
     print '  track <file>   track a dotfile with homekeeper'
     print '  update         update dotfiles from git'
 
-h = homekeeper.Homekeeper()
 if len(sys.argv) == 2 and sys.argv[1] == 'init':
+    h = homekeeper.Homekeeper()
     h.init()
 elif len(sys.argv) == 2 and sys.argv[1] == 'save':
+    h = homekeeper.Homekeeper()
     h.save()
 elif len(sys.argv) == 3 and sys.argv[1] == 'track':
+    h = homekeeper.Homekeeper()
     h.track(sys.argv[2])
     h.link()
 elif len(sys.argv) == 2 and sys.argv[1] == 'update':
+    h = homekeeper.Homekeeper()
     h.update()
     h.link()
 elif len(sys.argv) == 2 and sys.argv[1] == 'link':
+    h = homekeeper.Homekeeper()
     h.link()
 else:
     print_usage()
