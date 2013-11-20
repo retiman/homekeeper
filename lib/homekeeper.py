@@ -1,4 +1,5 @@
 #!/usr/bin/env python2
+import json
 import os
 import shutil
 import subprocess
@@ -35,6 +36,8 @@ def _sh(command):
 
 
 class Homekeeper(object):
+    CONFIG_PATHNAME = os.path.join(os.getenv('HOME'), '.homekeeper.json')
+
     def __init__(self, config={}):
         defaults = {
             'dotfiles_directory': os.path.join(os.getenv('HOME'), 'dotfiles'),
@@ -80,6 +83,23 @@ class Homekeeper(object):
                     shutil.rmtree(target)
                 os.symlink(source, target)
                 print 'symlinked %s' % target
+
+    def init(self):
+        """Writes a configuration file with cwd as the dotfiles directory.
+
+        Configuration file is written as JSON, and will be removed if it exists
+        already.  If configuration already exists, the new dotfiles directory
+        path will be merged into existing configuration.
+        """
+        self.config['dotfiles_directory'] = os.path.realpath(os.getcwd())
+        serialized = json.dumps(self.config, sort_keys=True, indent=4)
+        if os.path.exists(self.CONFIG_PATHNAME):
+            print 'overwriting %s' % self.CONFIG_PATHNAME
+            shutil.rmtree(self.CONFIG_PATHNAME)
+        config = open(self.CONFIG_PATHNAME)
+        config.write(serialized)
+        config.close()
+        print 'wrote configuration to %s' % self.CONFIG_PATHNAME
 
     def branch(self):
         with _cd(self.dotfiles_directory):
