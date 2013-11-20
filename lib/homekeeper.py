@@ -115,6 +115,7 @@ class Homekeeper(object):
 
     def link():
         with _cd(self.dotfiles_directory):
-            self.__symlink_files('bin', initial_dot=False)
             self.__symlink_files('dotfiles', initial_dot=self.initial_dot)
-            self.__remove_broken_symlinks()
+        with _cd(self.scripts_directory):
+            self.__symlink_files('bin', initial_dot=False)
+        self.__remove_broken_symlinks()
