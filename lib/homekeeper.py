@@ -67,6 +67,7 @@ class Homekeeper(object):
 
     def __remove_broken_symlinks(self, directory):
         for pathname in os.listdir(directory):
+            pathname = os.path.join(directory, pathname)
             if not os.path.islink(pathname):
                 continue
             if os.path.exists(os.readlink(pathname)):
@@ -74,18 +75,21 @@ class Homekeeper(object):
             print 'removing broken link: %s' % pathname
             os.unlink(pathname)
 
-    def __symlink_files(self, target_directory, initial_dot=False):
-        print 'symlinking files to %s' % target_directory
-        for pathname in os.listdir('.'):
-            basename = os.path.basename(pathname)
-            if initial_dot:
-                original = os.path.join(target_directory, '.', basename)
-            else:
-                original = os.path.join(target_directory, basename)
-            if os.path.exists(original):
-                shutil.rmtree(original)
-            os.symlink(pathname, original)
-            print 'symlinked %s' % original
+    def __symlink_files(self, source_directory, target_directory,
+                        initial_dot=False):
+        print 'symlinking files from %s' % source_directory
+        with _cd(source_directory):
+            for pathname in os.listdir('.'):
+                basename = os.path.basename(pathname)
+                if initial_dot:
+                    basename = '.' + basename
+                target = os.path.join(target_directory, basename)
+                if os.path.islink(target):
+                    os.unlink(target)
+                if os.path.exists(target):
+                    shutil.rmtree(target)
+                os.symlink(pathname, target)
+                print 'symlinked %s' % target
 
     def branch(self):
         with _cd(self.dotfiles_directory):
@@ -116,10 +120,9 @@ class Homekeeper(object):
 
     def link(self):
         home_directory = os.getenv('HOME')
-        with _cd(self.dotfiles_directory):
-            target_directory = os.path.join(home_directory)
-            self.__symlink_files(target_directory, initial_dot=self.initial_dot)
-        with _cd(self.scripts_directory):
-            target_directory = os.path.join(home_directory, 'bin')
-            self.__symlink_files(target_directory, initial_dot=False)
-        self.__remove_broken_symlinks()
+        self.__symlink_files(self.dotfiles_directory, home_directory,
+                             initial_dot=True)
+        self.__symlink_files(self.scripts_directory,
+                             os.path.join(home_directory, 'bin'),
+                             initial_dot=False)
+        self.__remove_broken_symlinks(home_directory)
