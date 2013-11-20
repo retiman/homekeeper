@@ -9,7 +9,7 @@ setup(
     long_description=open('README.txt').read(),
     name='homekeeper',
     package_dir={'': 'lib'},
-    packages=['homekeeper'],
+    py_modules=['homekeeper'],
     scripts=['bin/homekeeper'],
     test_suite='homekeeper_test',
     version='2.0.0',
