@@ -87,7 +87,7 @@ class Homekeeper(object):
         with _cd(self.dotfiles_directory):
             return _sh('git status').split('\n')[0].split('# On branch ')[1]
 
-    def commit(self):
+    def commit_id(self):
         with _cd(self.dotfiles_directory):
             return _sh('git show HEAD').split('\n')[0].split(' ')[1]
 
@@ -104,7 +104,7 @@ class Homekeeper(object):
     def save(self):
         with _cd(self.dotfiles_directory):
             b = self.branch()
-            c = self.commit()
+            c = self.commit_id()
             _sh('git checkout master')
             _sh('git cherry-pick %s' % c)
             _sh('git checkout %s' % b)
