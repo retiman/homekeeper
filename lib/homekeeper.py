@@ -41,14 +41,10 @@ class ConfigurationError(Exception):
 class Homekeeper(object):
     def __init__(self, config={}):
         self.config = config
-        if 'dotfiles_directory' not in self.config:
-            raise ConfigurationError('homekeeper configuration requires a '
-                                     '"dotfiles_directory" variable set.')
-        self.dotfiles_directory = self.config['dotfiles_directory']
-        default_scripts_directory = os.path.join(self.dotfiles_directory,
-                                                 'scripts')
-        self.scripts_directory = self.config.get('scripts_directory',
-                                                 default_scripts_directory)
+        default = os.path.join(os.getenv('HOME'), 'proj', 'dotfiles', 'lib')
+        self.dotfiles_directory = self.config.get('dotfiles_directory', default)
+        default = os.path.join(self.dotfiles_directory, 'scripts')
+        self.scripts_directory = self.config.get('scripts_directory', default)
 
     def __mkdir_p(self, pathname):
         try:

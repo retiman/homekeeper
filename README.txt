@@ -13,6 +13,9 @@ Here is a sample ``.homekeeper.conf``:
 
 ``dotfiles_directory = '/home/minhuang/proj/personal/dotfiles'``
 
+If you don't create a ``homekeeper.conf``, homekeeper will assume your dotfiles
+are in ``/home/$USER/proj/dotfiles/lib``.
+
 A special exception is made for a scripts directory; if you have one, it will
 be symlinked to ``bin`` in your home directory unless you specify:
 
