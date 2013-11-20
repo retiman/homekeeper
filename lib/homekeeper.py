@@ -73,17 +73,14 @@ class Homekeeper(object):
             print 'removing broken link: %s' % pathname
             os.unlink(pathname)
 
-    def __symlink_files(self, initial_dot=False):
-        print 'symlinking files in %s' % source_directory
-        home_directory = os.getenv('HOME')
+    def __symlink_files(self, target_directory, initial_dot=False):
+        print 'symlinking files in %s' % target_directory
         for pathname in os.listdir('.'):
             basename = os.path.basename(pathname)
             if initial_dot:
-                original = os.path.join(home_directory, source_directory,
-                                        '.', basename)
+                original = os.path.join(target_directory, '.', basename)
             else:
-                original = os.path.join(home_directory, source_directory,
-                                        basename)
+                original = os.path.join(target_directory, basename)
             if os.path.exists(original):
                 shutil.rmtree(original)
             os.symlink(pathname, original)
@@ -117,8 +114,11 @@ class Homekeeper(object):
             _sh('git merge master')
 
     def link(self):
+        home_directory = os.getenv('HOME')
         with _cd(self.dotfiles_directory):
-            self.__symlink_files(initial_dot=self.initial_dot)
+            target_directory = os.path.join(home_directory)
+            self.__symlink_files(target_directory, initial_dot=self.initial_dot)
         with _cd(self.scripts_directory):
-            self.__symlink_files(initial_dot=False)
+            target_directory = os.path.join(home_directory, 'bin')
+            self.__symlink_files(target_directory, initial_dot=False)
         self.__remove_broken_symlinks()
