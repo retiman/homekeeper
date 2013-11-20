@@ -39,22 +39,13 @@ class ConfigurationError(Exception):
 
 
 class Homekeeper(object):
-
-    def __init__(self, config_pathname=None):
-        self.config_pathname = config_pathname
-        if not self.config_pathname:
-            self.config_pathname = os.path.join(os.getenv('HOME'),
-                                                '.homekeeper.conf')
-        if not os.path.exists(self.config_pathname):
-            raise ConfigurationError(".homekeeper.conf doesn't exist.")
-        self.config = {}
-        execfile(self.config_pathname, self.config)
+    def __init__(self, config={}):
+        self.config = config
         if 'dotfiles_directory' not in self.config:
             raise ConfigurationError('homekeeper configuration requires a '
                                      '"dotfiles_dir" variable set.')
         self.dotfiles_directory = self.config['dotfiles_directory']
         self.scripts_directory = self.config.get('scripts_directory', '')
-        self.initial_dot = self.config.get('initial_dot', False)
 
     def __mkdir_p(self, pathname):
         try:
