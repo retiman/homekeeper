@@ -36,7 +36,7 @@ class Homekeeper(object):
         self.scripts_directory = self.config.get('scripts_directory', '')
         self.initial_dot = self.config.get('initial_dot', False)
 
-    def __mkdir_p(pathname):
+    def __mkdir_p(self, pathname):
         try:
             os.makedirs(pathname)
         except OSError as e:
@@ -45,7 +45,7 @@ class Homekeeper(object):
             else:
                 raise
 
-    def __remove_broken_symlinks(directory):
+    def __remove_broken_symlinks(self, directory):
         for pathname in os.listdir(directory):
             if not os.path.islink(pathname):
                 continue
@@ -54,7 +54,7 @@ class Homekeeper(object):
             print 'removing broken link: %s' % pathname
             os.unlink(pathname)
 
-    def __symlink_files(initial_dot=False):
+    def __symlink_files(self, initial_dot=False):
         print 'symlinking files in %s' % source_directory
         home_directory = os.getenv('HOME')
         for pathname in os.listdir('.'):
@@ -70,7 +70,7 @@ class Homekeeper(object):
             os.symlink(pathname, original)
             print 'symlinked %s' % original
 
-    def sh(command):
+    def sh(self, command):
         """Prints a command executes it.
 
         Args:
@@ -86,15 +86,15 @@ class Homekeeper(object):
         out, err = p.communicate()
         return out
 
-    def branch():
+    def branch(self):
         with _cd(self.dotfiles_directory):
             return sh(['git', 'status']).split('\n')[0].split('# On branch ')[1]
 
-    def commit():
+    def commit(self):
         with _cd(self.dotfiles_directory):
             return sh(['git', 'show', 'HEAD']).split('\n')[0].split(' ')[1]
 
-    def update():
+    def update(self):
         with _cd(self.dotfiles_directory):
             b = branch()
             sh('git fetch')
@@ -104,7 +104,7 @@ class Homekeeper(object):
             sh('git checkout %s' % b)
             sh('git merge master')
 
-    def save():
+    def save(self):
         with _cd(self.dotfiles_directory):
             b = branch
             c = commit
@@ -113,7 +113,7 @@ class Homekeeper(object):
             sh('git checkout %s' % b)
             sh('git merge master')
 
-    def link():
+    def link(self):
         with _cd(self.dotfiles_directory):
             self.__symlink_files(initial_dot=self.initial_dot)
         with _cd(self.scripts_directory):
