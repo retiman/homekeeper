@@ -50,10 +50,13 @@ class Homekeeper(object):
 
     def __parse_config(self):
         if not os.path.exists(self.CONFIG_PATHNAME):
+            print 'homekeeper configuration not found; assuming defaults'
             return {}
         try:
-            return json.loads(self.CONFIG_PATHNAME)
+            s = open(self.CONFIG_PATHNAME).read()
+            return json.loads(s)
         except ValueError:
+            print 'homekeeper configuration invalid; assuming defaults'
             return {}
 
     def __mkdir_p(self, pathname):
