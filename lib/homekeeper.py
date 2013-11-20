@@ -68,6 +68,8 @@ class Homekeeper(object):
 
     def __symlink_files(self, source_directory, target_directory,
                         initial_dot=False):
+        if not os.path.isdir(source_directory):
+            return
         print 'symlinking files from %s' % source_directory
         with _cd(source_directory):
             for pathname in os.listdir('.'):

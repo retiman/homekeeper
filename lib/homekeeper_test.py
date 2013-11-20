@@ -9,10 +9,8 @@ class HomekeeperTest(unittest.TestCase):
         global os
         self.filesystem = fake_filesystem.FakeFilesystem()
         os = fake_filesystem.FakeOsModule(self.filesystem)
-        config = {
-            'dotfiles_directory': '.'
-        }
-        self.homekeeper = homekeeper.Homekeeper(config)
+        homekeeper.os = os
+        self.homekeeper = homekeeper.Homekeeper({'dotfiles_directory': '.'})
 
     def tearDown(self):
         del self.filesystem
@@ -42,3 +40,15 @@ class HomekeeperTest(unittest.TestCase):
         self.assertFalse(os.path.exists('/nonexistent1.txt'))
         self.assertFalse(os.path.exists('/nonexistent2.txt'))
         self.assertTrue(os.path.exists('/exists.txt'))
+
+    def test_link_dotfiles(self):
+        dotfiles_directory = '/home/johndoe/dotfiles'
+        config = {'dotfiles_directory': dotfiles_directory}
+        self.filesystem.CreateFile(dotfiles_directory + '/vimrc')
+        self.homekeeper = homekeeper.Homekeeper(config)
+        self.homekeeper.link()
+        self.assertTrue(os.path.exists('/home/johndoe/dotfiles/vimrc'))
+        self.assertTrue(os.path.islink('/home/johndoe/.vimrc'))
+        self.assertTrue(os.path.exists('/home/johndoe/.vimrc'))
+        self.assertEquals('/home/johndoe/dotfiles/vimrc',
+                          os.path.readlink('/home/johndoe/.vimrc'))
