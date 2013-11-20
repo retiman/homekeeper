@@ -53,8 +53,9 @@ class Homekeeper(object):
             print 'homekeeper configuration not found; assuming defaults'
             return {}
         try:
-            s = open(self.CONFIG_PATHNAME).read()
-            return json.loads(s)
+            config = json.loads(open(self.CONFIG_PATHNAME).read())
+            print 'found homekeeper configuration at %s' % self.CONFIG_PATHNAME
+            return config
         except ValueError:
             print 'homekeeper configuration invalid; assuming defaults'
             return {}
