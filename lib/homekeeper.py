@@ -3,8 +3,10 @@ import os
 import subprocess
 import sys
 
+
 class ConfigurationError(Exception):
     pass
+
 
 class Homekeeper(object):
     class _cd(object):
