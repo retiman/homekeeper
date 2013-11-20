@@ -74,7 +74,7 @@ class Homekeeper(object):
             os.unlink(pathname)
 
     def __symlink_files(self, target_directory, initial_dot=False):
-        print 'symlinking files in %s' % target_directory
+        print 'symlinking files to %s' % target_directory
         for pathname in os.listdir('.'):
             basename = os.path.basename(pathname)
             if initial_dot:
