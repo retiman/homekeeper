@@ -112,6 +112,7 @@ class Homekeeper(object):
             print 'your dotfiles directory cannot be your home directory'
             return
         self.config['dotfiles_directory'] = os.path.realpath(os.getcwd())
+        print 'setting dotfiles directory to %s' % os.getcwd()
         serialized = json.dumps(self.config, sort_keys=True, indent=4)
         if os.path.exists(self.CONFIG_PATHNAME):
             print 'overwriting %s' % self.CONFIG_PATHNAME
