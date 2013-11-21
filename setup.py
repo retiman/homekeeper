@@ -10,7 +10,7 @@ setup(
     py_modules=['homekeeper'],
     scripts=['bin/homekeeper'],
     test_suite='homekeeper_test',
-    version='2.1.2',
+    version='2.1.3',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Topic :: Utilities',
