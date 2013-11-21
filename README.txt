@@ -6,9 +6,9 @@ You may or may not find it useful.
 
 My dotfiles repository is located here if you'd like to take a look:
 
-    https://github.com/retiman/homekeeper
+    https://github.com/retiman/dotfiles
 
-Homekeeper will read a `$HOME/homekeeper.json` file for configuration, or create
+Homekeeper will read a `$HOME/.homekeeper.json` file for configuration, or create
 one if it doesn't already exist.  The default configuration looks like this:
 
     {
