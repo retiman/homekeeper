@@ -37,14 +37,18 @@ def _sh(command):
 
 class Homekeeper(object):
     CONFIG_PATHNAME = os.path.join(os.getenv('HOME'), '.homekeeper.json')
+    CONFIG_DEFAULTS = {
+        'dotfiles_directory': os.path.join(os.getenv('HOME'), 'dotfiles'),
+        'excludes': ['.git', '.gitignore', 'LICENSE', 'README.md']
+        }
 
     def __init__(self, overrides={}):
-        self.config = {
-            'dotfiles_directory': os.path.join(os.getenv('HOME'), 'dotfiles'),
-            'excludes': ['.git', '.gitignore', 'LICENSE', 'README.md']
-        }
+        self.config = self.CONFIG_DEFAULTS
         self.config.update(self.__parse_config())
         self.config.update(overrides)
+        if self.config['dotfiles_directory'] == os.getenv('HOME'):
+            raise ValueError('your dotfiles directory cannot be your home '
+                             'directory')
 
     def __parse_config(self):
         if not os.path.exists(self.CONFIG_PATHNAME):
@@ -105,7 +109,7 @@ class Homekeeper(object):
         path will be merged into existing configuration.
         """
         if os.path.realpath(os.getcwd()) == os.realpath(os.getenv('HOME')):
-            print 'this is your home directory; your dotfiles are already here.'
+            print 'your dotfiles directory cannot be your home directory'
             return
         self.config['dotfiles_directory'] = os.path.realpath(os.getcwd())
         serialized = json.dumps(self.config, sort_keys=True, indent=4)

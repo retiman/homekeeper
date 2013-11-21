@@ -15,6 +15,13 @@ class HomekeeperTest(unittest.TestCase):
     def tearDown(self):
         del self.filesystem
 
+    def test_configuration_defaults(self):
+        self.homekeeper = homekeeper.Homekeeper()
+        self.assertEquals(self.homekeeper.CONFIG_DEFAULTS['dotfiles_directory'],
+                          self.homekeeper.config['dotfiles_directory'])
+        self.assertRaises(ValueError, homekeeper.Homekeeper,
+                          {'dotfiles_directory': os.getenv('HOME')})
+
     def test_branch(self):
         messages = ['# On branch foobar',
                     '# Your branch is ahead of \'origin/foobar\' by 2 commits.']
@@ -48,7 +55,8 @@ class HomekeeperTest(unittest.TestCase):
         self.filesystem.CreateFile(dotfiles_directory + '/.vimrc')
         self.homekeeper = homekeeper.Homekeeper(config)
         self.homekeeper.link()
-        self.assertTrue(os.path.exists('/home/johndoe/personal/dotfiles/.vimrc'))
+        self.assertTrue(os.path.exists('/home/johndoe/personal/dotfiles/'
+                                       '.vimrc'))
         self.assertTrue(os.path.islink('/home/johndoe/.vimrc'))
         self.assertTrue(os.path.exists('/home/johndoe/.vimrc'))
         self.assertEquals('/home/johndoe/personal/dotfiles/.vimrc',
