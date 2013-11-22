@@ -9,19 +9,21 @@ version = get_distribution('homekeeper').version
 
 def print_usage():
     print 'homekeeper %s by Min Huang (min.huang@alumni.usc.edu)' % version
-    print ''
     print 'Usage: homekeeper <command>'
     print ''
     print '<commands>'
-    print '  init           set dotfiles directory to current directory'
-    print '  link           symlink dotfiles to home directory'
-    print '  save           save last commit to master branch'
-    print '  track <file>   track a dotfile with homekeeper'
-    print '  update         update dotfiles from git'
+    print '  init <directory> set dotfiles directory to current directory'
+    print '  link             symlink dotfiles to home directory'
+    print '  save             save last commit to master branch'
+    print '  track <file>     track a dotfile with homekeeper'
+    print '  update           update dotfiles from git'
 
 if len(sys.argv) == 2 and sys.argv[1] == 'init':
     h = homekeeper.Homekeeper()
     h.init()
+elif len(sys.argv) == 3 and sys.argv[1] == 'init':
+    h = homekeeper.Homekeeper()
+    h.init(dotfiles_directory=sys.argv[2])
 elif len(sys.argv) == 2 and sys.argv[1] == 'save':
     h = homekeeper.Homekeeper()
     h.save()
