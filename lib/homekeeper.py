@@ -1,7 +1,6 @@
 #!/usr/bin/env python2
 import json
 import os
-import re
 import shutil
 import subprocess
 import sys
@@ -128,10 +127,7 @@ class Homekeeper(object):
 
     def branch(self):
         with _cd(self.config['dotfiles_directory']):
-            output = _sh('git status')
-            output.split('\n')[0]
-            p = re.compile(r'(# )? On branch ')
-            return p.split(output.split('\n')[0])[1]
+            return _sh('git status').split('\n')[0].split()[-1]
 
     def commit_id(self):
         with _cd(self.config['dotfiles_directory']):
