@@ -130,7 +130,7 @@ class Homekeeper(object):
         with _cd(self.config['dotfiles_directory']):
             output = _sh('git status')
             output.split('\n')[0]
-            p = re.compile(r'#? On branch ')
+            p = re.compile(r'(# )? On branch ')
             return p.split(output.split('\n')[0])[1]
 
     def commit_id(self):
