@@ -6,7 +6,7 @@ setup(
     description='Homekeeper can version your dotfiles with Git.',
     long_description=open('README.txt').read(),
     name='homekeeper',
-    package_dir='',
+    packages=['homekeeper'],
     scripts=['bin/homekeeper'],
     test_suite='homekeeper.test',
     version='2.3.0',
