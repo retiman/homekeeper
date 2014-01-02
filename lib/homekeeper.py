@@ -96,7 +96,9 @@ class Homekeeper(object):
                 target = os.path.join(target_directory, basename)
                 if os.path.islink(target):
                     os.unlink(target)
-                if os.path.exists(target):
+                if os.path.isfile(target):
+                    os.remove(target)
+                if os.path.isdir(target):
                     shutil.rmtree(target)
                 os.symlink(source, target)
                 print 'symlinked %s' % target
