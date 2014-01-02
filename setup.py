@@ -9,7 +9,7 @@ setup(
     package_dir='',
     scripts=['bin/homekeeper'],
     test_suite='homekeeper.test',
-    version='2.2.3',
+    version='2.3.0',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Topic :: Utilities',
