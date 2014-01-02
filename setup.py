@@ -6,10 +6,9 @@ setup(
     description='Homekeeper can version your dotfiles with Git.',
     long_description=open('README.txt').read(),
     name='homekeeper',
-    package_dir={'': 'lib'},
-    py_modules=['homekeeper'],
+    package_dir='',
     scripts=['bin/homekeeper'],
-    test_suite='homekeeper_test',
+    test_suite='homekeeper.test',
     version='2.2.3',
     classifiers=[
         'Development Status :: 4 - Beta',
