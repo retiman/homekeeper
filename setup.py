@@ -1,3 +1,4 @@
+import homekeeper
 import setuptools
 
 setuptools.setup(
@@ -9,7 +10,7 @@ setuptools.setup(
     packages=['homekeeper'],
     scripts=['bin/homekeeper'],
     test_suite='homekeeper.test',
-    version='2.3.0',
+    version=homekeeper.version,
     classifiers=[
         'Development Status :: 4 - Beta',
         'Topic :: Utilities',

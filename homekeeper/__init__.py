@@ -5,6 +5,8 @@ import shutil
 import subprocess
 import sys
 
+version = '2.3.0'
+
 
 class _cd(object):
     def __init__(self, pathname):
