@@ -1,6 +1,6 @@
-from setuptools import setup
+import setuptools
 
-setup(
+setuptools.setup(
     author='Min Huang',
     author_email='min.huang@alumni.usc.edu',
     description='Homekeeper can version your dotfiles with Git.',

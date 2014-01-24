@@ -1,7 +1,6 @@
 import fake_filesystem
-import unittest
-
 import homekeeper
+import unittest
 
 
 class HomekeeperTest(unittest.TestCase):
