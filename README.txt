@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/retiman/homekeeper.svg?branch=master)](https://travis-ci.org/retiman/homekeeper)
+
 Homekeeper
 ==========
 This project helps me organize and version my dotfiles across multiple
