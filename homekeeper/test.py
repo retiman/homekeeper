@@ -42,7 +42,7 @@ class HomekeeperTest(unittest.TestCase):
         os.symlink('/c.txt', '/nonexistent2.txt')
         self.assertTrue(os.path.islink('/nonexistent1.txt'))
         self.assertTrue(os.path.islink('/nonexistent2.txt'))
-        self.homekeeper._Homekeeper__remove_broken_symlinks('/')
+        homekeeper._remove_broken_symlinks('/')
         self.assertFalse(os.path.exists('/nonexistent1.txt'))
         self.assertFalse(os.path.exists('/nonexistent2.txt'))
         self.assertTrue(os.path.exists('/exists.txt'))
