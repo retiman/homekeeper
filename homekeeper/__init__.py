@@ -1,5 +1,6 @@
 #!/usr/bin/env python2
 """This program helps organize and version your dot files with Git."""
+import errno
 import json
 import os
 import shutil
@@ -75,8 +76,8 @@ class Homekeeper(object):
     def __mkdir_p(self, pathname):
         try:
             os.makedirs(pathname)
-        except OSError as e:
-            if e.errno == errno.EEXIST:
+        except OSError as exc:
+            if exc.errno == errno.EEXIST:
                 pass
             else:
                 raise
