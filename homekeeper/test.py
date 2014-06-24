@@ -2,6 +2,9 @@ import fake_filesystem
 import homekeeper
 import unittest
 
+# pylint: disable=invalid-name
+os = None
+
 
 class HomekeeperTest(unittest.TestCase):
     def setUp(self):
