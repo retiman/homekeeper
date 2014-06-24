@@ -4,10 +4,10 @@ import os
 import pkg_resources
 import sys
 
-version = homekeeper.version
 
 def print_usage():
-    print 'homekeeper %s by Min Huang (min.huang@alumni.usc.edu)' % version
+    print 'homekeeper %s by Min Huang (min.huang@alumni.usc.edu)' %
+          homekeeper.VERSION
     print 'Usage: homekeeper <command>'
     print ''
     print '<commands>'
