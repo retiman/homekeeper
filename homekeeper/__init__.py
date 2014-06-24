@@ -50,7 +50,9 @@ class Homekeeper(object):
         'excludes': ['.git', '.gitignore', 'LICENSE', 'README.md']
         }
 
-    def __init__(self, overrides={}):
+    def __init__(self, overrides=None):
+        if overrides is None:
+            overrides = {}
         self.config = self.CONFIG_DEFAULTS
         self.config.update(self.__parse_config())
         self.config.update(overrides)
