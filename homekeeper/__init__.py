@@ -40,6 +40,7 @@ def _sh(command):
 
 
 class Homekeeper(object):
+    """Organizes and versions your dot files."""
     CONFIG_PATHNAME = os.path.join(os.getenv('HOME'), '.homekeeper.json')
     CONFIG_DEFAULTS = {
         'dotfiles_directory': os.path.join(os.getenv('HOME'), 'dotfiles'),
