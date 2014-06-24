@@ -8,6 +8,7 @@ os = None
 
 class HomekeeperTest(unittest.TestCase):
     def setUp(self):
+        # pylint: disable=global-statement
         global os
         self.filesystem = fake_filesystem.FakeFilesystem()
         os = fake_filesystem.FakeOsModule(self.filesystem)
