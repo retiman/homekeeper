@@ -35,10 +35,10 @@ def _sh(command):
         error.
     """
     print command
-    p = subprocess.Popen(command.split(' '),
-                         stdout=subprocess.PIPE,
-                         stderr=subprocess.PIPE)
-    out, err = p.communicate()
+    proc = subprocess.Popen(command.split(' '),
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE)
+    out, _ = proc.communicate()
     return out
 
 
