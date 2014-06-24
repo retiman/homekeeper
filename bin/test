@@ -1,4 +1,4 @@
 #!/bin/sh
 pylint -rn bin/homekeeper
 pylint -rn homekeeper
-python2 setup.py test
+nosetests
