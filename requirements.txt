@@ -1,1 +1,2 @@
+pyfakefs==2.4
 pylint==1.2.1
