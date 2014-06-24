@@ -9,7 +9,9 @@ import sys
 VERSION = '2.3.0'
 
 
+# pylint: disable=too-few-public-methods
 class _cd(object):
+    "Use with the `with` keyword to change directory."""
     def __init__(self, pathname):
         self.pathname = pathname
         self.saved_pathname = None
