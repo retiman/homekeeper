@@ -42,6 +42,22 @@ def _sh(command):
     return out
 
 
+def _remove_broken_symlinks(directory):
+    """Removes broken symlinks from a directory.
+
+    Args:
+        directory: The directory to look for broken symlinks.
+    """
+    for pathname in os.listdir(directory):
+        pathname = os.path.join(directory, pathname)
+        if not os.path.islink(pathname):
+            continue
+        if os.path.exists(os.readlink(pathname)):
+            continue
+        print 'removing broken link: %s' % pathname
+        os.unlink(pathname)
+
+
 class Homekeeper(object):
     """Organizes and versions your dot files."""
     CONFIG_PATHNAME = os.path.join(os.getenv('HOME'), '.homekeeper.json')
@@ -71,16 +87,6 @@ class Homekeeper(object):
         except ValueError:
             print 'homekeeper configuration invalid; assuming defaults'
             return {}
-
-    def __remove_broken_symlinks(self, directory):
-        for pathname in os.listdir(directory):
-            pathname = os.path.join(directory, pathname)
-            if not os.path.islink(pathname):
-                continue
-            if os.path.exists(os.readlink(pathname)):
-                continue
-            print 'removing broken link: %s' % pathname
-            os.unlink(pathname)
 
     def __symlink_files(self, source_directory, target_directory):
         if not os.path.isdir(source_directory):
@@ -138,24 +144,24 @@ class Homekeeper(object):
 
     def update(self):
         with _cd(self.config['dotfiles_directory']):
-            b = self.branch()
+            branch = self.branch()
             _sh('git fetch')
-            _sh('git merge origin/%s' % b)
+            _sh('git merge origin/%s' % branch)
             _sh('git checkout master')
             _sh('git merge origin/master')
-            _sh('git checkout %s' % b)
+            _sh('git checkout %s' % branch)
             _sh('git merge master')
 
     def save(self):
         with _cd(self.config['dotfiles_directory']):
-            b = self.branch()
-            c = self.commit_id()
-            if c == 'master':
+            branch = self.branch()
+            commit = self.commit_id()
+            if commit == 'master':
                 print "nothing to save; you're already on master."
                 return
             _sh('git checkout master')
-            _sh('git cherry-pick %s' % c)
-            _sh('git checkout %s' % b)
+            _sh('git cherry-pick %s' % commit)
+            _sh('git checkout %s' % branch)
             _sh('git merge master')
 
     def track(self, pathname):
@@ -173,4 +179,4 @@ class Homekeeper(object):
     def link(self):
         home_directory = os.getenv('HOME')
         self.__symlink_files(self.config['dotfiles_directory'], home_directory)
-        self.__remove_broken_symlinks(home_directory)
+        _remove_broken_symlinks(home_directory)
