@@ -12,6 +12,7 @@ VERSION = '2.3.0'
 class _cd(object):
     def __init__(self, pathname):
         self.pathname = pathname
+        self.saved_pathname = None
 
     def __enter__(self):
         self.saved_pathname = os.getcwd()
