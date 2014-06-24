@@ -1,4 +1,5 @@
 #!/usr/bin/env python2
+"""This program helps organize and version your dot files with Git."""
 import json
 import os
 import shutil
