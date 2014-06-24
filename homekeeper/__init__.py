@@ -1,6 +1,5 @@
 #!/usr/bin/env python2
 """This program helps organize and version your dot files with Git."""
-import errno
 import json
 import os
 import shutil
@@ -72,15 +71,6 @@ class Homekeeper(object):
         except ValueError:
             print 'homekeeper configuration invalid; assuming defaults'
             return {}
-
-    def __mkdir_p(self, pathname):
-        try:
-            os.makedirs(pathname)
-        except OSError as exc:
-            if exc.errno == errno.EEXIST:
-                pass
-            else:
-                raise
 
     def __remove_broken_symlinks(self, directory):
         for pathname in os.listdir(directory):
