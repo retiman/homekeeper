@@ -1,2 +1,3 @@
 #!/bin/sh
+pylint -rn homekeeper
 python2 setup.py test
