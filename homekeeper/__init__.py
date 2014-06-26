@@ -6,8 +6,7 @@ import shutil
 import subprocess
 import sys
 
-VERSION = '2.3.0'
-
+__version__ = '2.3.0'
 
 class _cd(object):
     "Use with the `with` keyword to change directory."""
@@ -21,7 +20,6 @@ class _cd(object):
 
     def __exit__(self, etype, value, traceback):
         os.chdir(self.saved_pathname)
-
 
 def _sh(command):
     """Prints a command executes it.
@@ -40,7 +38,6 @@ def _sh(command):
     out, _ = proc.communicate()
     return out
 
-
 def _remove_broken_symlinks(directory):
     """Removes broken symlinks from a directory.
 
@@ -55,7 +52,6 @@ def _remove_broken_symlinks(directory):
             continue
         print 'removing broken link: %s' % pathname
         os.unlink(pathname)
-
 
 class Homekeeper(object):
     """Organizes and versions your dot files."""

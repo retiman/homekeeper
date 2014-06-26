@@ -5,7 +5,6 @@ import unittest
 # pylint: disable=invalid-name
 os = None
 
-
 class HomekeeperTest(unittest.TestCase):
     def setUp(self):
         # pylint: disable=global-statement

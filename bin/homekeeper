@@ -3,11 +3,10 @@
 import homekeeper
 import sys
 
-
 # pylint: disable=invalid-name, no-member
 def print_usage():
     print ('homekeeper %s by Min Huang (min.huang@alumni.usc.edu)' %
-           homekeeper.VERSION)
+           homekeeper.__version__)
     print 'Usage: homekeeper <command>'
     print ''
     print '<commands>'

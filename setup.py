@@ -10,7 +10,7 @@ setuptools.setup(
     packages=['homekeeper'],
     scripts=['bin/homekeeper'],
     test_suite='homekeeper.test',
-    version=homekeeper.VERSION,
+    version=homekeeper.__version__,
     classifiers=[
         'Development Status :: 4 - Beta',
         'Topic :: Utilities',
