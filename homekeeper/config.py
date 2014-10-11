@@ -2,12 +2,12 @@
 import json
 import os
 
-class Config:
+class Config(object):
     PATHNAME = os.path.join(os.getenv('HOME'), '.homekeeper.json')
     DEFAULTS = {
         'base': None,
         'directory': os.path.join(os.getenv('HOME'), 'dotfiles'),
-        'excludes': ['.git', '.gitignore', 'LICENSE', 'README.md']
+        'excludes': ['.git', '.gitignore', 'LICENSE', 'README.md'],
         'override': False
         }
 
