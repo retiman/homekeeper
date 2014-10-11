@@ -17,7 +17,7 @@ class Config(object):
         if os.path.exists(pathname):
             try:
                 print 'found homekeeper configuration at %s' % pathname
-                config = json.loads(open(self.PATHNAME).read())
+                config = json.loads(open(pathname).read())
             except ValueError:
                 print 'homekeeper configuration invalid; assuming defaults'
                 config = self.DEFAULTS

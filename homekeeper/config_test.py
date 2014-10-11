@@ -2,6 +2,7 @@ import fake_filesystem
 import homekeeper.config
 import json
 import unittest
+import __builtin__
 
 # pylint: disable=invalid-name
 os = None
@@ -9,39 +10,41 @@ Config = homekeeper.config.Config
 
 class ConfigTest(unittest.TestCase):
     def setUp(self):
-        # pylint: disable=global-statement
-        global os
-        self.config = None
-        self.filesystem = fake_filesystem.FakeFilesystem()
-        os = fake_filesystem.FakeOsModule(self.filesystem)
+        self.filesystem = ConfigTest.create_fake_filesystem()
+        self.pathname = os.path.join(os.getenv('HOME'), 'homekeeper.json')
+        self.defaults = {
+            'base': os.path.join(os.getenv('HOME'), 'dotfiles-base'),
+            'directory': os.path.join(os.getenv('HOME'), 'dotfiles-main'),
+            'dotfiles_directory': os.path.join(os.getenv('HOME'), 'dotfiles'),
+            'excludes': ['.git'],
+            'override': True
+        }
+        self.filesystem.CreateFile(self.pathname,
+                                   contents=json.dumps(self.defaults))
         homekeeper.config.os = os
-        self.write_configuration()
 
     def tearDown(self):
         del self.filesystem
 
-    def write_configuration(self):
-        config = {
-            'base': os.path.join(os.getenv('HOME'), 'dotfiles-base'),
-            'directory': os.path.join(os.getenv('HOME'), 'dotfiles-main'),
-            'excludes': ['.git'],
-            'override': True
-        }
-        pathname = Config.PATHNAME
-        self.filesystem.CreateFile(pathname)
-        config_file = open(pathname, 'w')
-        config_file.write(json.dumps(config))
-        config_file.close()
+    @staticmethod
+    def create_fake_filesystem():
+        filesystem = fake_filesystem.FakeFilesystem()
+        globals()['os'] = fake_filesystem.FakeOsModule(filesystem)
+        __builtin__.open = fake_filesystem.FakeFileOpen(filesystem)
+        return filesystem
 
-    def test_defaults_no_configuration_file(self):
-        os.unlink(Config.PATHNAME)
-        self.config = Config()
+    def test_defaults(self):
+        config = Config()
         self.assertFalse(os.path.exists(Config.PATHNAME))
-        self.assertEquals(self.config.base,
-                          Config.DEFAULTS['base'])
-        self.assertEquals(self.config.directory,
-                          Config.DEFAULTS['directory'])
-        self.assertEquals(self.config.excludes,
-                          Config.DEFAULTS['excludes'])
-        self.assertEquals(self.config.override,
-                          Config.DEFAULTS['override'])
+        self.assertEquals(config.base, Config.DEFAULTS['base'])
+        self.assertEquals(config.directory, Config.DEFAULTS['directory'])
+        self.assertEquals(config.excludes, Config.DEFAULTS['excludes'])
+        self.assertEquals(config.override, Config.DEFAULTS['override'])
+
+    def test_configuration(self):
+        config = Config(self.pathname)
+        self.assertEquals(config.base, self.defaults['base'])
+        self.assertEquals(config.excludes, self.defaults['excludes'])
+        self.assertEquals(config.override, self.defaults['override'])
+        self.assertEquals(config.directory, self.defaults['dotfiles_directory'])
+        self.assertNotEquals(config.directory, self.defaults['directory'])
