@@ -28,5 +28,9 @@ class Config(object):
         self.directory = config['directory'] if 'directory' in config else None
         self.excludes = config['excludes'] if 'excludes' in config else []
         self.override = config['override'] if 'override' in config else False
+        # This is the old configuration directive; it is retained and overrides
+        # the normal directive if present.
+        if 'dotfiles_directory' in config:
+            self.directory = config['dotfiles_directory']
         self.config = config
         self.pathname = pathname
