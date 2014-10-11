@@ -32,5 +32,3 @@ class Config(object):
         # the normal directive if present.
         if 'dotfiles_directory' in config:
             self.directory = config['dotfiles_directory']
-        self.config = config
-        self.pathname = pathname
