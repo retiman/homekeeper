@@ -6,7 +6,7 @@ import shutil
 import subprocess
 import sys
 
-__version__ = '2.3.0'
+__version__ = '3.0.0'
 
 class _cd(object):
     "Use with the `with` keyword to change directory."""
