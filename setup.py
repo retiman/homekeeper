@@ -12,7 +12,7 @@ setuptools.setup(
     test_suite='homekeeper.test',
     version=homekeeper.__version__,
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Topic :: Utilities',
     ],
 )
