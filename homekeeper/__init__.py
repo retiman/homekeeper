@@ -1,11 +1,13 @@
 #!/usr/bin/env python2
 """This program helps organize and version your dot files with Git."""
+import homekeeper.config
 import json
 import os
 import shutil
 import subprocess
 import sys
 
+Config = homekeeper.config.Config
 __version__ = '3.0.0'
 
 class _cd(object):
@@ -62,6 +64,7 @@ class Homekeeper(object):
         }
 
     def __init__(self, overrides=None):
+        self.foo = Config()
         if overrides is None:
             overrides = {}
         self.config = self.CONFIG_DEFAULTS
