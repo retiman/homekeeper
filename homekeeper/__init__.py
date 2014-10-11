@@ -64,7 +64,6 @@ class Homekeeper(object):
         }
 
     def __init__(self, overrides=None):
-        self.foo = Config()
         if overrides is None:
             overrides = {}
         self.config = self.CONFIG_DEFAULTS
