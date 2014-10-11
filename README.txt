@@ -14,7 +14,9 @@ Homekeeper will read a `$HOME/.homekeeper.json` file for configuration, or creat
 one if it doesn't already exist.  The default configuration looks like this:
 
     {
-        "dotfiles_directory": "/home/$USER/proj/dotfiles",·
+        "base": "/home/$USER/dotfiles/base",
+        "directory": "/home/$USER/dotfiles/$HOST",
+        "override": true,
         "excludes": [
             ".git",
             ".gitignore",
@@ -27,6 +29,10 @@ Homekeeper will not symlink any file in the `excludes` array in the
 configuration.  The default is to exclude the `.gitignore` and `.git` files
 but you can change this if you want.
 
+Homekeeper will symlink files in the base directory first, then override those
+symlinks with files in your normal dotfiles directory.  This can be useful if
+you have different configurations for different machines.
+
 You may have homekeeper generate this file by running `homekeeper init` in the
 directory where you store your dotfiles.
 
@@ -35,7 +41,7 @@ your home directory, and symlink it from your dotfiles directory.  For example,
 if you have a `.bash_profile` in `~/dotfiles`, then your home directory will
 contain:
 
-    .bash_profile -> /home/yourusername/dotfiles/.bash_profile
+    .bash_profile -> /home/$USER/dotfiles/.bash_profile
 
 NOTE: HOMEKEEPER WILL REMOVE THE ORIGINAL FILE ONCE YOU TELL IT TO SYMLINK.
 
@@ -44,28 +50,9 @@ symlink first.
 
 Multiple Computers
 ==================
-If you have multiple computers or VMs you are working with, consider making a
-branch for each one.  I like to name each branch after a host I am working on.
-If you like a commit and want them to show up in all branches, do this:
-
-1.  `git commit -am "My super awesome change"`
-1.  `git checkout master`
-1.  `git cherry-pick <commitid>`
-1.  `git checkout <host-branch>`
-1.  `git merge master`
-
-Or you can run `homekeeper save` which will do the same thing with what HEAD
-points to in the current branch.
-
-If you are on a different computer or VM and want to pick up the changes
-from master, do this:
-
-1.  `git checkout master`
-1.  `git pull origin master`
-1.  `git checkout <host-branch>`
-1.  `git merge master`
-
-Or you can run `homekeeper update` which will do the same thing.
+If you have multiple computers or VMs you are working with, you may wish to
+create directories named after each machine, and possibly a base directory for
+dotfiles common across all machines and do not change.
 
 More Documentation
 ==================
