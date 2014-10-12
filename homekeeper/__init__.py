@@ -2,6 +2,7 @@
 """This program helps organize and version your dot files with Git."""
 import homekeeper.config
 import homekeeper.util
+import logging
 import os
 import shutil
 
@@ -27,14 +28,14 @@ class Homekeeper(object):
 
     def track(self, pathname):
         if not os.path.exists(pathname):
-            print "pathname not found; won't track %s" % pathname
+            logging.info("pathname not found; won't track %s", pathname)
             return
         basename = os.path.basename(pathname)
         target = os.path.join(self.config['dotfiles_directory'], basename)
         if os.path.exists(target):
-            print 'this path is already tracked at %s' % target
+            logging.info('this path is already tracked at %s', target)
             return
-        print 'moved %s to %s' % (pathname, target)
+        logging.info('moved %s to %s', pathname, target)
         shutil.move(pathname, target)
 
     def link(self):
