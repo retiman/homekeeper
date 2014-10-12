@@ -22,6 +22,7 @@ class Homekeeper(object):
         path will be merged into existing configuration.
         """
         pathname = os.path.realpath(os.getcwd())
+        logging.info('saving homekeeper configuration to %', pathname)
         self.config.reset()
         self.config.directory = pathname
         self.config.save()
