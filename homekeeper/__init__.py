@@ -18,33 +18,9 @@ __version__ = '3.0.0'
 
 class Homekeeper(object):
     """Organizes and versions your dot files."""
-    CONFIG_PATHNAME = os.path.join(os.getenv('HOME'), '.homekeeper.json')
-    CONFIG_DEFAULTS = {
-        'dotfiles_directory': os.path.join(os.getenv('HOME'), 'dotfiles'),
-        'excludes': ['.git', '.gitignore', 'LICENSE', 'README.md']
-        }
 
-    def __init__(self, overrides=None):
-        if overrides is None:
-            overrides = {}
-        self.config = self.CONFIG_DEFAULTS
-        self.config.update(self.__parse_config())
-        self.config.update(overrides)
-        if self.config['dotfiles_directory'] == os.getenv('HOME'):
-            raise ValueError('your dotfiles directory cannot be your home '
-                             'directory')
-
-    def __parse_config(self):
-        if not os.path.exists(self.CONFIG_PATHNAME):
-            print 'homekeeper configuration not found; assuming defaults'
-            return {}
-        try:
-            config = json.loads(open(self.CONFIG_PATHNAME).read())
-            print 'found homekeeper configuration at %s' % self.CONFIG_PATHNAME
-            return config
-        except ValueError:
-            print 'homekeeper configuration invalid; assuming defaults'
-            return {}
+    def __init__(self, pathname=None):
+        self.config = Config(pathname)
 
     def __symlink_files(self, source_directory, target_directory):
         if not os.path.isdir(source_directory):
@@ -84,43 +60,13 @@ class Homekeeper(object):
         self.config['dotfiles_directory'] = dotfiles_directory
         print 'setting dotfiles directory to %s' % os.getcwd()
         serialized = json.dumps(self.config, sort_keys=True, indent=4)
-        if os.path.exists(self.CONFIG_PATHNAME):
-            print 'overwriting %s' % self.CONFIG_PATHNAME
-            os.remove(self.CONFIG_PATHNAME)
-        config = open(self.CONFIG_PATHNAME, 'w')
+        if os.path.exists(Config.PATHNAME):
+            print 'overwriting %s' % Config.PATHNAME
+            os.remove(Config.PATHNAME)
+        config = open(Config.PATHNAME, 'w')
         config.write(serialized)
         config.close()
         print 'wrote configuration to %s' % self.CONFIG_PATHNAME
-
-    def branch(self):
-        with cd(self.config['dotfiles_directory']):
-            return sh('git status').split('\n')[0].split()[-1]
-
-    def commit_id(self):
-        with cd(self.config['dotfiles_directory']):
-            return sh('git show HEAD').split('\n')[0].split(' ')[1]
-
-    def update(self):
-        with cd(self.config['dotfiles_directory']):
-            branch = self.branch()
-            sh('git fetch')
-            sh('git merge origin/%s' % branch)
-            sh('git checkout master')
-            sh('git merge origin/master')
-            sh('git checkout %s' % branch)
-            sh('git merge master')
-
-    def save(self):
-        with cd(self.config['dotfiles_directory']):
-            branch = self.branch()
-            commit = self.commit_id()
-            if commit == 'master':
-                print "nothing to save; you're already on master."
-                return
-            sh('git checkout master')
-            sh('git cherry-pick %s' % commit)
-            sh('git checkout %s' % branch)
-            sh('git merge master')
 
     def track(self, pathname):
         if not os.path.exists(pathname):
