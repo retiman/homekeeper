@@ -13,7 +13,11 @@ class Config(object):
 
     def __init__(self, pathname=None):
         self.data = self.DEFAULTS
-        self.pathname = os.path.realpath(pathname or self.PATHNAME)
+        self.pathname = self.PATHNAME
+        if pathname is None:
+            print 'homekeeper configuration not specified; assuming defaults'
+            return
+        self.pathname = os.path.realpath(pathname)
         if not os.path.exists(self.pathname):
             print 'homekeeper configuration not found; assuming defaults'
             return
@@ -29,6 +33,9 @@ class Config(object):
             print 'your dotfiles directory cannot be your home directory'
             self.data['directory'] = self.DEFAULTS['directory']
             return
+
+    def reset(self):
+        self.data = self.DEFAULTS
 
     def save(self, pathname=None):
         pathname = pathname or self.pathname

@@ -34,7 +34,7 @@ def sh(command):
     out, _ = proc.communicate()
     return out
 
-def create_symlinks(config, source_directory, target_directory):
+def create_symlinks(config):
     """Symlinks files from the dotfiles directory to the home directory.
 
     Args:

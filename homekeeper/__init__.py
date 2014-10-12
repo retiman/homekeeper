@@ -8,15 +8,13 @@ import shutil
 import subprocess
 import sys
 
-Config = homekeeper.config.Config
-
 __version__ = '3.0.0'
 
 class Homekeeper(object):
     """Organizes and versions your dot files."""
 
     def __init__(self, pathname=None):
-        self.config = Config(pathname)
+        self.config = homekeeper.config.Config(pathname)
 
     def init(self):
         """Writes a configuration file with cwd as the dotfiles directory.
@@ -26,17 +24,9 @@ class Homekeeper(object):
         path will be merged into existing configuration.
         """
         pathname = os.path.realpath(os.getcwd())
-
-        self.config['dotfiles_directory'] = dotfiles_directory
-        print 'setting dotfiles directory to %s' % os.getcwd()
-        serialized = json.dumps(self.config, sort_keys=True, indent=4)
-        if os.path.exists(Config.PATHNAME):
-            print 'overwriting %s' % Config.PATHNAME
-            os.remove(Config.PATHNAME)
-        config = open(Config.PATHNAME, 'w')
-        config.write(serialized)
-        config.close()
-        print 'wrote configuration to %s' % Config.PATHNAME
+        self.config.reset()
+        self.config.directory = pathname
+        self.config.save()
 
     def track(self, pathname):
         if not os.path.exists(pathname):
@@ -52,4 +42,4 @@ class Homekeeper(object):
 
     def link(self):
         homekeeper.util.create_symlinks(self.config)
-        homekeeper.util.cleanup_symlinks(home_directory)
+        homekeeper.util.cleanup_symlinks(os.getenv('HOME'))

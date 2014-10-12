@@ -78,3 +78,16 @@ class ConfigTest(unittest.TestCase):
         self.assertEquals(config.excludes, [])
         self.assertEquals(config.override, True)
 
+    def test_save_with_no_pathname(self):
+        """Tests save config file without an explicit pathname."""
+        config = Config(self.pathname)
+        config.excludes = []
+        config.save()
+        config = Config(self.pathname)
+        self.assertEquals(config.excludes, [])
+        config = Config()
+        config.excludes = ['.git']
+        config.save()
+        config = Config(Config.PATHNAME)
+        self.assertEquals(config.excludes, ['.git'])
+
