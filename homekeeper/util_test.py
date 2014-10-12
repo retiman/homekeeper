@@ -10,12 +10,16 @@ cleanup_symlinks = homekeeper.util.cleanup_symlinks
 
 class UtilTest(unittest.TestCase):
     def setUp(self):
-        self.filesystem = fake_filesystem.FakeFilesystem()
-        globals()['os'] = fake_filesystem.FakeOsModule(self.filesystem)
-        __builtin__.open = fake_filesystem.FakeFileOpen(self.filesystem)
+        # pylint: disable=global-statement
+        global os
         self.home = '/home/johndoe'
+        self.filesystem = fake_filesystem.FakeFilesystem()
+        __builtin__.open = fake_filesystem.FakeFileOpen(self.filesystem)
+        os = fake_filesystem.FakeOsModule(self.filesystem)
+        os.getenv = lambda key: {'HOME': self.home}[key]
         homekeeper.util.os = os
-        homekeeper.util.os.getenv = lambda var: self.home
+        homekeeper.util.shutil.rmtree = os.rmdir
+        homekeeper.util.shutil.move = os.rename
 
     def tearDown(self):
         del self.filesystem

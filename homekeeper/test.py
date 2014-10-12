@@ -9,29 +9,33 @@ os = None
 
 class HomekeeperTest(unittest.TestCase):
     def setUp(self):
-        # pylint: disable=global-statement
-        global os
-        self.filesystem = fake_filesystem.FakeFilesystem()
+        self.filesystem = None
         self.config = None
         self.homekeeper = None
         self.home = '/home/johndoe'
-        __builtin__.open = fake_filesystem.FakeFileOpen(self.filesystem)
-        os = fake_filesystem.FakeOsModule(self.filesystem)
-        os.getenv = lambda key: self.home
-        os.makedirs(self.home)
-        os.makedirs(self.home + '/dotfiles-base')
-        os.makedirs(self.home + '/dotfiles-main')
-        homekeeper.os = os
-        homekeeper.config.os = os
-        homekeeper.util.os = os
-        homekeeper.util.shutil.rmtree = os.rmdir
-        homekeeper.util.shutil.move = os.rename
+        self._create_filesystem()
         self._configure()
 
     def tearDown(self):
         del self.filesystem
 
+    def _create_filesystem(self):
+        # pylint: disable=global-statement
+        global os
+        self.filesystem = fake_filesystem.FakeFilesystem()
+        __builtin__.open = fake_filesystem.FakeFileOpen(self.filesystem)
+        os = fake_filesystem.FakeOsModule(self.filesystem)
+        os.getenv = lambda key: {'HOME': self.home}[key]
+        homekeeper.os = os
+        homekeeper.config.os = os
+        homekeeper.util.os = os
+        homekeeper.util.shutil.rmtree = os.rmdir
+        homekeeper.util.shutil.move = os.rename
+
     def _configure(self):
+        os.makedirs(self.home)
+        os.makedirs(self.home + '/dotfiles-base')
+        os.makedirs(self.home + '/dotfiles-main')
         self.config = homekeeper.config.Config()
         self.config.base = self.home + '/dotfiles-base'
         self.config.directory = self.home + '/dotfiles-main'
