@@ -67,3 +67,14 @@ class ConfigTest(unittest.TestCase):
         config = Config(self.pathname)
         self.assertEquals(config.directory, Config.DEFAULTS['directory'])
 
+    def test_save(self):
+        """Tests save config file functionality."""
+        pathname = os.path.join(os.getenv('HOME'), 'saved.json')
+        config = Config(self.pathname)
+        config.excludes = []
+        config.override = True
+        config.save(pathname)
+        config = Config(pathname)
+        self.assertEquals(config.excludes, [])
+        self.assertEquals(config.override, True)
+

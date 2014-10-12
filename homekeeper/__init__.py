@@ -8,10 +8,6 @@ import shutil
 import subprocess
 import sys
 
-# pylint: disable=invalid-name
-cd = homekeeper.util.cd
-# pylint: disable=invalid-name
-sh = homekeeper.util.sh
 Config = homekeeper.config.Config
 
 __version__ = '3.0.0'
@@ -22,40 +18,15 @@ class Homekeeper(object):
     def __init__(self, pathname=None):
         self.config = Config(pathname)
 
-    def __symlink_files(self, source_directory, target_directory):
-        if not os.path.isdir(source_directory):
-            print 'dotfiles directory not found: %s' % source_directory
-            return
-        print 'symlinking files from %s' % source_directory
-        with cd(source_directory):
-            excludes = set(self.config['excludes'])
-            for pathname in os.listdir('.'):
-                basename = os.path.basename(pathname)
-                if basename in excludes:
-                    continue
-                source = os.path.join(source_directory, basename)
-                target = os.path.join(target_directory, basename)
-                if os.path.islink(target):
-                    os.unlink(target)
-                if os.path.isfile(target):
-                    os.remove(target)
-                if os.path.isdir(target):
-                    shutil.rmtree(target)
-                os.symlink(source, target)
-                print 'symlinked %s' % target
-
-    def init(self, pathname=None):
+    def init(self):
         """Writes a configuration file with cwd as the dotfiles directory.
 
         Configuration file is written as JSON, and will be removed if it exists
         already.  If configuration already exists, the new dotfiles directory
         path will be merged into existing configuration.
         """
-        pathname = pathname or os.cwd()
-        pathname = os.path.realpath(pathname)
-        if dotfiles_directory == os.path.realpath(os.getenv('HOME')):
-            print 'your dotfiles directory cannot be your home directory'
-            return
+        pathname = os.path.realpath(os.getcwd())
+
         self.config['dotfiles_directory'] = dotfiles_directory
         print 'setting dotfiles directory to %s' % os.getcwd()
         serialized = json.dumps(self.config, sort_keys=True, indent=4)
@@ -80,6 +51,5 @@ class Homekeeper(object):
         shutil.move(pathname, target)
 
     def link(self):
-        home_directory = os.getenv('HOME')
-        self.__symlink_files(self.config['dotfiles_directory'], home_directory)
+        homekeeper.util.create_symlinks(self.config)
         homekeeper.util.cleanup_symlinks(home_directory)
