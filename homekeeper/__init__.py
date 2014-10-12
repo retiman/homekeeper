@@ -1,44 +1,17 @@
 #!/usr/bin/env python2
 """This program helps organize and version your dot files with Git."""
 import homekeeper.config
+import homekeeper.util
 import json
 import os
 import shutil
 import subprocess
 import sys
 
+cd = homekeeper.util.cd
+sh = homekeeper.util.sh
 Config = homekeeper.config.Config
 __version__ = '3.0.0'
-
-class _cd(object):
-    "Use with the `with` keyword to change directory."""
-    def __init__(self, pathname):
-        self.pathname = pathname
-        self.saved_pathname = None
-
-    def __enter__(self):
-        self.saved_pathname = os.getcwd()
-        os.chdir(self.pathname)
-
-    def __exit__(self, etype, value, traceback):
-        os.chdir(self.saved_pathname)
-
-def _sh(command):
-    """Prints a command executes it.
-
-    Args:
-        command: The command to execute.
-
-    Returns:
-        The output of the command, discarding anything printed to standard
-        error.
-    """
-    print command
-    proc = subprocess.Popen(command.split(' '),
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE)
-    out, _ = proc.communicate()
-    return out
 
 def _remove_broken_symlinks(directory):
     """Removes broken symlinks from a directory.
@@ -90,7 +63,7 @@ class Homekeeper(object):
             print 'dotfiles directory not found: %s' % source_directory
             return
         print 'symlinking files from %s' % source_directory
-        with _cd(source_directory):
+        with cd(source_directory):
             excludes = set(self.config['excludes'])
             for pathname in os.listdir('.'):
                 basename = os.path.basename(pathname)
@@ -132,34 +105,34 @@ class Homekeeper(object):
         print 'wrote configuration to %s' % self.CONFIG_PATHNAME
 
     def branch(self):
-        with _cd(self.config['dotfiles_directory']):
-            return _sh('git status').split('\n')[0].split()[-1]
+        with cd(self.config['dotfiles_directory']):
+            return sh('git status').split('\n')[0].split()[-1]
 
     def commit_id(self):
-        with _cd(self.config['dotfiles_directory']):
-            return _sh('git show HEAD').split('\n')[0].split(' ')[1]
+        with cd(self.config['dotfiles_directory']):
+            return sh('git show HEAD').split('\n')[0].split(' ')[1]
 
     def update(self):
-        with _cd(self.config['dotfiles_directory']):
+        with cd(self.config['dotfiles_directory']):
             branch = self.branch()
-            _sh('git fetch')
-            _sh('git merge origin/%s' % branch)
-            _sh('git checkout master')
-            _sh('git merge origin/master')
-            _sh('git checkout %s' % branch)
-            _sh('git merge master')
+            sh('git fetch')
+            sh('git merge origin/%s' % branch)
+            sh('git checkout master')
+            sh('git merge origin/master')
+            sh('git checkout %s' % branch)
+            sh('git merge master')
 
     def save(self):
-        with _cd(self.config['dotfiles_directory']):
+        with cd(self.config['dotfiles_directory']):
             branch = self.branch()
             commit = self.commit_id()
             if commit == 'master':
                 print "nothing to save; you're already on master."
                 return
-            _sh('git checkout master')
-            _sh('git cherry-pick %s' % commit)
-            _sh('git checkout %s' % branch)
-            _sh('git merge master')
+            sh('git checkout master')
+            sh('git cherry-pick %s' % commit)
+            sh('git checkout %s' % branch)
+            sh('git merge master')
 
     def track(self, pathname):
         if not os.path.exists(pathname):
