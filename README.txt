@@ -2,6 +2,9 @@
 
 Homekeeper
 ==========
+NOTE: The format for homekeeper configuration has changed; this change is not
+backwards compatible with the old version.
+
 This project helps me organize and version my dotfiles across multiple
 computers.  It is useful to keep these dotfiles in sync so I don't get confused.
 You may or may not find it useful.
