@@ -30,10 +30,6 @@ class Config(object):
             self.data['directory'] = self.DEFAULTS['directory']
             return
 
-    def save(self):
-        with open(self.pathname) as cfile:
-            cfile.write(json.dumps(self.data))
-
     @property
     def base(self):
         return self.data.get('base', self.DEFAULTS['base'])
