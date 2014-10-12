@@ -11,29 +11,30 @@ class HomekeeperTest(unittest.TestCase):
         # pylint: disable=global-statement
         global os
         self.filesystem = fake_filesystem.FakeFilesystem()
+        self.homekeeper = None
+        self.home = '/home/johndoe'
         os = fake_filesystem.FakeOsModule(self.filesystem)
         homekeeper.os = os
         homekeeper.util.os = os
+        homekeeper.util.os.getenv = lambda var: self.home
         homekeeper.util.shutil.rmtree = os.rmdir
-        self.config = homekeeper.config.Config()
-        self.homekeeper = None
 
     def tearDown(self):
         del self.filesystem
 
     def test_link(self):
-        home = '/home/johndoe'
-        source = home + '/dotfiles/.vimrc'
-        target = home + '/.vimrc'
-        homekeeper.util.os.getenv = lambda var: home
-        self.config.directory = home + '/dotfiles'
-        self.config.save()
+        config = homekeeper.config.Config()
+        config.base = self.home + '/dotfiles-base'
+        config.directory = self.home + '/dotfiles-main'
+        config.override = True
+        config.save()
         self.homekeeper = homekeeper.Homekeeper()
-        self.filesystem.CreateFile(source)
-        self.assertTrue(os.path.exists(source))
-        self.assertFalse(os.path.exists(target))
+        self.filesystem.CreateFile(config.base + '/.bashrc')
+        self.filesystem.CreateFile(config.base + '/.vimrc')
+        self.filesystem.CreateFile(config.directory + '/.vimrc')
         self.homekeeper.link()
-        self.assertTrue(os.path.exists(source))
-        self.assertTrue(os.path.exists(target))
-        self.assertTrue(os.path.islink(target))
-        self.assertEquals(source, os.readlink(target))
+        self.assertEquals(config.base + '/.bashrc',
+                          os.readlink(self.home + '/.bashrc'))
+        self.assertEquals(config.directory + '/.vimrc',
+                          os.readlink(self.home + '/.vimrc'))
+

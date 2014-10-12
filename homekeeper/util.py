@@ -44,7 +44,7 @@ def create_symlinks(source_directory, target_directory, excludes=None):
             if os.path.isdir(target):
                 shutil.rmtree(target)
             os.symlink(source, target)
-            logging.info('symlinked %s', target)
+            logging.info('symlinked %s -> %s', target, source)
 
 def cleanup_symlinks(directory):
     """Removes broken symlinks from a directory.
