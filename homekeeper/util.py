@@ -1,3 +1,4 @@
+import logging
 import os
 import shutil
 
@@ -24,9 +25,9 @@ def create_symlinks(config):
     source_directory = config.directory
     target_directory = os.getenv('HOME')
     if not os.path.isdir(source_directory):
-        print 'dotfiles directory not found: %s' % source_directory
+        logging.info('dotfiles directory not found: %s', source_directory)
         return
-    print 'symlinking files from %s' % source_directory
+    logging.info('symlinking files from %s', source_directory)
     with cd(source_directory):
         excludes = set(config.excludes)
         for pathname in os.listdir('.'):
@@ -42,7 +43,7 @@ def create_symlinks(config):
             if os.path.isdir(target):
                 shutil.rmtree(target)
             os.symlink(source, target)
-            print 'symlinked %s' % target
+            logging.info('symlinked %s', target)
 
 def cleanup_symlinks(directory):
     """Removes broken symlinks from a directory.
@@ -56,6 +57,6 @@ def cleanup_symlinks(directory):
             continue
         if os.path.exists(os.readlink(pathname)):
             continue
-        print 'removing broken link: %s' % pathname
+        logging.info('removing broken link: %s', pathname)
         os.unlink(pathname)
 
