@@ -48,6 +48,7 @@ class Config(object):
             os.remove(pathname)
         with open(pathname, 'w') as cfile:
             cfile.write(json.dumps(self.data, sort_keys=True, indent=4))
+        logging.info('saved configuration to %s', pathname)
 
     @property
     def base(self):

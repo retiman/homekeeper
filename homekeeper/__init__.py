@@ -39,12 +39,14 @@ class Homekeeper(object):
             logging.info("pathname not found; won't track %s", pathname)
             return
         basename = os.path.basename(pathname)
-        target = os.path.join(self.config['dotfiles_directory'], basename)
+        target = os.path.join(self.config.directory, basename)
         if os.path.exists(target):
             logging.info('this path is already tracked at %s', target)
             return
-        logging.info('moved %s to %s', pathname, target)
         shutil.move(pathname, target)
+        logging.info('moved %s to %s', pathname, target)
+        os.symlink(target, pathname)
+        logging.info('symlinked %s -> %s', pathname, target)
 
     def link(self):
         self._configure()
