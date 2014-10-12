@@ -13,18 +13,22 @@ class Config(object):
 
     def __init__(self, pathname=None):
         self.data = self.DEFAULTS
-        self.pathname = pathname or self.PATHNAME
-        if os.path.exists(self.pathname):
-            try:
-                print 'found homekeeper configuration at %s' % self.pathname
-                self.data = json.loads(open(self.pathname).read())
-            except ValueError:
-                print 'homekeeper configuration invalid; assuming defaults'
-        else:
+        self.pathname = os.path.realpath(pathname or self.PATHNAME)
+        if not os.path.exists(self.pathname):
             print 'homekeeper configuration not found; assuming defaults'
+            return
+        try:
+            print 'found homekeeper configuration at %s' % self.pathname
+            self.data = json.loads(open(self.pathname).read())
+        except ValueError:
+            print 'homekeeper configuration invalid; assuming defaults'
         if 'dotfiles_directory' in self.data:
             self.data['directory'] = self.data['dotfiles_directory']
             del self.data['dotfiles_directory']
+        if self.directory == os.path.realpath(os.getenv('HOME')):
+            print 'your dotfiles directory cannot be your home directory'
+            self.data['directory'] = self.DEFAULTS['directory']
+            return
 
     def save(self):
         with open(self.pathname) as cfile:

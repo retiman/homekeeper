@@ -44,16 +44,15 @@ class Homekeeper(object):
                 os.symlink(source, target)
                 print 'symlinked %s' % target
 
-    def init(self, dotfiles_directory=None):
+    def init(self, pathname=None):
         """Writes a configuration file with cwd as the dotfiles directory.
 
         Configuration file is written as JSON, and will be removed if it exists
         already.  If configuration already exists, the new dotfiles directory
         path will be merged into existing configuration.
         """
-        if dotfiles_directory is None:
-            dotfiles_directory = os.getcwd()
-        dotfiles_directory = os.path.realpath(dotfiles_directory)
+        pathname = pathname or os.cwd()
+        pathname = os.path.realpath(pathname)
         if dotfiles_directory == os.path.realpath(os.getenv('HOME')):
             print 'your dotfiles directory cannot be your home directory'
             return
