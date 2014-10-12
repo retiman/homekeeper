@@ -1,0 +1,18 @@
+#!/bin/bash
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+case "$@" in
+  install)
+    pip2 install "$DIR" --upgrade
+    ;;
+  lint)
+    pylint -rn "$DIR/bin/homekeeper"
+    pylint -rn "$DIR/homekeeper"
+    ;;
+  test)
+    pylint -rn "$DIR/bin/homekeeper"
+    pylint -rn "$DIR/homekeeper"
+    nosetests "$DIR"
+    ;;
+esac
+

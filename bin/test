@@ -1,4 +1,0 @@
-#!/bin/sh
-pylint -rn bin/homekeeper
-pylint -rn homekeeper
-nosetests
