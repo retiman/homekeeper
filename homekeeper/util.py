@@ -1,6 +1,5 @@
 import os
 import shutil
-import subprocess
 
 # pylint: disable=invalid-name
 class cd(object):
@@ -15,24 +14,6 @@ class cd(object):
 
     def __exit__(self, etype, value, traceback):
         os.chdir(self.saved_pathname)
-
-# pylint: disable=invalid-name
-def sh(command):
-    """Prints a command executes it.
-
-    Args:
-        command: The command to execute.
-
-    Returns:
-        The output of the command, discarding anything printed to standard
-        error.
-    """
-    print command
-    proc = subprocess.Popen(command.split(' '),
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE)
-    out, _ = proc.communicate()
-    return out
 
 def create_symlinks(config):
     """Symlinks files from the dotfiles directory to the home directory.

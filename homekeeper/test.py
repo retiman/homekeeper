@@ -1,5 +1,6 @@
 import fake_filesystem
 import homekeeper
+import homekeeper.config
 import unittest
 
 # pylint: disable=invalid-name
@@ -13,28 +14,26 @@ class HomekeeperTest(unittest.TestCase):
         os = fake_filesystem.FakeOsModule(self.filesystem)
         homekeeper.os = os
         homekeeper.util.os = os
-        self.homekeeper = homekeeper.Homekeeper({'dotfiles_directory': '.'})
+        homekeeper.util.shutil.rmtree = os.rmdir
+        self.config = homekeeper.config.Config()
+        self.homekeeper = None
 
     def tearDown(self):
         del self.filesystem
 
-    #def test_configuration_defaults(self):
-    #    self.homekeeper = homekeeper.Homekeeper()
-#    self.assertEquals(self.homekeeper.CONFIG_DEFAULTS['dotfiles_directory'],
-    #                      self.homekeeper.config['dotfiles_directory'])
-    #    self.assertRaises(ValueError, homekeeper.Homekeeper,
-    #                      {'dotfiles_directory': os.getenv('HOME')})
-
-    #def test_link_dotfiles(self):
-    #    homekeeper.os.getenv = lambda var: '/home/johndoe'
-    #    dotfiles_directory = '/home/johndoe/personal/dotfiles'
-    #    config = {'dotfiles_directory': dotfiles_directory}
-    #    self.filesystem.CreateFile(dotfiles_directory + '/.vimrc')
-    #    self.homekeeper = homekeeper.Homekeeper(config)
-    #    self.homekeeper.link()
-    #    self.assertTrue(os.path.exists('/home/johndoe/personal/dotfiles/'
-    #                                   '.vimrc'))
-    #    self.assertTrue(os.path.islink('/home/johndoe/.vimrc'))
-    #    self.assertTrue(os.path.exists('/home/johndoe/.vimrc'))
-    #    self.assertEquals('/home/johndoe/personal/dotfiles/.vimrc',
-    #                      os.readlink('/home/johndoe/.vimrc'))
+    def test_link(self):
+        home = '/home/johndoe'
+        source = home + '/dotfiles/.vimrc'
+        target = home + '/.vimrc'
+        homekeeper.util.os.getenv = lambda var: home
+        self.config.directory = home + '/dotfiles'
+        self.config.save()
+        self.homekeeper = homekeeper.Homekeeper()
+        self.filesystem.CreateFile(source)
+        self.assertTrue(os.path.exists(source))
+        self.assertFalse(os.path.exists(target))
+        self.homekeeper.link()
+        self.assertTrue(os.path.exists(source))
+        self.assertTrue(os.path.exists(target))
+        self.assertTrue(os.path.islink(target))
+        self.assertEquals(source, os.readlink(target))
