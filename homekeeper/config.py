@@ -1,4 +1,5 @@
 #!/usr/bin/env python2
+import logging
 import json
 import os
 
@@ -15,22 +16,25 @@ class Config(object):
         self.data = self.DEFAULTS
         self.pathname = self.PATHNAME
         if pathname is None:
-            print 'homekeeper configuration not specified; assuming defaults'
+            logging.info('homekeeper configuration not specified; assuming '
+                         'defaults')
             return
         self.pathname = os.path.realpath(pathname)
         if not os.path.exists(self.pathname):
-            print 'homekeeper configuration not found; assuming defaults'
+            logging.info('homekeeper configuration not found; assuming '
+                         'defaults')
             return
         try:
-            print 'found homekeeper configuration at %s' % self.pathname
+            logging.info('found homekeeper configuration at %s', self.pathname)
             self.data = json.loads(open(self.pathname).read())
         except ValueError:
-            print 'homekeeper configuration invalid; assuming defaults'
+            logging.info('homekeeper configuration invalid; assuming defaults')
         if 'dotfiles_directory' in self.data:
             self.data['directory'] = self.data['dotfiles_directory']
             del self.data['dotfiles_directory']
         if self.directory == os.path.realpath(os.getenv('HOME')):
-            print 'your dotfiles directory cannot be your home directory'
+            logging.info('your dotfiles directory cannot be your home '
+                         'directory')
             self.data['directory'] = self.DEFAULTS['directory']
             return
 
@@ -40,7 +44,7 @@ class Config(object):
     def save(self, pathname=None):
         pathname = pathname or self.pathname
         if os.path.exists(pathname):
-            print 'overwriting %s' % pathname
+            logging.info('overwriting %s', pathname)
             os.remove(pathname)
         with open(pathname, 'w') as cfile:
             cfile.write(json.dumps(self.data, sort_keys=True, indent=4))
