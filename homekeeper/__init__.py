@@ -2,11 +2,8 @@
 """This program helps organize and version your dot files with Git."""
 import homekeeper.config
 import homekeeper.util
-import json
 import os
 import shutil
-import subprocess
-import sys
 
 __version__ = '3.0.0'
 
