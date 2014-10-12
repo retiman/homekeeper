@@ -5,6 +5,8 @@ import __builtin__
 
 # pylint: disable=invalid-name
 os = None
+create_symlinks = homekeeper.util.create_symlinks
+cleanup_symlinks = homekeeper.util.cleanup_symlinks
 
 class UtilTest(unittest.TestCase):
     def setUp(self):
@@ -24,11 +26,23 @@ class UtilTest(unittest.TestCase):
         self.filesystem.CreateFile(source)
         self.assertTrue(os.path.exists(source))
         self.assertFalse(os.path.exists(target))
-        homekeeper.util.create_symlinks('/dotfiles', self.home)
+        create_symlinks('/dotfiles', self.home)
         self.assertTrue(os.path.exists(source))
         self.assertTrue(os.path.exists(target))
         self.assertTrue(os.path.islink(target))
         self.assertEquals(source, os.readlink(target))
+
+    def test_create_symlinks_with_overrides(self):
+        source = '/dotfiles/.vimrc'
+        target = self.home + '/.vimrc'
+        excludes = ['.vimrc']
+        self.filesystem.CreateFile(source)
+        self.assertTrue(os.path.exists(source))
+        self.assertFalse(os.path.exists(target))
+        create_symlinks('/dotfiles', self.home, excludes=excludes)
+        self.assertTrue(os.path.exists(source))
+        self.assertFalse(os.path.exists(target))
+        self.assertFalse(os.path.islink(target))
 
     def test_cleanup_symlinks(self):
         self.filesystem.CreateFile('/a.txt')
@@ -37,7 +51,7 @@ class UtilTest(unittest.TestCase):
         os.symlink('/c.txt', '/nonexistent2.txt')
         self.assertTrue(os.path.islink('/nonexistent1.txt'))
         self.assertTrue(os.path.islink('/nonexistent2.txt'))
-        homekeeper.util.cleanup_symlinks('/')
+        cleanup_symlinks('/')
         self.assertFalse(os.path.exists('/nonexistent1.txt'))
         self.assertFalse(os.path.exists('/nonexistent2.txt'))
         self.assertTrue(os.path.exists('/exists.txt'))
