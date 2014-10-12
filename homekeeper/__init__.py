@@ -12,7 +12,12 @@ class Homekeeper(object):
     """Organizes and versions your dot files."""
 
     def __init__(self, pathname=None):
-        self.config = homekeeper.config.Config(pathname)
+        self.config = None
+        self.pathname = pathname
+
+    def _configure(self):
+        if self.config is None:
+            self.config = homekeeper.config.Config(self.pathname)
 
     def init(self):
         """Writes a configuration file with cwd as the dotfiles directory.
@@ -23,11 +28,13 @@ class Homekeeper(object):
         """
         pathname = os.path.realpath(os.getcwd())
         logging.info('saving homekeeper configuration to %s', pathname)
+        self.config = homekeeper.config.Config(pathname)
         self.config.reset()
         self.config.directory = pathname
         self.config.save()
 
     def track(self, pathname):
+        self._configure()
         if not os.path.exists(pathname):
             logging.info("pathname not found; won't track %s", pathname)
             return
@@ -40,6 +47,7 @@ class Homekeeper(object):
         shutil.move(pathname, target)
 
     def link(self):
+        self._configure()
         home = os.getenv('HOME')
         if self.config.override:
             homekeeper.util.create_symlinks(self.config.base, home)
