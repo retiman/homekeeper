@@ -1,36 +1,22 @@
-import fake_filesystem
 import homekeeper
 import homekeeper.config
+import homekeeper.testing
 import unittest
-import __builtin__
 
 # pylint: disable=invalid-name
 os = None
+testing = homekeeper.testing
 
 class HomekeeperTest(unittest.TestCase):
     def setUp(self):
-        self.filesystem = None
+        self.filesystem, globals()['os'] = testing.create_fake_filesystem()
         self.config = None
         self.homekeeper = None
         self.home = '/home/johndoe'
-        self._create_filesystem()
         self._configure()
 
     def tearDown(self):
         del self.filesystem
-
-    def _create_filesystem(self):
-        # pylint: disable=global-statement
-        global os
-        self.filesystem = fake_filesystem.FakeFilesystem()
-        __builtin__.open = fake_filesystem.FakeFileOpen(self.filesystem)
-        os = fake_filesystem.FakeOsModule(self.filesystem)
-        os.getenv = lambda key: {'HOME': self.home}[key]
-        homekeeper.os = os
-        homekeeper.config.os = os
-        homekeeper.util.os = os
-        homekeeper.util.shutil.rmtree = os.rmdir
-        homekeeper.util.shutil.move = os.rename
 
     def _configure(self):
         os.makedirs(self.home)

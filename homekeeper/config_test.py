@@ -1,18 +1,16 @@
-import fake_filesystem
 import homekeeper.config
+import homekeeper.testing
 import json
 import unittest
-import __builtin__
 
 # pylint: disable=invalid-name
 os = None
+testing = homekeeper.testing
 Config = homekeeper.config.Config
 
 class ConfigTest(unittest.TestCase):
     def setUp(self):
-        self.filesystem = fake_filesystem.FakeFilesystem()
-        globals()['os'] = fake_filesystem.FakeOsModule(self.filesystem)
-        __builtin__.open = fake_filesystem.FakeFileOpen(self.filesystem)
+        self.filesystem, globals()['os'] = testing.create_fake_filesystem()
         self.pathname = os.path.join(os.getenv('HOME'), 'homekeeper.json')
         self.defaults = {
             'base': os.path.join(os.getenv('HOME'), 'dotfiles-base'),
@@ -21,7 +19,6 @@ class ConfigTest(unittest.TestCase):
             'override': True
         }
         self.create_config_file()
-        homekeeper.config.os = os
 
     def tearDown(self):
         del self.filesystem
@@ -85,9 +82,4 @@ class ConfigTest(unittest.TestCase):
         config.save()
         config = Config(self.pathname)
         self.assertEquals(config.excludes, [])
-        config = Config()
-        config.excludes = ['.git']
-        config.save()
-        config = Config(Config.PATHNAME)
-        self.assertEquals(config.excludes, ['.git'])
 
