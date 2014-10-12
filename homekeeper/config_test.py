@@ -10,7 +10,9 @@ Config = homekeeper.config.Config
 
 class ConfigTest(unittest.TestCase):
     def setUp(self):
-        self.filesystem = ConfigTest.create_fake_filesystem()
+        self.filesystem = fake_filesystem.FakeFilesystem()
+        globals()['os'] = fake_filesystem.FakeOsModule(self.filesystem)
+        __builtin__.open = fake_filesystem.FakeFileOpen(self.filesystem)
         self.pathname = os.path.join(os.getenv('HOME'), 'homekeeper.json')
         self.defaults = {
             'base': os.path.join(os.getenv('HOME'), 'dotfiles-base'),
@@ -25,13 +27,6 @@ class ConfigTest(unittest.TestCase):
 
     def tearDown(self):
         del self.filesystem
-
-    @staticmethod
-    def create_fake_filesystem():
-        filesystem = fake_filesystem.FakeFilesystem()
-        globals()['os'] = fake_filesystem.FakeOsModule(filesystem)
-        __builtin__.open = fake_filesystem.FakeFileOpen(filesystem)
-        return filesystem
 
     def test_defaults(self):
         config = Config()
