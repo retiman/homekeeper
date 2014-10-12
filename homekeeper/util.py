@@ -16,20 +16,21 @@ class cd(object):
     def __exit__(self, etype, value, traceback):
         os.chdir(self.saved_pathname)
 
-def create_symlinks(config):
+def create_symlinks(source_directory, target_directory, excludes=None):
     """Symlinks files from the dotfiles directory to the home directory.
 
     Args:
-        config: A Config object that contains the dotfiles directory.
+        source_directory: The source directory where your dotfiles are.
+        target_directory: The target directory for symlinking.
+        excludes: An array of files excluded from symlinking.
     """
-    source_directory = config.directory
-    target_directory = os.getenv('HOME')
+    excludes = excludes if excludes is not None else []
     if not os.path.isdir(source_directory):
         logging.info('dotfiles directory not found: %s', source_directory)
         return
     logging.info('symlinking files from %s', source_directory)
     with cd(source_directory):
-        excludes = set(config.excludes)
+        excludes = set(excludes)
         for pathname in os.listdir('.'):
             basename = os.path.basename(pathname)
             if basename in excludes:

@@ -39,5 +39,8 @@ class Homekeeper(object):
         shutil.move(pathname, target)
 
     def link(self):
-        homekeeper.util.create_symlinks(self.config)
-        homekeeper.util.cleanup_symlinks(os.getenv('HOME'))
+        home = os.getenv('HOME')
+        if self.config.override:
+            homekeeper.util.create_symlinks(self.config.base, home)
+        homekeeper.util.create_symlinks(self.config.directory, home)
+        homekeeper.util.cleanup_symlinks(home)
