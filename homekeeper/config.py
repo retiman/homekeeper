@@ -9,26 +9,40 @@ class Config(object):
         'directory': os.path.join(os.getenv('HOME'), 'dotfiles'),
         'excludes': ['.git', '.gitignore', 'LICENSE', 'README.md'],
         'override': False
-        }
+    }
 
     def __init__(self, pathname=None):
-        config = {}
-        pathname = pathname or self.PATHNAME
-        if os.path.exists(pathname):
+        self.data = self.DEFAULTS
+        self.pathname = pathname or self.PATHNAME
+        if os.path.exists(self.pathname):
             try:
-                print 'found homekeeper configuration at %s' % pathname
-                config = json.loads(open(pathname).read())
+                print 'found homekeeper configuration at %s' % self.pathname
+                self.data = json.loads(open(self.pathname).read())
             except ValueError:
                 print 'homekeeper configuration invalid; assuming defaults'
-                config = self.DEFAULTS
         else:
             print 'homekeeper configuration not found; assuming defaults'
-            config = self.DEFAULTS
-        self.base = config['base'] if 'base' in config else None
-        self.directory = config['directory'] if 'directory' in config else None
-        self.excludes = config['excludes'] if 'excludes' in config else []
-        self.override = config['override'] if 'override' in config else False
-        # This is the old configuration directive; it is retained and overrides
-        # the normal directive if present.
-        if 'dotfiles_directory' in config:
-            self.directory = config['dotfiles_directory']
+        if 'dotfiles_directory' in self.data:
+            self.data['directory'] = self.data['dotfiles_directory']
+            del self.data['dotfiles_directory']
+
+    def save(self):
+        with open(self.pathname) as cfile:
+            cfile.write(json.dumps(self.data))
+
+    @property
+    def base(self):
+        return self.data.get('base', self.DEFAULTS['base'])
+
+    @property
+    def excludes(self):
+        return self.data.get('excludes', self.DEFAULTS['excludes'])
+
+    @property
+    def override(self):
+        return self.data.get('override', self.DEFAULTS['override'])
+
+    @property
+    def directory(self):
+        return self.data.get('directory', self.DEFAULTS['directory'])
+

@@ -66,7 +66,7 @@ class Homekeeper(object):
         config = open(Config.PATHNAME, 'w')
         config.write(serialized)
         config.close()
-        print 'wrote configuration to %s' % self.CONFIG_PATHNAME
+        print 'wrote configuration to %s' % Config.PATHNAME
 
     def track(self, pathname):
         if not os.path.exists(pathname):
