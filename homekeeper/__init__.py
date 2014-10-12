@@ -8,25 +8,13 @@ import shutil
 import subprocess
 import sys
 
+# pylint: disable=invalid-name
 cd = homekeeper.util.cd
+# pylint: disable=invalid-name
 sh = homekeeper.util.sh
 Config = homekeeper.config.Config
+
 __version__ = '3.0.0'
-
-def _remove_broken_symlinks(directory):
-    """Removes broken symlinks from a directory.
-
-    Args:
-        directory: The directory to look for broken symlinks.
-    """
-    for pathname in os.listdir(directory):
-        pathname = os.path.join(directory, pathname)
-        if not os.path.islink(pathname):
-            continue
-        if os.path.exists(os.readlink(pathname)):
-            continue
-        print 'removing broken link: %s' % pathname
-        os.unlink(pathname)
 
 class Homekeeper(object):
     """Organizes and versions your dot files."""
@@ -149,4 +137,4 @@ class Homekeeper(object):
     def link(self):
         home_directory = os.getenv('HOME')
         self.__symlink_files(self.config['dotfiles_directory'], home_directory)
-        _remove_broken_symlinks(home_directory)
+        homekeeper.util.cleanup_symlinks(home_directory)

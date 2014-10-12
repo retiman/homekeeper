@@ -39,18 +39,6 @@ class HomekeeperTest(unittest.TestCase):
         self.assertEquals('a5f97835c71153123c10a664ff7d539dac02aada',
                           self.homekeeper.commit_id())
 
-    def test_remove_broken_symlinks(self):
-        self.filesystem.CreateFile('/a.txt')
-        os.symlink('/a.txt', '/exists.txt')
-        os.symlink('/b.txt', '/nonexistent1.txt')
-        os.symlink('/c.txt', '/nonexistent2.txt')
-        self.assertTrue(os.path.islink('/nonexistent1.txt'))
-        self.assertTrue(os.path.islink('/nonexistent2.txt'))
-        homekeeper._remove_broken_symlinks('/')
-        self.assertFalse(os.path.exists('/nonexistent1.txt'))
-        self.assertFalse(os.path.exists('/nonexistent2.txt'))
-        self.assertTrue(os.path.exists('/exists.txt'))
-
     def test_link_dotfiles(self):
         homekeeper.os.getenv = lambda var: '/home/johndoe'
         dotfiles_directory = '/home/johndoe/personal/dotfiles'

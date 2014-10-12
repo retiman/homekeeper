@@ -22,14 +22,14 @@ class UtilTest(unittest.TestCase):
         __builtin__.open = fake_filesystem.FakeFileOpen(filesystem)
         return filesystem
 
-    def test_remove_broken_symlinks(self):
+    def test_cleanup_symlinks(self):
         self.filesystem.CreateFile('/a.txt')
         os.symlink('/a.txt', '/exists.txt')
         os.symlink('/b.txt', '/nonexistent1.txt')
         os.symlink('/c.txt', '/nonexistent2.txt')
         self.assertTrue(os.path.islink('/nonexistent1.txt'))
         self.assertTrue(os.path.islink('/nonexistent2.txt'))
-        homekeeper.util.remove_broken_symlinks('/')
+        homekeeper.util.cleanup_symlinks('/')
         self.assertFalse(os.path.exists('/nonexistent1.txt'))
         self.assertFalse(os.path.exists('/nonexistent2.txt'))
         self.assertTrue(os.path.exists('/exists.txt'))

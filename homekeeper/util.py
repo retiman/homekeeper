@@ -33,7 +33,7 @@ def sh(command):
     out, _ = proc.communicate()
     return out
 
-def remove_broken_symlinks(directory):
+def cleanup_symlinks(directory):
     """Removes broken symlinks from a directory.
 
     Args:
