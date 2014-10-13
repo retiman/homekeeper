@@ -14,9 +14,7 @@ def print_usage():
     logging.info('  init <directory> set dotfiles directory to current '
                  'directory')
     logging.info('  link             symlink dotfiles to home directory')
-    logging.info('  save             save last commit to master branch')
     logging.info('  track <file>     track a dotfile with homekeeper')
-    logging.info('  update           update dotfiles from git')
 
 logging.basicConfig(format='%(message)s', level=logging.DEBUG)
 
