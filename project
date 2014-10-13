@@ -2,6 +2,18 @@
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 case "$@" in
+  clean)
+    rm -rf $DIR/build
+    rm -rf $DIR/dist
+    rm -rf $DIR/*.egg-info
+    rm -rf $DIR/lib
+    ;;
+  deploy)
+    cd $DIR
+    ./project clean && \
+    ./project test && \
+    python setup.py sdist upload -r homekeeper
+    ;;
   install)
     sudo pip2 install "$DIR" --upgrade
     ;;
