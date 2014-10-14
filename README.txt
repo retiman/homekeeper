@@ -22,7 +22,7 @@ Examples
 My dotfiles repository is located here if you'd like to take a look:
 
     https://github.com/retiman/dotfiles
-    
+
 How It Works
 ============
 
