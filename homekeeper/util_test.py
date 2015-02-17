@@ -6,7 +6,7 @@ import unittest
 os = None
 create_symlinks = homekeeper.util.create_symlinks
 cleanup_symlinks = homekeeper.util.cleanup_symlinks
-cleanup_target  = homekeeper.util.cleanup_target
+cleanup_target = homekeeper.util.cleanup_target
 testing = homekeeper.testing
 
 class UtilTest(unittest.TestCase):
@@ -48,11 +48,13 @@ class UtilTest(unittest.TestCase):
         self.filesystem.CreateFile(source)
         self.assertTrue(os.path.exists(source))
         self.assertFalse(os.path.exists(target))
-        create_symlinks('/dotfiles', self.home, excludes=None, includes=includes)
+        create_symlinks(
+            '/dotfiles', self.home,
+            excludes=None, includes=includes)
         self.assertTrue(os.path.exists(source)) # source exists?
         self.assertTrue(os.path.exists(target)) # target exists?
         # target parent dir is still a dir
-        self.assertTrue(os.path.isdir(os.path.dirname(target))) 
+        self.assertTrue(os.path.isdir(os.path.dirname(target)))
         self.assertTrue(os.path.islink(target)) # target is link?
 
     def test_cleanup_symlinks(self):

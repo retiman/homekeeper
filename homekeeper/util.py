@@ -16,7 +16,8 @@ class cd(object):
     def __exit__(self, etype, value, traceback):
         os.chdir(self.saved_pathname)
 
-def create_symlinks(source_directory, target_directory, excludes=None, includes=None):
+def create_symlinks(
+        source_directory, target_directory, excludes=None, includes=None):
     """Symlinks files from the dotfiles directory to the home directory.
 
     Args:
@@ -41,8 +42,7 @@ def create_symlinks(source_directory, target_directory, excludes=None, includes=
             # Our source and target are set, unless basename matches something
             # within our include path, then basneame becomes include
             for include in includes:
-                (inc_path, inc_base) = os.path.split(include)
-                if (os.path.commonprefix([basename,include])):
+                if os.path.commonprefix([basename, include]):
                     basename = include
             source = os.path.join(source_directory, basename)
             target = os.path.join(target_directory, basename)
@@ -67,7 +67,6 @@ def cleanup_symlinks(directory):
         logging.info('removing broken link: %s', pathname)
         os.unlink(pathname)
 
-# TODO: remove_original(target)
 def cleanup_target(target):
     """Cleans up target path before we link to it.
 
