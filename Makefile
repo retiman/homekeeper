@@ -1,5 +1,5 @@
-PYTHON = /usr/bin/env/python
-PIP = /usr/bin/env pip
+PYTHON = /usr/bin/env/python2
+PIP = /usr/bin/env pip2
 .PHONY = clean deploy install lint requirements test
 
 all: requirements test
