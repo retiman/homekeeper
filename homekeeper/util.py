@@ -16,33 +16,39 @@ class cd(object):
     def __exit__(self, etype, value, traceback):
         os.chdir(self.saved_pathname)
 
-def create_symlinks(source_directory, target_directory, excludes=None):
+def create_symlinks(
+        source_directory, target_directory, excludes=None, includes=None):
     """Symlinks files from the dotfiles directory to the home directory.
 
     Args:
         source_directory: The source directory where your dotfiles are.
         target_directory: The target directory for symlinking.
         excludes: An array of files excluded from symlinking.
+        includes: An array of paths in which only the basename gets symlinked
     """
     excludes = excludes if excludes is not None else []
+    includes = includes if includes is not None else []
     if not os.path.isdir(source_directory):
         logging.info('dotfiles directory not found: %s', source_directory)
         return
     logging.info('symlinking files from %s', source_directory)
     with cd(source_directory):
         excludes = set(excludes)
+        includes = set(includes)
         for pathname in os.listdir('.'):
             basename = os.path.basename(pathname)
             if basename in excludes:
                 continue
+            # Our source and target are set, unless basename matches something
+            # within our include path, then basneame becomes include
+            for include in includes:
+                if os.path.commonprefix([basename, include]):
+                    basename = include
             source = os.path.join(source_directory, basename)
             target = os.path.join(target_directory, basename)
-            if os.path.islink(target):
-                os.unlink(target)
-            if os.path.isfile(target):
-                os.remove(target)
-            if os.path.isdir(target):
-                shutil.rmtree(target)
+
+            cleanup_target(target)
+
             os.symlink(source, target)
             logging.info('symlinked %s -> %s', target, source)
 
@@ -60,4 +66,20 @@ def cleanup_symlinks(directory):
             continue
         logging.info('removing broken link: %s', pathname)
         os.unlink(pathname)
+
+def cleanup_target(target):
+    """Cleans up target path before we link to it.
+
+    Args:
+        target: Path of symlink target, can be file or directory
+    """
+    if os.path.islink(target):
+        os.unlink(target)
+        logging.info('removed symlink %s', target)
+    if os.path.isfile(target):
+        os.remove(target)
+        logging.info('removed file %s', target)
+    if os.path.isdir(target):
+        shutil.rmtree(target)
+        logging.info('removed directory %s', target)
 
