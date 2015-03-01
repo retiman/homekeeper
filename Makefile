@@ -5,9 +5,10 @@ PIP = /usr/bin/env pip2
 all: requirements test
 
 clean:
+	rm -rf *.egg-info
 	rm -rf build
 	rm -rf dist
-	rm -rf *.egg-info
+	rm -rf homekeeper/*.pyc
 	rm -rf lib
 
 deploy: clean test
