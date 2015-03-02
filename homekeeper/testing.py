@@ -14,11 +14,11 @@ def create_fake_filesystem():
     __builtin__.open = fake_filesystem.FakeFileOpen(filesystem)
     # pylint: disable=invalid-name
     os = fake_filesystem.FakeOsModule(filesystem)
-    os.getenv = getenv
-    replace_modules(os)
+    os.getenv = _getenv
+    _replace_modules(os)
     return [filesystem, os]
 
-def replace_modules(fake_os):
+def _replace_modules(fake_os):
     """Replaces filesystem modules and functions with fakes."""
     homekeeper.os = fake_os
     homekeeper.config.os = fake_os
@@ -26,7 +26,7 @@ def replace_modules(fake_os):
     homekeeper.util.shutil.move = fake_os.rename
     homekeeper.util.shutil.rmtree = fake_os.rmdir
 
-def getenv(key):
+def _getenv(key):
     return {
         'HOME': '/home/johndoe'
     }[key]
