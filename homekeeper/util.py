@@ -16,8 +16,8 @@ class cd(object):
     def __exit__(self, etype, value, traceback):
         os.chdir(self.saved_pathname)
 
-def create_symlinks(
-        source_directory, target_directory, excludes=None, includes=None):
+def create_symlinks(source_directory, target_directory, excludes=None,
+                    includes=None):
     """Symlinks files from the dotfiles directory to the home directory.
 
     Args:

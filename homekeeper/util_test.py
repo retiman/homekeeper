@@ -48,9 +48,8 @@ class UtilTest(unittest.TestCase):
         self.filesystem.CreateFile(source)
         self.assertTrue(os.path.exists(source))
         self.assertFalse(os.path.exists(target))
-        create_symlinks(
-            '/dotfiles', self.home,
-            excludes=None, includes=includes)
+        create_symlinks('/dotfiles', self.home, excludes=None,
+                        includes=includes)
         self.assertTrue(os.path.exists(source)) # source exists?
         self.assertTrue(os.path.exists(target)) # target exists?
         # target parent dir is still a dir
