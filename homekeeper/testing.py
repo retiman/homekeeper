@@ -10,17 +10,16 @@ def create_fake_filesystem():
     Returns:
         The created fake filesystem object and os module.
     """
-    filesystem = fake_filesystem.FakeFilesystem()
-    # pylint: disable=invalid-name
-    os = fake_filesystem.FakeOsModule(filesystem)
-    os.getenv = _getenv
-    _replace_modules(os)
-    _replace_builtins(filesystem)
-    return [filesystem, os]
+    fake_fs = fake_filesystem.FakeFilesystem()
+    fake_os = fake_filesystem.FakeOsModule(fake_fs)
+    fake_os.getenv = _getenv
+    _replace_modules(fake_os)
+    _replace_builtins(fake_fs)
+    return (fake_fs, fake_os)
 
-def _replace_builtins(filesystem):
+def _replace_builtins(fake_fs):
     """Replaces Python builtins."""
-    __builtin__.open = fake_filesystem.FakeFileOpen(filesystem)
+    __builtin__.open = fake_filesystem.FakeFileOpen(fake_fs)
 
 def _replace_modules(fake_os):
     """Replaces filesystem modules and functions with fakes."""
