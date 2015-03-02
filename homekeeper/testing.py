@@ -55,9 +55,10 @@ def _create_test_files():
     """Creates test files in our fake filesystem."""
     home = os.getenv('HOME')
     os.makedirs(home)
-    os.makedirs(os.path.join(home, 'bin'))
-    os.makedirs(os.path.join(home, '.vim'))
     os.makedirs(os.path.join(home, '.foo', 'bar', 'baz'))
+    os.makedirs(os.path.join(home, '.vim'))
+    os.makedirs(os.path.join(home, 'bin'))
+    os.makedirs(os.path.join(home, 'dotfiles'))
     for name in ['bundle', 'ftdetect', 'ftplugin', 'ftdetect', 'syntax']:
         os.makedirs(os.path.join(home, '.vim', name))
 
