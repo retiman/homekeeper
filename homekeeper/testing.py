@@ -11,8 +11,7 @@ def init():
         The created fake filesystem object and os module.
     """
     fake_fs = fake_filesystem.FakeFilesystem()
-    fake_os = fake_filesystem.FakeOsModule(fake_fs)
-    fake_os.getenv = _getenv
+    fake_os = _create_fake_os(fake_fs)
     _replace_modules(fake_os)
     _replace_builtins(fake_fs)
     return (fake_fs, fake_os)
@@ -25,9 +24,15 @@ def _replace_modules(fake_os):
     """Replaces filesystem modules and functions with fakes."""
     homekeeper.os = fake_os
     homekeeper.config.os = fake_os
+    homekeeper.testing.os = fake_os
     homekeeper.util.os = fake_os
     homekeeper.util.shutil.move = fake_os.rename
     homekeeper.util.shutil.rmtree = fake_os.rmdir
+
+def _create_fake_os(fake_fs):
+    fake_os = fake_filesystem.FakeOsModule(fake_fs)
+    fake_os.getenv = _getenv
+    return fake_os
 
 def _getenv(key):
     return {
