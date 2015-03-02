@@ -31,6 +31,8 @@ def _replace_modules(fake_os):
     homekeeper.util.shutil.rmtree = fake_os.rmdir
 
 def _makedirs(makedirs):
+    """Returns a version of makedirs that does not raise an exception if the
+    directory already exists."""
     def safe_makedirs(pathname):
         try:
             makedirs(pathname)
@@ -42,6 +44,7 @@ def _makedirs(makedirs):
     return safe_makedirs
 
 def _create_fake_os(fake_fs):
+    """Creates a fake os module from a fake filesystem object."""
     fake_os = fake_filesystem.FakeOsModule(fake_fs)
     fake_os.getenv = _getenv
     fake_os.makedirs = _makedirs(fake_os.makedirs)
