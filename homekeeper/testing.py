@@ -15,6 +15,7 @@ def init():
     fake_os = _create_fake_os(fake_fs)
     _replace_modules(fake_os)
     _replace_builtins(fake_fs)
+    _create_test_files()
     return (fake_fs, fake_os)
 
 def _replace_builtins(fake_fs):
@@ -49,6 +50,16 @@ def _create_fake_os(fake_fs):
     fake_os.getenv = _getenv
     fake_os.makedirs = _makedirs(fake_os.makedirs)
     return fake_os
+
+def _create_test_files():
+    """Creates test files in our fake filesystem."""
+    home = os.getenv('HOME')
+    os.makedirs(home)
+    os.makedirs(os.path.join(home, 'bin'))
+    os.makedirs(os.path.join(home, '.vim'))
+    os.makedirs(os.path.join(home, 'foo', 'bar', 'baz'))
+    for name in ['bundle', 'ftdetect', 'ftplugin', 'ftdetect', 'syntax']:
+        os.makedirs(os.path.join(home, '.vim', name))
 
 def _getenv(key):
     return {
