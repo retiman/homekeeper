@@ -10,7 +10,7 @@ Config = homekeeper.config.Config
 
 class ConfigTest(unittest.TestCase):
     def setUp(self):
-        self.filesystem, globals()['os'] = testing.create_fake_filesystem()
+        self.filesystem, globals()['os'] = testing.init()
         self.pathname = os.path.join(os.getenv('HOME'), 'homekeeper.json')
         self.defaults = {
             'base': os.path.join(os.getenv('HOME'), 'dotfiles-base'),

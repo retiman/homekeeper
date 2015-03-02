@@ -4,7 +4,7 @@ import homekeeper.config
 import homekeeper.util
 import __builtin__
 
-def create_fake_filesystem():
+def init():
     """Create a fake filesystem and and use it in all modules.
 
     Returns:

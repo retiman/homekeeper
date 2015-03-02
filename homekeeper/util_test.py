@@ -12,7 +12,7 @@ testing = homekeeper.testing
 class UtilTest(unittest.TestCase):
     def setUp(self):
         self.home = '/home/johndoe'
-        self.filesystem, globals()['os'] = testing.create_fake_filesystem()
+        self.filesystem, globals()['os'] = testing.init()
 
     def tearDown(self):
         del self.filesystem

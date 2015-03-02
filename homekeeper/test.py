@@ -9,7 +9,7 @@ testing = homekeeper.testing
 
 class HomekeeperTest(unittest.TestCase):
     def setUp(self):
-        self.filesystem, globals()['os'] = testing.create_fake_filesystem()
+        self.filesystem, globals()['os'] = testing.init()
         self.config = None
         self.homekeeper = None
         self.home = '/home/johndoe'
