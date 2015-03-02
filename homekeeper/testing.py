@@ -1,3 +1,4 @@
+import errno
 import fake_filesystem
 import homekeeper
 import homekeeper.config
@@ -29,9 +30,21 @@ def _replace_modules(fake_os):
     homekeeper.util.shutil.move = fake_os.rename
     homekeeper.util.shutil.rmtree = fake_os.rmdir
 
+def _makedirs(makedirs):
+    def safe_makedirs(pathname):
+        try:
+            makedirs(pathname)
+        except OSError as exc:
+            if exc.errno == errno.EEXIST and os.path.isdir(pathname):
+                pass
+            else:
+                raise
+    return safe_makedirs
+
 def _create_fake_os(fake_fs):
     fake_os = fake_filesystem.FakeOsModule(fake_fs)
     fake_os.getenv = _getenv
+    fake_os.makedirs = _makedirs(fake_os.makedirs)
     return fake_os
 
 def _getenv(key):
