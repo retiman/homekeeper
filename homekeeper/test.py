@@ -12,7 +12,7 @@ class HomekeeperTest(unittest.TestCase):
         self.filesystem, globals()['os'] = testing.init()
         self.config = None
         self.homekeeper = None
-        self.home = '/home/johndoe'
+        self.home = os.getenv('HOME')
         self._configure()
 
     def tearDown(self):

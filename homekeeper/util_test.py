@@ -11,8 +11,8 @@ testing = homekeeper.testing
 
 class UtilTest(unittest.TestCase):
     def setUp(self):
-        self.home = '/home/johndoe'
         self.filesystem, globals()['os'] = testing.init()
+        self.home = os.getenv('HOME')
 
     def tearDown(self):
         del self.filesystem
