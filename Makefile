@@ -11,8 +11,11 @@ clean:
 	rm -rf homekeeper/*.pyc
 	rm -rf lib
 
-deploy: clean test
+deploy: clean doc test
 	${PYTHON} setup.py sdist upload -r homekeeper
+
+doc:
+	pydoc -w homekeeper
 
 install: clean requirements
 	${PIP} install --upgrade .
