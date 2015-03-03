@@ -124,6 +124,7 @@ class UtilTest(unittest.TestCase):
         self.assertTrue(os.path.exists('exists.txt'))
 
     def test_cleanup_target(self):
+        """Tests that targets are removed before symlinking."""
         target = os.path.join(self.home, '.vimrc')
         self.filesystem.CreateFile(target)
         self.assertTrue(os.path.exists(target))
