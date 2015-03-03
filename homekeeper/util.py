@@ -89,7 +89,7 @@ def prepare_target(target):
     Args:
         target: Path of symlink target, can be file or directory.
     """
-    dirname = os.path.basename(target)
+    dirname = os.path.dirname(target)
     if not os.path.exists(dirname):
         os.makedirs(dirname)
     if os.path.islink(target):
