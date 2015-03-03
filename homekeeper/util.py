@@ -16,6 +16,7 @@ class cd(object):
     def __exit__(self, etype, value, traceback):
         os.chdir(self.saved_pathname)
 
+# pylint: disable=unused-argument
 def restore(source_directory, target_directory, excludes=None,
             cherrypicks=None):
     """Restores symlinks from the source directory to the target directory.
@@ -41,8 +42,10 @@ def create_symlinks(source_directory, target_directory, excludes=None,
         excludes: An array of paths excluded from symlinking.
         cherrypicks: An array of paths in which only the base gets symlinked.
     """
-    excludes = frozenset(excludes) if excludes is not None else []
-    cherrypicks = frozenset(cherrypicks) if cherrypicks is not None else []
+    assert not isinstance(excludes, basestring)
+    assert not isinstance(cherrypicks, basestring)
+    excludes = frozenset(excludes or [])
+    cherrypicks = frozenset(cherrypicks or [])
     if not os.path.isdir(source_directory):
         logging.info('dotfiles directory not found: %s', source_directory)
         return
