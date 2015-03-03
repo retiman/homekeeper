@@ -5,8 +5,10 @@ PIP = /usr/bin/env pip2
 all: clean requirements doc test
 
 clean:
+	rm .coverage
 	rm -rf *.egg-info
 	rm -rf build
+	rm -rf cover
 	rm -rf dist
 	rm -rf homekeeper/*.pyc
 	rm -rf lib
