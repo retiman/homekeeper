@@ -39,6 +39,15 @@ class ConfigTest(unittest.TestCase):
         self.assertEquals(config.includes, Config.DEFAULTS['includes'])
         self.assertEquals(config.override, Config.DEFAULTS['override'])
 
+    def test_invalid_configuration_file(self):
+        self.filesystem.CreateFile('homekeeper.json', contents='invalid-json')
+        config = Config('homekeeper.json')
+        self.assertEquals(config.base, Config.DEFAULTS['base'])
+        self.assertEquals(config.directory, Config.DEFAULTS['directory'])
+        self.assertEquals(config.excludes, Config.DEFAULTS['excludes'])
+        self.assertEquals(config.includes, Config.DEFAULTS['includes'])
+        self.assertEquals(config.override, Config.DEFAULTS['override'])
+
     def test_configuration_file(self):
         """Tests creating a Config object with a filename."""
         config = Config(testing.configuration_file())
