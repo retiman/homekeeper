@@ -26,25 +26,38 @@ def create_symlinks(source_directory, target_directory, excludes=None,
         excludes: An array of files excluded from symlinking.
         includes: An array of paths in which only the basename gets symlinked
     """
-    excludes = excludes if excludes is not None else []
-    includes = includes if includes is not None else []
+    excludes = frozenset(excludes) if excludes is not None else []
+    includes = frozenset(includes) if includes is not None else []
     if not os.path.isdir(source_directory):
         logging.info('dotfiles directory not found: %s', source_directory)
         return
     logging.info('symlinking files from %s', source_directory)
+    # Symlink the manually included files from the include directive; these will
+    # never be excluded.
     with cd(source_directory):
-        excludes = set(excludes)
-        includes = set(includes)
+        for pathname in includes:
+            source = os.path.join(source_directory, pathname)
+            target = os.path.join(target_directory, pathname)
+            if os.path.exists(source):
+                cleanup_target(target)
+                os.symlink(source, target)
+                logging.info('symlinked %s -> %s', target, source)
+            else:
+                logging.warning('cannot find file to symlink: %s', source)
+    # Symlink the rest of the files, excluding any from the exclude directive.
+    with cd(source_directory):
+        included = frozenset(map(firstdir, includes))
         for pathname in os.listdir('.'):
             basename = os.path.basename(pathname)
+            # Skip any excluded paths.
             if basename in excludes:
                 logging.debug('skipping excluded resource: %s', basename)
                 continue
-            # Our source and target are set, unless basename matches something
-            # within our include path, then basename becomes include.
-            for include in includes:
-                if os.path.commonprefix([basename, include]):
-                    basename = include
+            # Skip any included paths that were already symlinked earlier.
+            if os.path.isdir(basename) and basename in included:
+                logging.debug('skipping already symlinked resource: %s',
+                              basename)
+                continue
             source = os.path.join(source_directory, basename)
             target = os.path.join(target_directory, basename)
             cleanup_target(target)
@@ -72,6 +85,9 @@ def cleanup_target(target):
     Args:
         target: Path of symlink target, can be file or directory.
     """
+    dirname = os.path.basename(target)
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
     if os.path.islink(target):
         os.unlink(target)
         logging.debug('removed symlink %s', target)
