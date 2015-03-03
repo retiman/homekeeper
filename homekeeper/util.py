@@ -73,11 +73,11 @@ def cleanup_target(target):
     """
     if os.path.islink(target):
         os.unlink(target)
-        logging.info('removed symlink %s', target)
+        logging.debug('removed symlink %s', target)
     if os.path.isfile(target):
         os.remove(target)
-        logging.info('removed file %s', target)
+        logging.debug('removed file %s', target)
     if os.path.isdir(target):
         shutil.rmtree(target)
-        logging.info('removed directory %s', target)
+        logging.debug('removed directory %s', target)
 

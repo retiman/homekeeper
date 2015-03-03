@@ -16,7 +16,7 @@ def print_usage():
     logging.info('  link             symlink dotfiles to home directory')
     logging.info('  track <file>     track a dotfile with homekeeper')
 
-logging.basicConfig(format='%(message)s', level=logging.DEBUG)
+logging.basicConfig(format='%(message)s', level=logging.INFO)
 
 if len(sys.argv) == 2 and sys.argv[1] == 'init':
     h = homekeeper.Homekeeper()
