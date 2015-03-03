@@ -35,6 +35,13 @@ class HomekeeperTest(unittest.TestCase):
         self.assertEquals(os.path.join(self.config.directory, '.gitconfig'),
                           os.readlink(os.path.join(self.home, '.gitconfig')))
 
+    def test_init(self):
+        os.unlink(testing.configuration_file())
+        self.assertFalse(os.path.exists(testing.configuration_file()))
+        self.homekeeper = homekeeper.Homekeeper(testing.configuration_file())
+        self.homekeeper.init()
+        self.assertTrue(os.path.exists(testing.configuration_file()))
+
     def test_link(self):
         self.filesystem.CreateFile(os.path.join(self.config.base, '.bashrc'))
         self.filesystem.CreateFile(os.path.join(self.config.base, '.vimrc'))
