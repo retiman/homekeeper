@@ -32,18 +32,12 @@ class ConfigTest(unittest.TestCase):
     def test_defaults(self):
         """Tests creating a Config object without specifying a filename."""
         config = Config()
-        self.assertFalse(os.path.exists(Config.PATHNAME),
-                         msg='Configuration path already exists.')
-        self.assertEquals(config.base, Config.DEFAULTS['base'],
-                          msg='Base directory is not the default.')
-        self.assertEquals(config.directory, Config.DEFAULTS['directory'],
-                          msg='Main directory is not the default.')
-        self.assertEquals(config.excludes, Config.DEFAULTS['excludes'],
-                          msg='Excludes directive is not the default.')
-        self.assertEquals(config.includes, Config.DEFAULTS['includes'],
-                          msg='Includes directive is not the default.')
-        self.assertEquals(config.override, Config.DEFAULTS['override'],
-                          msg='Override directive is not the default.')
+        self.assertFalse(os.path.exists(Config.PATHNAME))
+        self.assertEquals(config.base, Config.DEFAULTS['base'])
+        self.assertEquals(config.directory, Config.DEFAULTS['directory'])
+        self.assertEquals(config.excludes, Config.DEFAULTS['excludes'])
+        self.assertEquals(config.includes, Config.DEFAULTS['includes'])
+        self.assertEquals(config.override, Config.DEFAULTS['override'])
 
     def test_configuration_file(self):
         """Tests creating a Config object with a filename."""
