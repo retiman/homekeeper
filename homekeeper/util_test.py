@@ -44,12 +44,12 @@ class UtilTest(unittest.TestCase):
         self.assertFalse(os.path.exists(target))
         self.assertFalse(os.path.islink(target))
 
-    def test_create_symlinks_with_commonprefix_includes(self):
+    def test_create_symlinks_with_commonprefix_cherrypicks(self):
         """Tests that '.a/b' can be included without interfering with '.ab'."""
         source = os.path.join(testing.base_directory(), '.a', 'b')
         target = os.path.join(self.home, '.a', 'b')
         unrelated = os.path.join(testing.base_directory(), '.ab')
-        includes = [os.path.join('.a', 'b')]
+        cherrypicks = [os.path.join('.a', 'b')]
         self.filesystem.CreateFile(source)
         self.filesystem.CreateFile(unrelated)
         self.assertTrue(os.path.exists(source))
@@ -57,7 +57,7 @@ class UtilTest(unittest.TestCase):
         create_symlinks(testing.base_directory(),
                         self.home,
                         excludes=None,
-                        includes=includes)
+                        cherrypicks=cherrypicks)
         self.assertTrue(os.path.exists(source))
         self.assertTrue(os.path.exists(target))
         self.assertTrue(os.path.exists(unrelated),
@@ -71,11 +71,11 @@ class UtilTest(unittest.TestCase):
         self.assertTrue(os.path.islink(target),
                         msg='Target is not a symlink as expected.')
 
-    def test_create_symlinks_without_includes(self):
+    def test_create_symlinks_without_cherrypicks(self):
         """Tests that only 'base/.config' is symlinked.
 
-        Without the 'includes' directive, the entire top level directory will be
-        symlinked.
+        Without the 'cherrypicks' directive, the entire top level directory will
+        be symlinked.
         """
         source = os.path.join(testing.base_directory(),
                               '.config',
@@ -91,17 +91,17 @@ class UtilTest(unittest.TestCase):
         create_symlinks(testing.base_directory(),
                         self.home,
                         excludes=None,
-                        includes=None)
+                        cherrypicks=None)
         self.assertTrue(os.path.exists(source))
         self.assertTrue(os.path.exists(target))
         self.assertTrue(os.path.islink(os.path.join(self.home, '.config')))
         self.assertEquals(os.path.join(testing.base_directory(), '.config'),
                           os.readlink(os.path.join(self.home, '.config')))
 
-    def test_create_symlinks_with_includes(self):
+    def test_create_symlinks_with_cherrypicks(self):
         """Tests that only 'terminalrc' is symlinked.
 
-        With the 'includes' directive, only the most specific file or
+        With the 'cherrypicks' directive, only the most specific file or
         directory will be symlinked. That is, '.config/Terminal/terminalrc'
         will be symlinked, but everything else in the target '.config' directory
         will be left alone.
@@ -120,7 +120,7 @@ class UtilTest(unittest.TestCase):
         unrelated = os.path.join(self.home,
                                  '.config',
                                  'user-dirs.dirs')
-        includes = [os.path.join('.config', 'Terminal', 'terminalrc')]
+        cherrypicks = [os.path.join('.config', 'Terminal', 'terminalrc')]
         self.filesystem.CreateFile(source)
         self.filesystem.CreateFile(unrelated)
         self.assertTrue(os.path.exists(source))
@@ -129,7 +129,7 @@ class UtilTest(unittest.TestCase):
         create_symlinks(testing.base_directory(),
                         self.home,
                         excludes=None,
-                        includes=includes)
+                        cherrypicks=cherrypicks)
         self.assertTrue(os.path.exists(source))
         self.assertTrue(os.path.exists(target))
         self.assertTrue(os.path.exists(unrelated),

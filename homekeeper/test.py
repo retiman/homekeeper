@@ -69,33 +69,29 @@ class HomekeeperTest(unittest.TestCase):
 
     @patch('homekeeper.util.create_symlinks')
     @patch('homekeeper.util.cleanup_symlinks')
-    def test_link_with_excludes(self,
-                                mock_cleanup_symlinks,
-                                mock_create_symlinks):
+    def test_link_with_excludes(self, cleanup_symlinks, create_symlinks):
         self.config.excludes = ['.bashrc']
         self.config.save(testing.configuration_file())
         self.homekeeper = homekeeper.Homekeeper()
         self.filesystem.CreateFile(os.path.join(self.config.base, '.bashrc'))
         self.filesystem.CreateFile(os.path.join(self.home, '.bashrc'))
         self.homekeeper.link()
-        mock_create_symlinks.assert_called_with(self.config.directory,
-                                                self.home,
-                                                excludes=self.config.excludes,
-                                                includes=self.config.includes)
-        mock_cleanup_symlinks.assert_called_with(os.getenv('HOME'))
+        create_symlinks.assert_called_with(self.config.directory,
+                                           self.home,
+                                           excludes=self.config.excludes,
+                                           cherrypicks=self.config.cherrypicks)
+        cleanup_symlinks.assert_called_with(os.getenv('HOME'))
 
     @patch('homekeeper.util.create_symlinks')
     @patch('homekeeper.util.cleanup_symlinks')
-    def test_link_with_includes(self,
-                                mock_cleanup_symlinks,
-                                mock_create_symlinks):
-        self.config.includes = [os.path.join('.foo', 'bar', 'baz')]
+    def test_link_with_cherrypicks(self, cleanup_symlinks, create_symlinks):
+        self.config.cherrypicks = [os.path.join('.foo', 'bar', 'baz')]
         self.config.save(testing.configuration_file())
         self.homekeeper = homekeeper.Homekeeper()
         self.homekeeper.link()
-        mock_create_symlinks.assert_called_with(self.config.directory,
-                                                self.home,
-                                                excludes=self.config.excludes,
-                                                includes=self.config.includes)
-        mock_cleanup_symlinks.assert_called_with(os.getenv('HOME'))
+        create_symlinks.assert_called_with(self.config.directory,
+                                           self.home,
+                                           excludes=self.config.excludes,
+                                           cherrypicks=self.config.cherrypicks)
+        cleanup_symlinks.assert_called_with(os.getenv('HOME'))
 

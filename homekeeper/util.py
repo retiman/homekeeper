@@ -17,17 +17,17 @@ class cd(object):
         os.chdir(self.saved_pathname)
 
 def create_symlinks(source_directory, target_directory, excludes=None,
-                    includes=None):
+                    cherrypicks=None):
     """Symlinks files from the dotfiles directory to the home directory.
 
     Args:
         source_directory: The source directory where your dotfiles are.
         target_directory: The target directory for symlinking.
-        excludes: An array of files excluded from symlinking.
-        includes: An array of paths in which only the basename gets symlinked
+        excludes: An array of paths excluded from symlinking.
+        cherrypicks: An array of paths in which only the base gets symlinked.
     """
     excludes = frozenset(excludes) if excludes is not None else []
-    includes = frozenset(includes) if includes is not None else []
+    cherrypicks = frozenset(cherrypicks) if cherrypicks is not None else []
     if not os.path.isdir(source_directory):
         logging.info('dotfiles directory not found: %s', source_directory)
         return
@@ -35,7 +35,7 @@ def create_symlinks(source_directory, target_directory, excludes=None,
     # Symlink the manually included files from the include directive; these will
     # never be excluded.
     with cd(source_directory):
-        for pathname in includes:
+        for pathname in cherrypicks:
             source = os.path.join(source_directory, pathname)
             target = os.path.join(target_directory, pathname)
             if os.path.exists(source):
@@ -49,7 +49,7 @@ def create_symlinks(source_directory, target_directory, excludes=None,
                 logging.debug('skipping missing resource: %s', source)
     # Symlink the rest of the files, excluding any from the exclude directive.
     with cd(source_directory):
-        included = frozenset(map(firstdir, includes))
+        included = frozenset(map(firstdir, cherrypicks))
         for pathname in os.listdir('.'):
             basename = os.path.basename(pathname)
             # Skip any excluded paths.

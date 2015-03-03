@@ -15,7 +15,7 @@ class Config(object):
         'base': None,
         'directory': os.path.join(os.getenv('HOME'), 'dotfiles'),
         'excludes': ['.git', '.gitignore', 'LICENSE', 'README.md'],
-        'includes': [],
+        'cherrypicks': [],
         'override': False
     }
 
@@ -79,12 +79,12 @@ class Config(object):
         self.data['excludes'] = value
 
     @property
-    def includes(self):
-        return self.data.get('includes', self.DEFAULTS['includes'])
+    def cherrypicks(self):
+        return self.data.get('cherrypicks', self.DEFAULTS['cherrypicks'])
 
-    @includes.setter
-    def includes(self, value):
-        self.data['includes'] = value
+    @cherrypicks.setter
+    def cherrypicks(self, value):
+        self.data['cherrypicks'] = value
 
     @property
     def override(self):

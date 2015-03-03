@@ -36,7 +36,7 @@ class ConfigTest(unittest.TestCase):
         self.assertEquals(config.base, Config.DEFAULTS['base'])
         self.assertEquals(config.directory, Config.DEFAULTS['directory'])
         self.assertEquals(config.excludes, Config.DEFAULTS['excludes'])
-        self.assertEquals(config.includes, Config.DEFAULTS['includes'])
+        self.assertEquals(config.cherrypicks, Config.DEFAULTS['cherrypicks'])
         self.assertEquals(config.override, Config.DEFAULTS['override'])
 
     def test_invalid_configuration_file(self):
@@ -45,7 +45,7 @@ class ConfigTest(unittest.TestCase):
         self.assertEquals(config.base, Config.DEFAULTS['base'])
         self.assertEquals(config.directory, Config.DEFAULTS['directory'])
         self.assertEquals(config.excludes, Config.DEFAULTS['excludes'])
-        self.assertEquals(config.includes, Config.DEFAULTS['includes'])
+        self.assertEquals(config.cherrypicks, Config.DEFAULTS['cherrypicks'])
         self.assertEquals(config.override, Config.DEFAULTS['override'])
 
     def test_configuration_file(self):

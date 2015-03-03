@@ -57,10 +57,10 @@ class Homekeeper(object):
             homekeeper.util.create_symlinks(self.config.base,
                                             home,
                                             excludes=self.config.excludes,
-                                            includes=self.config.includes)
+                                            cherrypicks=self.config.cherrypicks)
         homekeeper.util.create_symlinks(self.config.directory,
                                         home,
                                         excludes=self.config.excludes,
-                                        includes=self.config.includes)
+                                        cherrypicks=self.config.cherrypicks)
         homekeeper.util.cleanup_symlinks(home)
 

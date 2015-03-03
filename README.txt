@@ -38,7 +38,7 @@ this:
             ".git",
             ".gitignore",
         ],
-        "includes": [
+        "cherrypicks": [
             ".mplayer/config",
             ".config/Terminal/terminalrc",
         ],
@@ -86,7 +86,7 @@ In order to track all files and directories under `.foo`, track the following:
 
     $ homekeeper track ~/.foo
 
-If you want to track *just* `~/.foo/bar/baz`, see the section about includes
+If you want to track *just* `~/.foo/bar/baz`, see the section about cherrypicks
 below.
 
 Excludes
@@ -94,10 +94,10 @@ Excludes
 
 Any paths listed in the `excludes` directive in `homekeeper.json` will be
 ignored by homekeeper when linking.  The only exception is if the path is also
-in the `includes` directive (see below).
+in the `cherrypicks` directive (see below).
 
-Includes
-========
+Cherry Picks
+============
 
 This directive tells homekeeper to 'cherry pick' a particular path for linking.
 This is useful if you want to version control a single file, but not the other
