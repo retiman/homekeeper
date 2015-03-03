@@ -29,6 +29,12 @@ class Homekeeper(object):
         self.config.save()
 
     def track(self, pathname):
+        """Moves a file or directory into your dotfiles directory so it can be
+        symlinked later.
+
+        Args:
+            pathname: The pathname of the directory or file you want to track.
+        """
         if not os.path.exists(pathname):
             logging.info("pathname not found; won't track %s", pathname)
             return
@@ -43,6 +49,9 @@ class Homekeeper(object):
         logging.info('symlinked %s -> %s', pathname, target)
 
     def link(self):
+        """Symlinks all files and directories from your dotfiles directory into
+        your home directory.
+        """
         home = os.getenv('HOME')
         if self.config.override:
             homekeeper.util.create_symlinks(self.config.base, home)

@@ -4,6 +4,8 @@ import json
 import os
 
 class Config(object):
+    """Representation of the homekeeper configuration file (homekeeper.json)."""
+
     PATHNAME = os.path.join(os.getenv('HOME'), '.homekeeper.json')
     DEFAULTS = {
         'base': None,
@@ -43,6 +45,12 @@ class Config(object):
         self.data = self.DEFAULTS
 
     def save(self, pathname=None):
+        """Saves the configuration data to a file. Existing configuration will
+        be removed.
+
+        Args:
+            pathname: The file to save the configuration to.
+        """
         pathname = pathname or self.pathname
         if os.path.exists(pathname):
             os.remove(pathname)
