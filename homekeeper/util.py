@@ -82,3 +82,14 @@ def cleanup_target(target):
         shutil.rmtree(target)
         logging.debug('removed directory %s', target)
 
+def firstdir(pathname):
+    """Gets the first directory of the path.
+
+    For example, if pathname is '/home/johndoe', this function returns '/home'.
+    """
+    head, tail = os.path.split(pathname)
+    if head is '' or head is '/':
+        return tail
+    else:
+        return firstdir(head)
+

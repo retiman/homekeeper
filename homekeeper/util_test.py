@@ -7,6 +7,7 @@ os = None
 create_symlinks = homekeeper.util.create_symlinks
 cleanup_symlinks = homekeeper.util.cleanup_symlinks
 cleanup_target = homekeeper.util.cleanup_target
+firstdir = homekeeper.util.firstdir
 testing = homekeeper.testing
 
 class UtilTest(unittest.TestCase):
@@ -135,4 +136,12 @@ class UtilTest(unittest.TestCase):
         self.assertTrue(os.path.exists(target))
         cleanup_target(target)
         self.assertFalse(os.path.exists(target))
+
+    def test_firstdir(self):
+        """Tests that the first directory of a path is returned."""
+        self.assertEquals('home', firstdir('home/johndoe/.vimrc'))
+        self.assertEquals('home', firstdir('/home/johndoe/.vimrc'))
+        self.assertEquals('.vimrc', firstdir('.vimrc'))
+        self.assertEquals('', firstdir(''))
+        self.assertEquals('', firstdir('/'))
 
