@@ -1,4 +1,4 @@
-PYTHON = /usr/bin/env/python2
+PYTHON = /usr/bin/env python2
 PIP = /usr/bin/env pip2
 .PHONY = clean deploy doc doc-server install lint requirements test
 
