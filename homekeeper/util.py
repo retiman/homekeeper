@@ -16,6 +16,21 @@ class cd(object):
     def __exit__(self, etype, value, traceback):
         os.chdir(self.saved_pathname)
 
+def restore(source_directory, target_directory, excludes=None,
+            cherrypicks=None):
+    """Restores symlinks from the source directory to the target directory.
+
+    For example, suppose that there is a symlink:
+
+        $HOME/.vimrc -> $HOME/dotfiles/.vimrc
+
+    You want to undo this symlink so that the actual file in
+    $HOME/dotfiles/.vimrc is copied to $HOME/.vimrc and the symlink is undone.
+    In this case, the source_directory is $HOME/dotfiles and the target
+    directory is $HOME.
+    """
+    pass
+
 def create_symlinks(source_directory, target_directory, excludes=None,
                     cherrypicks=None):
     """Symlinks files from the dotfiles directory to the home directory.
