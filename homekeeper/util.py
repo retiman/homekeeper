@@ -40,15 +40,13 @@ def create_symlinks(source_directory, target_directory, excludes=None,
             if basename in excludes:
                 continue
             # Our source and target are set, unless basename matches something
-            # within our include path, then basneame becomes include
+            # within our include path, then basename becomes include.
             for include in includes:
                 if os.path.commonprefix([basename, include]):
                     basename = include
             source = os.path.join(source_directory, basename)
             target = os.path.join(target_directory, basename)
-
             cleanup_target(target)
-
             os.symlink(source, target)
             logging.info('symlinked %s -> %s', target, source)
 
