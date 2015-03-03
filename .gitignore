@@ -1,5 +1,7 @@
 /build
+/cover
 /dist
 /homekeeper/*.pyc
+.coverage
 *.egg-info
 homekeeper.html

@@ -31,4 +31,4 @@ requirements:
 	${PIP} install -r requirements.txt
 
 test: lint
-	nosetests
+	nosetests --with-coverage --cover-html --cover-package=homekeeper
