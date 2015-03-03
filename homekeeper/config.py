@@ -9,6 +9,7 @@ class Config(object):
         'base': None,
         'directory': os.path.join(os.getenv('HOME'), 'dotfiles'),
         'excludes': ['.git', '.gitignore', 'LICENSE', 'README.md'],
+        'includes': [],
         'override': False
     }
 
@@ -64,6 +65,14 @@ class Config(object):
     @excludes.setter
     def excludes(self, value):
         self.data['excludes'] = value
+
+    @property
+    def includes(self):
+        return self.data.get('includes', self.DEFAULTS['includes'])
+
+    @includes.setter
+    def includes(self, value):
+        self.data['includes'] = value
 
     @property
     def override(self):
