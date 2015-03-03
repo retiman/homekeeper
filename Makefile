@@ -2,7 +2,7 @@ PYTHON = /usr/bin/env/python2
 PIP = /usr/bin/env pip2
 .PHONY = clean deploy install lint requirements test
 
-all: requirements test
+all: clean requirements doc test
 
 clean:
 	rm -rf *.egg-info
