@@ -42,20 +42,32 @@ class UtilTest(unittest.TestCase):
         self.assertFalse(os.path.islink(target))
 
     def test_create_symlinks_with_includes(self):
-        source = os.path.join(testing.base_directory(), '.config', 'Terminal',
+        source = os.path.join(testing.base_directory(),
+                              '.config',
+                              'Terminal',
                               'terminalrc')
-        target = os.path.join(self.home, '.config', 'Terminal', 'terminalrc')
+        target = os.path.join(self.home,
+                              '.config',
+                              'Terminal',
+                              'terminalrc')
         includes = [os.path.join('.config', 'Terminal', 'terminalrc')]
         self.filesystem.CreateFile(source)
-        self.assertTrue(os.path.exists(source))
-        self.assertFalse(os.path.exists(target))
+        self.assertTrue(os.path.exists(source),
+                        msg='Source file could not be created.')
+        self.assertFalse(os.path.exists(target),
+                         msg='Target file already exists.')
         create_symlinks(testing.base_directory(), self.home, excludes=None,
                         includes=includes)
-        self.assertTrue(os.path.exists(source)) # source exists?
-        self.assertTrue(os.path.exists(target)) # target exists?
-        # target parent dir is still a dir
-        self.assertTrue(os.path.isdir(os.path.dirname(target)))
-        self.assertTrue(os.path.islink(target)) # target is link?
+        self.assertTrue(os.path.exists(source),
+                        msg='Source file no longer exists.')
+        self.assertTrue(os.path.exists(target),
+                        msg='Target file no longer exists.')
+        self.assertTrue(os.path.isdir(os.path.dirname(target)),
+                        msg='Target parent directory is no longer a directory.')
+        self.assertFalse(os.path.islink(os.path.dirname(target)),
+                         msg='Target parent should not be a symlink.')
+        self.assertTrue(os.path.islink(target),
+                        msg='Target is not a symlink as expected.')
 
     def test_cleanup_symlinks(self):
         self.filesystem.CreateFile('a.txt')
