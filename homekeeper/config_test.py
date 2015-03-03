@@ -30,7 +30,7 @@ class ConfigTest(unittest.TestCase):
         self.filesystem.CreateFile(self.pathname, contents=contents)
 
     def test_defaults(self):
-        """Tests creating a Config object with specifying a filename."""
+        """Tests creating a Config object without specifying a filename."""
         config = Config()
         self.assertFalse(os.path.exists(Config.PATHNAME))
         self.assertEquals(config.base, Config.DEFAULTS['base'])
@@ -47,9 +47,8 @@ class ConfigTest(unittest.TestCase):
         self.assertEquals(config.directory, self.defaults['directory'])
 
     def test_dotfiles_directory_key_overrides(self):
-        """Tests that the old 'dotfiles_directory' key.
-
-        It should override the 'directory' key if present."""
+        """Tests that the old 'dotfiles_directory' key should override the
+        'directory' key if present."""
         dotfiles_directory = os.path.join(os.getenv('HOME'), 'dotfiles')
         self.defaults['dotfiles_directory'] = dotfiles_directory
         self.create_config_file()
@@ -58,14 +57,14 @@ class ConfigTest(unittest.TestCase):
         self.assertEquals(config.directory, self.defaults['dotfiles_directory'])
 
     def test_home_directory_not_allowed(self):
-        """Tests that using the home directory is not allowed."""
+        """Tests that using the home directory as a base is not allowed."""
         self.defaults['directory'] = os.getenv('HOME')
         self.create_config_file()
         config = Config(self.pathname)
         self.assertEquals(config.directory, Config.DEFAULTS['directory'])
 
     def test_save(self):
-        """Tests save config file functionality."""
+        """Tests saving a config file."""
         pathname = os.path.join(os.getenv('HOME'), 'saved.json')
         config = Config(self.pathname)
         config.excludes = []
@@ -76,7 +75,7 @@ class ConfigTest(unittest.TestCase):
         self.assertEquals(config.override, True)
 
     def test_save_with_no_pathname(self):
-        """Tests save config file without an explicit pathname."""
+        """Tests saving config file without an explicit pathname."""
         config = Config(self.pathname)
         config.excludes = []
         config.save()
