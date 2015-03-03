@@ -1,7 +1,11 @@
 #!/usr/bin/env python2
+import homekeeper.util
 import logging
 import json
 import os
+
+# pylint: disable=invalid-name
+util = homekeeper.util
 
 class Config(object):
     """Representation of the homekeeper configuration file (homekeeper.json)."""
@@ -29,7 +33,7 @@ class Config(object):
             return
         try:
             logging.info('found homekeeper configuration at %s', self.pathname)
-            self.data = json.loads(open(self.pathname).read())
+            self.data = json.loads(util.fopen(self.pathname).read())
         except ValueError:
             logging.info('homekeeper configuration invalid; assuming defaults')
         if 'dotfiles_directory' in self.data:
@@ -54,7 +58,7 @@ class Config(object):
         pathname = pathname or self.pathname
         if os.path.exists(pathname):
             os.remove(pathname)
-        with open(pathname, 'w') as cfile:
+        with util.fopen(pathname, 'w') as cfile:
             cfile.write(json.dumps(self.data, sort_keys=True, indent=4))
         logging.info('saved configuration to %s', pathname)
 

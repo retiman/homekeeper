@@ -3,7 +3,6 @@ import fake_filesystem
 import homekeeper
 import homekeeper.config
 import homekeeper.util
-import __builtin__
 
 # pylint: disable=invalid-name
 os = None
@@ -16,8 +15,7 @@ def init():
     """
     fake_fs = fake_filesystem.FakeFilesystem()
     fake_os = _create_fake_os(fake_fs)
-    _replace_modules(fake_os)
-    _replace_builtins(fake_fs)
+    _replace_modules(fake_fs, fake_os)
     _create_test_files()
     return (fake_fs, fake_os)
 
@@ -41,15 +39,12 @@ def configuration_file():
     """
     return os.path.join(os.getenv('HOME'), 'homekeeper.json')
 
-def _replace_builtins(fake_fs):
-    """Replaces Python builtins."""
-    __builtin__.open = fake_filesystem.FakeFileOpen(fake_fs)
-
-def _replace_modules(fake_os):
+def _replace_modules(fake_fs, fake_os):
     """Replaces filesystem modules and functions with fakes."""
     homekeeper.os = fake_os
     homekeeper.config.os = fake_os
     homekeeper.testing.os = fake_os
+    homekeeper.util.fopen = fake_filesystem.FakeFileOpen(fake_fs)
     homekeeper.util.os = fake_os
     homekeeper.util.shutil.move = fake_os.rename
     homekeeper.util.shutil.rmtree = fake_os.rmdir

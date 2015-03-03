@@ -102,6 +102,12 @@ def prepare_target(target):
         shutil.rmtree(target)
         logging.debug('removed directory %s', target)
 
+def fopen(*args, **kwargs):
+    """Alias for __builtin__.open. This exists so tests may mock this function
+    without overriding open for all modules.
+    """
+    return open(*args, **kwargs)
+
 def firstdir(pathname):
     """Gets the first directory of the path.
 
