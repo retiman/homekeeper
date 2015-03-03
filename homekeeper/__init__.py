@@ -54,7 +54,13 @@ class Homekeeper(object):
         """
         home = os.getenv('HOME')
         if self.config.override:
-            homekeeper.util.create_symlinks(self.config.base, home)
-        homekeeper.util.create_symlinks(self.config.directory, home)
+            homekeeper.util.create_symlinks(self.config.base,
+                                            home,
+                                            excludes=self.config.excludes,
+                                            includes=self.config.includes)
+        homekeeper.util.create_symlinks(self.config.directory,
+                                        home,
+                                        excludes=self.config.excludes,
+                                        includes=self.config.includes)
         homekeeper.util.cleanup_symlinks(home)
 

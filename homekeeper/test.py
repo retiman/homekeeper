@@ -44,3 +44,13 @@ class HomekeeperTest(unittest.TestCase):
         self.assertEquals(os.path.join(self.config.directory, '.vimrc'),
                           os.readlink(os.path.join(self.home, '.vimrc')))
 
+    def test_link_with_excludes(self):
+        self.config.excludes = ['.bashrc']
+        self.config.save(testing.configuration_file())
+        self.homekeeper = homekeeper.Homekeeper()
+        self.filesystem.CreateFile(os.path.join(self.config.base, '.bashrc'))
+        self.filesystem.CreateFile(os.path.join(self.home, '.bashrc'))
+        self.homekeeper.link()
+        self.assertFalse(os.path.islink(os.path.join(self.home, '.bashrc')),
+                         msg='The excluded file was symlinked anyways.')
+

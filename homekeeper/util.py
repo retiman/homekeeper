@@ -38,6 +38,7 @@ def create_symlinks(source_directory, target_directory, excludes=None,
         for pathname in os.listdir('.'):
             basename = os.path.basename(pathname)
             if basename in excludes:
+                logging.debug('Skipping excluded resource: %s', basename)
                 continue
             # Our source and target are set, unless basename matches something
             # within our include path, then basename becomes include.
