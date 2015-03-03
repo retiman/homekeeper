@@ -17,6 +17,9 @@ deploy: clean doc test
 doc:
 	pydoc -w homekeeper
 
+doc-server:
+	pydoc -p 8080 -w homekeeper
+
 install: clean requirements
 	${PIP} install --upgrade .
 
