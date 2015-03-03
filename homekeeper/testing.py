@@ -61,6 +61,8 @@ def _create_test_files():
     os.makedirs(os.path.join(home, 'dotfiles'))
     for name in ['bundle', 'ftdetect', 'ftplugin', 'ftdetect', 'syntax']:
         os.makedirs(os.path.join(home, '.vim', name))
+    for name in ['base', 'main']:
+        os.makedirs(os.path.join(home, '.dotfiles', name))
 
 def _getenv(key):
     return {

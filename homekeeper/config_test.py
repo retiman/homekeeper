@@ -13,8 +13,8 @@ class ConfigTest(unittest.TestCase):
         self.filesystem, globals()['os'] = testing.init()
         self.pathname = os.path.join(os.getenv('HOME'), 'homekeeper.json')
         self.defaults = {
-            'base': os.path.join(os.getenv('HOME'), 'dotfiles-base'),
-            'directory': os.path.join(os.getenv('HOME'), 'dotfiles-main'),
+            'base': os.path.join(os.getenv('HOME'), 'dotfiles', 'base'),
+            'directory': os.path.join(os.getenv('HOME'), 'dotfiles', 'main'),
             'excludes': ['.git'],
             'override': True
         }
