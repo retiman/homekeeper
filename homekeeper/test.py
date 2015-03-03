@@ -35,6 +35,20 @@ class HomekeeperTest(unittest.TestCase):
         self.assertEquals(os.path.join(self.config.directory, '.gitconfig'),
                           os.readlink(os.path.join(self.home, '.gitconfig')))
 
+    def test_track_target_that_doesnt_exist(self):
+        self.assertFalse(os.path.exists(os.path.join(self.home, '.gitconfig')))
+        self.homekeeper.track(os.path.join(self.home, '.gitconfig'))
+        self.assertFalse(os.path.exists(os.path.join(self.config.directory,
+                                                     '.gitconfig')))
+        self.assertFalse(os.path.islink(os.path.join(self.home, '.gitconfig')))
+
+    def test_track_target_that_already_exists(self):
+        self.filesystem.CreateFile(os.path.join(self.home, '.gitconfig'))
+        self.filesystem.CreateFile(os.path.join(self.config.directory,
+                                                '.gitconfig'))
+        self.homekeeper.track(os.path.join(self.home, '.gitconfig'))
+        self.assertFalse(os.path.islink(os.path.join(self.home, '.gitconfig')))
+
     def test_init(self):
         os.unlink(testing.configuration_file())
         self.assertFalse(os.path.exists(testing.configuration_file()))
