@@ -11,10 +11,9 @@ Config = homekeeper.config.Config
 class ConfigTest(unittest.TestCase):
     def setUp(self):
         self.filesystem, globals()['os'] = testing.init()
-        self.pathname = os.path.join(os.getenv('HOME'), 'homekeeper.json')
         self.defaults = {
-            'base': os.path.join(os.getenv('HOME'), 'dotfiles', 'base'),
-            'directory': os.path.join(os.getenv('HOME'), 'dotfiles', 'main'),
+            'base': testing.base_directory(),
+            'directory': testing.main_directory(),
             'excludes': ['.git'],
             'override': True
         }
@@ -24,10 +23,11 @@ class ConfigTest(unittest.TestCase):
         del self.filesystem
 
     def create_config_file(self):
-        if os.path.exists(self.pathname):
-            self.filesystem.RemoveObject(self.pathname)
+        if os.path.exists(testing.configuration_file()):
+            self.filesystem.RemoveObject(testing.configuration_file())
         contents = json.dumps(self.defaults)
-        self.filesystem.CreateFile(self.pathname, contents=contents)
+        self.filesystem.CreateFile(testing.configuration_file(),
+                                   contents=contents)
 
     def test_defaults(self):
         """Tests creating a Config object without specifying a filename."""
@@ -40,7 +40,7 @@ class ConfigTest(unittest.TestCase):
 
     def test_configuration_file(self):
         """Tests creating a Config object with a filename."""
-        config = Config(self.pathname)
+        config = Config(testing.configuration_file())
         self.assertEquals(config.base, self.defaults['base'])
         self.assertEquals(config.excludes, self.defaults['excludes'])
         self.assertEquals(config.override, self.defaults['override'])
@@ -49,10 +49,9 @@ class ConfigTest(unittest.TestCase):
     def test_dotfiles_directory_key_overrides(self):
         """Tests that the old 'dotfiles_directory' key should override the
         'directory' key if present."""
-        dotfiles_directory = os.path.join(os.getenv('HOME'), 'dotfiles')
-        self.defaults['dotfiles_directory'] = dotfiles_directory
+        self.defaults['dotfiles_directory'] = testing.dotfiles_directory()
         self.create_config_file()
-        config = Config(self.pathname)
+        config = Config(testing.configuration_file())
         self.assertNotEquals(config.directory, self.defaults['directory'])
         self.assertEquals(config.directory, self.defaults['dotfiles_directory'])
 
@@ -60,13 +59,13 @@ class ConfigTest(unittest.TestCase):
         """Tests that using the home directory as a base is not allowed."""
         self.defaults['directory'] = os.getenv('HOME')
         self.create_config_file()
-        config = Config(self.pathname)
+        config = Config(testing.configuration_file())
         self.assertEquals(config.directory, Config.DEFAULTS['directory'])
 
     def test_save(self):
         """Tests saving a config file."""
         pathname = os.path.join(os.getenv('HOME'), 'saved.json')
-        config = Config(self.pathname)
+        config = Config(testing.configuration_file())
         config.excludes = []
         config.override = True
         config.save(pathname)
@@ -76,9 +75,9 @@ class ConfigTest(unittest.TestCase):
 
     def test_save_with_no_pathname(self):
         """Tests saving config file without an explicit pathname."""
-        config = Config(self.pathname)
+        config = Config(testing.configuration_file())
         config.excludes = []
         config.save()
-        config = Config(self.pathname)
+        config = Config(testing.configuration_file())
         self.assertEquals(config.excludes, [])
 

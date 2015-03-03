@@ -5,6 +5,9 @@ import homekeeper.config
 import homekeeper.util
 import __builtin__
 
+# pylint: disable=invalid-name
+os = None
+
 def init():
     """Create a fake filesystem and and use it in all modules.
 
@@ -17,6 +20,26 @@ def init():
     _replace_builtins(fake_fs)
     _create_test_files()
     return (fake_fs, fake_os)
+
+def dotfiles_directory():
+    """The dotfiles directory in the fake filesystem."""
+    return os.path.join(os.getenv('HOME'), 'dotfiles')
+
+def base_directory():
+    """The base directory for dotfiles in the fake filesystem."""
+    return os.path.join(dotfiles_directory(), 'base')
+
+def main_directory():
+    """The main directory for dotfiles in the fake filesystem."""
+    return os.path.join(dotfiles_directory(), 'main')
+
+def configuration_file():
+    """The configuration file for homekeeper in the fake filesystem.
+
+    Note that this value will differ from Config.PATHNAME because this path is
+    based off of _getenv function.
+    """
+    return os.path.join(os.getenv('HOME'), 'homekeeper.json')
 
 def _replace_builtins(fake_fs):
     """Replaces Python builtins."""
@@ -58,11 +81,10 @@ def _create_test_files():
     os.makedirs(os.path.join(home, '.foo', 'bar', 'baz'))
     os.makedirs(os.path.join(home, '.vim'))
     os.makedirs(os.path.join(home, 'bin'))
-    os.makedirs(os.path.join(home, 'dotfiles'))
+    os.makedirs(base_directory())
+    os.makedirs(main_directory())
     for name in ['bundle', 'ftdetect', 'ftplugin', 'ftdetect', 'syntax']:
         os.makedirs(os.path.join(home, '.vim', name))
-    for name in ['base', 'main']:
-        os.makedirs(os.path.join(home, '.dotfiles', name))
 
 def _getenv(key):
     return {

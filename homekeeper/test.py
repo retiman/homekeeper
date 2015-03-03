@@ -4,6 +4,7 @@ import homekeeper.testing
 import unittest
 
 # pylint: disable=invalid-name
+config = homekeeper.config
 os = None
 testing = homekeeper.testing
 
@@ -19,14 +20,11 @@ class HomekeeperTest(unittest.TestCase):
         del self.filesystem
 
     def _configure(self):
-        os.makedirs(self.home)
-        os.makedirs(self.home + '/dotfiles-base')
-        os.makedirs(self.home + '/dotfiles-main')
-        self.config = homekeeper.config.Config()
-        self.config.base = self.home + '/dotfiles-base'
-        self.config.directory = self.home + '/dotfiles-main'
+        self.config = config.Config()
+        self.config.base = testing.base_directory()
+        self.config.directory = testing.main_directory()
         self.config.override = True
-        self.config.save(self.home + '/.homekeeper.json')
+        self.config.save(testing.configuration_file())
         self.homekeeper = homekeeper.Homekeeper()
 
     def test_track(self):
