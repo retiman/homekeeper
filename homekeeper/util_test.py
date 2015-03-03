@@ -84,9 +84,14 @@ class UtilTest(unittest.TestCase):
                               '.config',
                               'Terminal',
                               'terminalrc')
+        unrelated = os.path.join(self.home,
+                                 '.config',
+                                 'user-dirs.dirs')
         includes = [os.path.join('.config', 'Terminal', 'terminalrc')]
         self.filesystem.CreateFile(source)
+        self.filesystem.CreateFile(unrelated)
         self.assertTrue(os.path.exists(source))
+        self.assertTrue(os.path.exists(unrelated))
         self.assertFalse(os.path.exists(target))
         create_symlinks(testing.base_directory(),
                         self.home,
@@ -94,6 +99,10 @@ class UtilTest(unittest.TestCase):
                         includes=includes)
         self.assertTrue(os.path.exists(source))
         self.assertTrue(os.path.exists(target))
+        self.assertTrue(os.path.exists(unrelated),
+                        msg='Unrelated file was clobbered.')
+        self.assertFalse(os.path.islink(unrelated),
+                         msg='Unrelated file was transformed into symlink.')
         self.assertTrue(os.path.isdir(os.path.dirname(target)),
                         msg='Target parent directory is no longer a directory.')
         self.assertFalse(os.path.islink(os.path.dirname(target)),
