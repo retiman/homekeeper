@@ -74,7 +74,12 @@ class UtilTest(unittest.TestCase):
         """Tests that only 'terminalrc' is symlinked.
 
         With the 'includes' directive, only the most specific file or
-        directory will be symlinked.
+        directory will be symlinked. That is, '.config/Terminal/terminalrc'
+        will be symlinked, but everything else in the target '.config' directory
+        will be left alone.
+
+        This test ensures that unrelated files won't be clobbered by symlinking
+        the 'terminalrc' file.
         """
         source = os.path.join(testing.base_directory(),
                               '.config',
