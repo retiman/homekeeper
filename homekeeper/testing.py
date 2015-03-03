@@ -4,7 +4,6 @@ import homekeeper
 import homekeeper.config
 import homekeeper.util
 
-# pylint: disable=invalid-name
 os = None
 
 def init():

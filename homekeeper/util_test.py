@@ -2,7 +2,6 @@ import homekeeper.testing
 import homekeeper.util
 import unittest
 
-# pylint: disable=invalid-name
 os = None
 create_symlinks = homekeeper.util.create_symlinks
 cleanup_symlinks = homekeeper.util.cleanup_symlinks

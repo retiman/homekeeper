@@ -4,7 +4,6 @@ import homekeeper.testing
 import mock
 import unittest
 
-# pylint: disable=invalid-name
 config = homekeeper.config
 os = None
 patch = mock.patch

@@ -2,7 +2,6 @@ import logging
 import os
 import shutil
 
-# pylint: disable=invalid-name
 class cd(object):
     "Use with the `with` keyword to change directory."""
     def __init__(self, pathname):

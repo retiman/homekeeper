@@ -3,7 +3,6 @@ import homekeeper.testing
 import json
 import unittest
 
-# pylint: disable=invalid-name
 os = None
 testing = homekeeper.testing
 Config = homekeeper.config.Config

@@ -4,7 +4,6 @@ import logging
 import json
 import os
 
-# pylint: disable=invalid-name
 util = homekeeper.util
 
 class Config(object):

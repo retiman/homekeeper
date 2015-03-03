@@ -4,7 +4,7 @@ import homekeeper
 import logging
 import sys
 
-# pylint: disable=invalid-name, no-member
+# pylint: disable=no-member
 def print_usage():
     logging.info('homekeeper %s by Min Huang (min.huang@alumni.usc.edu)',
                  homekeeper.__version__)
