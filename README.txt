@@ -26,8 +26,9 @@ My dotfiles repository is located here if you'd like to take a look:
 How It Works
 ============
 
-Homekeeper will read a `$HOME/.homekeeper.json` file for configuration, or create
-one if it doesn't already exist.  The default configuration looks like this:
+Homekeeper will read a `$HOME/.homekeeper.json` file for configuration, or
+create one if it doesn't already exist.  The default configuration looks like
+this:
 
     {
         "base": "/home/$USER/dotfiles/base",
@@ -35,8 +36,12 @@ one if it doesn't already exist.  The default configuration looks like this:
         "override": true,
         "excludes": [
             ".git",
-            ".gitignore"
-        ]
+            ".gitignore",
+        ],
+        "includes": [
+            ".mplayer/config",
+            ".config/Terminal/terminalrc",
+        ],
     }
 
 Homekeeper will not symlink any file in the `excludes` array in the
@@ -61,6 +66,45 @@ NOTE: HOMEKEEPER WILL REMOVE THE ORIGINAL FILE ONCE YOU TELL IT TO SYMLINK.
 Make sure you back it up or are having homekeeper track the file you want to
 symlink first.
 
-More Documentation
-==================
-There isn't any.  I don't think anybody will use this except me.
+Tracking
+========
+
+    $ homekeeper track ~/.vimrc
+
+This will copy your `~/.vimrc` file into your dotfiles directory.  The next time
+you run `homekeeper link` the original `~/.vimrc` will be deleted, and the
+tracked version will be symlinked there instead.
+
+If you track a directory, the entire directory and all subdirectories will be
+copied to your dotfiles directory.  You can only track a top level directory.
+For example, if you decide to track:
+
+    $ homekeeper track ~/.foo/bar/baz
+
+...then homekeeper will copy the `baz` directory into your dotfiles directory.
+In order to track all files and directories under `.foo`, track the following:
+
+    $ homekeeper track ~/.foo
+
+If you want to track *just* `~/.foo/bar/baz`, see the section about includes
+below.
+
+Excludes
+========
+
+Any paths listed in the `excludes` directive in `homekeeper.json` will be
+ignored by homekeeper when linking.  The only exception is if the path is also
+in the `includes` directive (see below).
+
+Includes
+========
+
+This directive tells homekeeper to 'cherry pick' a particular path for linking.
+This is useful if you want to version control a single file, but not the other
+files in the same directory, or any of the parent directories.
+
+Once you have done so, copy the file manually (with the appropriate directory
+structure) into your dotfiles directory.
+
+NOTE: This feature is experimental and may change.
+
