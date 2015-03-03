@@ -105,7 +105,7 @@ def firstdir(pathname):
     For example, if pathname is '/home/johndoe', this function returns '/home'.
     """
     head, tail = os.path.split(pathname)
-    if head is '' or head is '/':
+    if not head or head is '/':
         return tail
     else:
         return firstdir(head)
