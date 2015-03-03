@@ -44,6 +44,33 @@ class UtilTest(unittest.TestCase):
         self.assertFalse(os.path.exists(target))
         self.assertFalse(os.path.islink(target))
 
+    def test_create_symlinks_with_commonprefix_includes(self):
+        """Tests that '.a/b' can be included without interfering with '.ab'."""
+        source = os.path.join(testing.base_directory(), '.a', 'b')
+        target = os.path.join(self.home, '.a', 'b')
+        unrelated = os.path.join(testing.base_directory(), '.ab')
+        includes = [os.path.join('.a', 'b')]
+        self.filesystem.CreateFile(source)
+        self.filesystem.CreateFile(unrelated)
+        self.assertTrue(os.path.exists(source))
+        self.assertFalse(os.path.exists(target))
+        create_symlinks(testing.base_directory(),
+                        self.home,
+                        excludes=None,
+                        includes=includes)
+        self.assertTrue(os.path.exists(source))
+        self.assertTrue(os.path.exists(target))
+        self.assertTrue(os.path.exists(unrelated),
+                        msg='Unrelated file was clobbered.')
+        self.assertTrue(os.path.islink(os.path.join(self.home, '.ab')),
+                        msg='Unrelated file was not symlinked.')
+        self.assertTrue(os.path.isdir(os.path.dirname(target)),
+                        msg='Target parent directory is no longer a directory.')
+        self.assertFalse(os.path.islink(os.path.dirname(target)),
+                         msg='Target parent should not be a symlink.')
+        self.assertTrue(os.path.islink(target),
+                        msg='Target is not a symlink as expected.')
+
     def test_create_symlinks_without_includes(self):
         """Tests that only 'base/.config' is symlinked.
 
