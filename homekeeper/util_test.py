@@ -18,6 +18,7 @@ class UtilTest(unittest.TestCase):
         del self.filesystem
 
     def test_create_symlinks(self):
+        """Tests symlinking 'base/.vimrc' to '$HOME/.vimrc'."""
         source = os.path.join(testing.base_directory(), '.vimrc')
         target = os.path.join(self.home, '.vimrc')
         self.filesystem.CreateFile(source)
@@ -29,7 +30,8 @@ class UtilTest(unittest.TestCase):
         self.assertTrue(os.path.islink(target))
         self.assertEquals(source, os.readlink(target))
 
-    def test_create_symlinks_with_overrides(self):
+    def test_create_symlinks_with_excludes(self):
+        """Tests that 'base/.vimrc' can be excluded from symlinking."""
         source = os.path.join(testing.base_directory(), '.vimrc')
         target = os.path.join(self.home, '.vimrc')
         excludes = ['.vimrc']
@@ -42,6 +44,11 @@ class UtilTest(unittest.TestCase):
         self.assertFalse(os.path.islink(target))
 
     def test_create_symlinks_without_includes(self):
+        """Tests that only 'base/.config' is symlinked.
+
+        Without the 'includes' directive, the entire top level directory will be
+        symlinked.
+        """
         source = os.path.join(testing.base_directory(),
                               '.config',
                               'Terminal',
@@ -64,6 +71,11 @@ class UtilTest(unittest.TestCase):
                           os.readlink(os.path.join(self.home, '.config')))
 
     def test_create_symlinks_with_includes(self):
+        """Tests that only 'terminalrc' is symlinked.
+
+        With the 'includes' directive, only the most specific file or
+        directory will be symlinked.
+        """
         source = os.path.join(testing.base_directory(),
                               '.config',
                               'Terminal',
@@ -90,6 +102,7 @@ class UtilTest(unittest.TestCase):
                         msg='Target is not a symlink as expected.')
 
     def test_cleanup_symlinks(self):
+        """Tests that non-existant symlinks are removed."""
         self.filesystem.CreateFile('a.txt')
         os.symlink('a.txt', 'exists.txt')
         os.symlink('b.txt', 'nonexistent1.txt')

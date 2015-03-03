@@ -68,10 +68,10 @@ def cleanup_symlinks(directory):
         os.unlink(pathname)
 
 def cleanup_target(target):
-    """Cleans up target path before we link to it.
+    """Removes a target symlink/file/directory before replacing it with symlink.
 
     Args:
-        target: Path of symlink target, can be file or directory
+        target: Path of symlink target, can be file or directory.
     """
     if os.path.islink(target):
         os.unlink(target)
