@@ -54,3 +54,31 @@ class HomekeeperTest(unittest.TestCase):
         self.assertFalse(os.path.islink(os.path.join(self.home, '.bashrc')),
                          msg='The excluded file was symlinked anyways.')
 
+    def test_link_with_includes(self):
+        self.config.includes = [os.path.join('.foo', 'bar', 'baz')]
+        self.config.save(testing.configuration_file())
+        self.homekeeper = homekeeper.Homekeeper()
+        self.filesystem.CreateFile(os.path.join(self.config.base,
+                                                '.foo',
+                                                'bar',
+                                                'baz'))
+        self.filesystem.CreateFile(os.path.join(self.home,
+                                                '.foo',
+                                                'bar',
+                                                'unrelated'))
+        self.homekeeper.link()
+        self.assertFalse(os.path.islink(os.path.join(self.home, '.foo')),
+                         msg='The directory was symlinked anyways.')
+        self.assertTrue(os.path.islink(os.path.join(self.home,
+                                                    '.foo',
+                                                    'bar',
+                                                    'baz')))
+        self.assertTrue(os.path.exists(os.path.join(self.home,
+                                                    '.foo',
+                                                    'bar',
+                                                    'unrelated')))
+        self.assertFalse(os.path.islink(os.path.join(self.home,
+                                                     '.foo',
+                                                     'bar',
+                                                     'unrelated')))
+
