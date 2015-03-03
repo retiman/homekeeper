@@ -29,7 +29,52 @@ def restore(source_directory, target_directory, excludes=None,
     In this case, the source_directory is $HOME/dotfiles and the target
     directory is $HOME.
     """
-    pass
+    assert not isinstance(excludes, basestring)
+    assert not isinstance(cherrypicks, basestring)
+    excludes = frozenset(excludes or [])
+    cherrypicks = frozenset(cherrypicks or [])
+    if not os.path.isdir(source_directory):
+        logging.info('dotfiles directory not found: %s', source_directory)
+        return
+    logging.info('restoring files from %s', source_directory)
+    # Restore the manually included files from the include directive; these will
+    # never be excluded.
+    with cd(source_directory):
+        for pathname in cherrypicks:
+            source = os.path.join(source_directory, pathname)
+            target = os.path.join(target_directory, pathname)
+            if os.path.exists(source) and os.path.islink(target):
+                prepare_target(target)
+                shutil.copy(source, target)
+                logging.info('restored %s', target)
+            else:
+                # This is a harmless condition that can occur if you've included
+                # a file from your base directory (and it is present), but it is
+                # not present from your dotfiles directory.
+                logging.debug('skipping missing resource: %s', source)
+    # Restore the rest of the files, excluding any from the exclude directive.
+    with cd(source_directory):
+        included = frozenset(map(firstdir, cherrypicks))
+        for pathname in os.listdir('.'):
+            basename = os.path.basename(pathname)
+            # Skip any excluded paths.
+            if basename in excludes:
+                logging.debug('skipping excluded resource: %s', basename)
+                continue
+            # Skip any included paths that were already symlinked earlier.
+            if os.path.isdir(basename) and basename in included:
+                logging.debug('skipping already restored resource: %s',
+                              basename)
+                continue
+            # Skip any paths whose targets don't seem to be symlinks.
+            if not os.path.islink(target):
+                logging.debug('skipping non linked resource: %s', basename)
+                continue
+            source = os.path.join(source_directory, basename)
+            target = os.path.join(target_directory, basename)
+            prepare_target(target)
+            shutil.copy(source, target)
+            logging.info('restored %s', target)
 
 def create_symlinks(source_directory, target_directory, excludes=None,
                     cherrypicks=None):
