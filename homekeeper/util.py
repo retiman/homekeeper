@@ -43,7 +43,10 @@ def create_symlinks(source_directory, target_directory, excludes=None,
                 os.symlink(source, target)
                 logging.info('symlinked %s -> %s', target, source)
             else:
-                logging.warning('cannot find file to symlink: %s', source)
+                # This is a harmless condition that can occur if you've included
+                # a file from your base directory (and it is present), but it is
+                # not present from your dotfiles directory.
+                logging.debug('skipping missing resource: %s', source)
     # Symlink the rest of the files, excluding any from the exclude directive.
     with cd(source_directory):
         included = frozenset(map(firstdir, includes))
