@@ -6,7 +6,7 @@ import unittest
 os = None
 create_symlinks = homekeeper.util.create_symlinks
 cleanup_symlinks = homekeeper.util.cleanup_symlinks
-cleanup_target = homekeeper.util.cleanup_target
+prepare_target = homekeeper.util.prepare_target
 firstdir = homekeeper.util.firstdir
 testing = homekeeper.testing
 
@@ -129,13 +129,22 @@ class UtilTest(unittest.TestCase):
         self.assertFalse(os.path.exists('nonexistent2.txt'))
         self.assertTrue(os.path.exists('exists.txt'))
 
-    def test_cleanup_target(self):
+    def test_prepare_target(self):
         """Tests that targets are removed before symlinking."""
         target = os.path.join(self.home, '.vimrc')
         self.filesystem.CreateFile(target)
         self.assertTrue(os.path.exists(target))
-        cleanup_target(target)
+        prepare_target(target)
         self.assertFalse(os.path.exists(target))
+
+    def test_prepare_target_creates_parent_directory(self):
+        """Tests that target parent directories are created before symlinking.
+        """
+        target = os.path.join(self.home, '.foo', 'bar', 'bif')
+        self.assertFalse(os.path.exists(target))
+        prepare_target(target)
+        self.assertFalse(os.path.exists(target))
+        self.assertTrue(os.path.isdir(os.path.dirname(target)))
 
     def test_firstdir(self):
         """Tests that the first directory of a path is returned."""

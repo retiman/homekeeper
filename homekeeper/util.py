@@ -39,7 +39,7 @@ def create_symlinks(source_directory, target_directory, excludes=None,
             source = os.path.join(source_directory, pathname)
             target = os.path.join(target_directory, pathname)
             if os.path.exists(source):
-                cleanup_target(target)
+                prepare_target(target)
                 os.symlink(source, target)
                 logging.info('symlinked %s -> %s', target, source)
             else:
@@ -60,7 +60,7 @@ def create_symlinks(source_directory, target_directory, excludes=None,
                 continue
             source = os.path.join(source_directory, basename)
             target = os.path.join(target_directory, basename)
-            cleanup_target(target)
+            prepare_target(target)
             os.symlink(source, target)
             logging.info('symlinked %s -> %s', target, source)
 
@@ -79,8 +79,9 @@ def cleanup_symlinks(directory):
         logging.info('removing broken link: %s', pathname)
         os.unlink(pathname)
 
-def cleanup_target(target):
+def prepare_target(target):
     """Removes a target symlink/file/directory before replacing it with symlink.
+    Also creates the parent directory if it does not exist.
 
     Args:
         target: Path of symlink target, can be file or directory.
