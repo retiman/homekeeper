@@ -28,18 +28,19 @@ class HomekeeperTest(unittest.TestCase):
         self.homekeeper = homekeeper.Homekeeper()
 
     def test_track(self):
-        self.filesystem.CreateFile(self.home + '/.gitconfig')
-        self.homekeeper.track(self.home + '/.gitconfig')
-        self.assertEquals(self.config.directory + '/.gitconfig',
-                          os.readlink(self.home + '/.gitconfig'))
+        self.filesystem.CreateFile(os.path.join(self.home, '.gitconfig'))
+        self.homekeeper.track(os.path.join(self.home, '.gitconfig'))
+        self.assertEquals(os.path.join(self.config.directory, '.gitconfig'),
+                          os.readlink(os.path.join(self.home, '.gitconfig')))
 
     def test_link(self):
-        self.filesystem.CreateFile(self.config.base + '/.bashrc')
-        self.filesystem.CreateFile(self.config.base + '/.vimrc')
-        self.filesystem.CreateFile(self.config.directory + '/.vimrc')
+        self.filesystem.CreateFile(os.path.join(self.config.base, '.bashrc'))
+        self.filesystem.CreateFile(os.path.join(self.config.base, '.vimrc'))
+        self.filesystem.CreateFile(os.path.join(self.config.directory,
+                                                '.vimrc'))
         self.homekeeper.link()
-        self.assertEquals(self.config.base + '/.bashrc',
-                          os.readlink(self.home + '/.bashrc'))
-        self.assertEquals(self.config.directory + '/.vimrc',
-                          os.readlink(self.home + '/.vimrc'))
+        self.assertEquals(os.path.join(self.config.base, '.bashrc'),
+                          os.readlink(os.path.join(self.home, '.bashrc')))
+        self.assertEquals(os.path.join(self.config.directory, '.vimrc'),
+                          os.readlink(os.path.join(self.home, '.vimrc')))
 

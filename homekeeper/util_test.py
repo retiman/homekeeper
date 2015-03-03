@@ -18,37 +18,38 @@ class UtilTest(unittest.TestCase):
         del self.filesystem
 
     def test_create_symlinks(self):
-        source = '/dotfiles/.vimrc'
-        target = self.home + '/.vimrc'
+        source = os.path.join(testing.base_directory(), '.vimrc')
+        target = os.path.join(self.home, '.vimrc')
         self.filesystem.CreateFile(source)
         self.assertTrue(os.path.exists(source))
         self.assertFalse(os.path.exists(target))
-        create_symlinks('/dotfiles', self.home)
+        create_symlinks(testing.base_directory(), self.home)
         self.assertTrue(os.path.exists(source))
         self.assertTrue(os.path.exists(target))
         self.assertTrue(os.path.islink(target))
         self.assertEquals(source, os.readlink(target))
 
     def test_create_symlinks_with_overrides(self):
-        source = '/dotfiles/.vimrc'
-        target = self.home + '/.vimrc'
+        source = os.path.join(testing.base_directory(), '.vimrc')
+        target = os.path.join(self.home, '.vimrc')
         excludes = ['.vimrc']
         self.filesystem.CreateFile(source)
         self.assertTrue(os.path.exists(source))
         self.assertFalse(os.path.exists(target))
-        create_symlinks('/dotfiles', self.home, excludes=excludes)
+        create_symlinks(testing.base_directory(), self.home, excludes=excludes)
         self.assertTrue(os.path.exists(source))
         self.assertFalse(os.path.exists(target))
         self.assertFalse(os.path.islink(target))
 
     def test_create_symlinks_with_includes(self):
-        source = '/dotfiles/.config/Terminal/terminalrc'
-        target = self.home + '/.config/Terminal/terminalrc'
-        includes = ['.config/Terminal/terminalrc']
+        source = os.path.join(testing.base_directory(), '.config', 'Terminal',
+                              'terminalrc')
+        target = os.path.join(self.home, '.config', 'Terminal', 'terminalrc')
+        includes = [os.path.join('.config', 'Terminal', 'terminalrc')]
         self.filesystem.CreateFile(source)
         self.assertTrue(os.path.exists(source))
         self.assertFalse(os.path.exists(target))
-        create_symlinks('/dotfiles', self.home, excludes=None,
+        create_symlinks(testing.base_directory(), self.home, excludes=None,
                         includes=includes)
         self.assertTrue(os.path.exists(source)) # source exists?
         self.assertTrue(os.path.exists(target)) # target exists?
@@ -57,19 +58,19 @@ class UtilTest(unittest.TestCase):
         self.assertTrue(os.path.islink(target)) # target is link?
 
     def test_cleanup_symlinks(self):
-        self.filesystem.CreateFile('/a.txt')
-        os.symlink('/a.txt', '/exists.txt')
-        os.symlink('/b.txt', '/nonexistent1.txt')
-        os.symlink('/c.txt', '/nonexistent2.txt')
-        self.assertTrue(os.path.islink('/nonexistent1.txt'))
-        self.assertTrue(os.path.islink('/nonexistent2.txt'))
+        self.filesystem.CreateFile('a.txt')
+        os.symlink('a.txt', 'exists.txt')
+        os.symlink('b.txt', 'nonexistent1.txt')
+        os.symlink('c.txt', 'nonexistent2.txt')
+        self.assertTrue(os.path.islink('nonexistent1.txt'))
+        self.assertTrue(os.path.islink('nonexistent2.txt'))
         cleanup_symlinks('/')
-        self.assertFalse(os.path.exists('/nonexistent1.txt'))
-        self.assertFalse(os.path.exists('/nonexistent2.txt'))
-        self.assertTrue(os.path.exists('/exists.txt'))
+        self.assertFalse(os.path.exists('nonexistent1.txt'))
+        self.assertFalse(os.path.exists('nonexistent2.txt'))
+        self.assertTrue(os.path.exists('exists.txt'))
 
     def test_cleanup_target(self):
-        target = self.home + '/.vimrc'
+        target = os.path.join(self.home, '.vimrc')
         self.filesystem.CreateFile(target)
         self.assertTrue(os.path.exists(target))
         cleanup_target(target)
