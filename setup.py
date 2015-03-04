@@ -9,7 +9,6 @@ setuptools.setup(
     name='homekeeper',
     packages=['homekeeper'],
     scripts=['bin/homekeeper'],
-    test_suite='homekeeper.test',
     version=homekeeper.__version__,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
