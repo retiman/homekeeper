@@ -207,7 +207,25 @@ class UtilTest(unittest.TestCase):
     def test_restore_with_cherrypicks(self):
         """Test that restoring cherrypicked files does not clobber other files.
         """
-        pass
+        source = os.path.join(testing.base_directory(), '.a', 'b', 'c')
+        unrelated = os.path.join(self.home, '.a', 'd')
+        cherrypicks = [os.path.join('.a', 'b', 'c')]
+        self.filesystem.CreateFile(source)
+        self.filesystem.CreateFile(unrelated)
+        self.assertTrue(os.path.exists(unrelated))
+        create_symlinks(testing.base_directory(),
+                        self.home,
+                        cherrypicks=cherrypicks)
+        restore(testing.base_directory(),
+                self.home,
+                cherrypicks=cherrypicks)
+        self.assertTrue(os.path.exists(unrelated))
+        self.assertFalse(os.path.islink(unrelated))
+        self.assertTrue(os.path.exists(os.path.join(self.home, '.a', 'b', 'c')))
+        self.assertFalse(os.path.islink(os.path.join(self.home,
+                                                     '.a',
+                                                     'b',
+                                                     'c')))
 
     def test_prepare_target(self):
         """Tests that targets are removed before symlinking."""
