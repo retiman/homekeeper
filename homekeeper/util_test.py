@@ -191,6 +191,24 @@ class UtilTest(unittest.TestCase):
         self.assertTrue(os.path.exists(os.path.join(self.home, '.foo', 'bar')))
         self.assertFalse(os.path.islink(os.path.join(self.home, '.foo', 'bar')))
 
+    def test_restore_with_excludes(self):
+        """Test that excluded files are not restored."""
+        source = os.path.join(testing.base_directory(), '.vimrc')
+        unrelated = os.path.join(testing.base_directory(), '.git')
+        excludes = ['.git']
+        self.filesystem.CreateFile(source)
+        self.filesystem.CreateFile(unrelated)
+        self.assertTrue(os.path.exists(unrelated))
+        self.assertFalse(os.path.exists(os.path.join(self.home, '.git')))
+        create_symlinks(testing.base_directory(), self.home, excludes=excludes)
+        restore(testing.base_directory(), self.home, excludes=excludes)
+        self.assertFalse(os.path.exists(os.path.join(self.home, '.git')))
+
+    def test_restore_with_cherrypicks(self):
+        """Test that restoring cherrypicked files does not clobber other files.
+        """
+        pass
+
     def test_prepare_target(self):
         """Tests that targets are removed before symlinking."""
         target = os.path.join(self.home, '.vimrc')
