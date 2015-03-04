@@ -48,6 +48,20 @@ class Homekeeper(object):
         os.symlink(target, pathname)
         logging.info('symlinked %s -> %s', pathname, target)
 
+    def restore(self):
+        """Restores all symlinks (inverse of link)."""
+        home = os.getenv('HOME')
+        if self.config.override:
+            homekeeper.util.restore(self.config.base,
+                                    home,
+                                    excludes=self.config.excludes,
+                                    cherrypicks=self.config.cherrypicks)
+        homekeeper.util.restore(self.config.directory,
+                                home,
+                                excludes=self.config.excludes,
+                                cherrypicks=self.config.cherrypicks)
+        homekeeper.util.cleanup_symlinks(home)
+
     def link(self):
         """Symlinks all files and directories from your dotfiles directory into
         your home directory.
