@@ -2,6 +2,7 @@
 /cover
 /dist
 /homekeeper/*.pyc
+/homekeeper/__pycache__
 .coverage
 *.egg-info
 homekeeper.html
