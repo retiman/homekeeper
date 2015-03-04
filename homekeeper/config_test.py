@@ -4,12 +4,14 @@ import json
 import unittest
 
 os = None
+shutil = None
 testing = homekeeper.testing
 Config = homekeeper.config.Config
 
 class ConfigTest(unittest.TestCase):
     def setUp(self):
-        self.filesystem, globals()['os'] = testing.init()
+        global os, shutil
+        self.filesystem, os, shutil = testing.init()
         self.defaults = {
             'base': testing.base_directory(),
             'directory': testing.main_directory(),

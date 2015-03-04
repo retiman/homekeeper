@@ -73,7 +73,13 @@ def restore(source_directory, target_directory, excludes=None,
                 logging.debug('skipping non linked resource: %s', basename)
                 continue
             prepare_target(target)
-            shutil.copy(source, target)
+            if os.path.isfile(source):
+                shutil.copy(source, target)
+            elif os.path.isdir(source):
+                shutil.copytree(source, target)
+            else:
+                logging.warning('skipping invalid resource: %s', source)
+                continue
             logging.info('restored %s', target)
 
 def create_symlinks(source_directory, target_directory, excludes=None,

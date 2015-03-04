@@ -8,11 +8,13 @@ create_symlinks = homekeeper.util.create_symlinks
 firstdir = homekeeper.util.firstdir
 prepare_target = homekeeper.util.prepare_target
 restore = homekeeper.util.restore
+shutil = None
 testing = homekeeper.testing
 
 class UtilTest(unittest.TestCase):
     def setUp(self):
-        self.filesystem, globals()['os'] = testing.init()
+        global os, shutil
+        self.filesystem, os, shutil = testing.init()
         self.home = os.getenv('HOME')
 
     def tearDown(self):
@@ -156,7 +158,7 @@ class UtilTest(unittest.TestCase):
         self.assertFalse(os.path.exists('nonexistent2.txt'))
         self.assertTrue(os.path.exists('exists.txt'))
 
-    def test_restore(self):
+    def test_restore_file(self):
         """Tests symlinking 'base/.vimrc' to '$HOME/.vimrc' and then restoring
         will undo the action.
         """
@@ -171,6 +173,23 @@ class UtilTest(unittest.TestCase):
         self.assertTrue(os.path.exists(target))
         self.assertFalse(os.path.islink(source))
         self.assertFalse(os.path.islink(target))
+
+    def test_restore_directory(self):
+        """Tests symlinking directory 'base/.foo' to '$HOME/.foo' and then
+        restoring will undo the action.
+        """
+        source = os.path.join(testing.base_directory(), '.foo', 'bar')
+        target = os.path.join(self.home, '.foo', 'bar')
+        os.makedirs(source)
+        shutil.rmtree(target)
+        self.assertTrue(os.path.exists(source))
+        self.assertFalse(os.path.exists(target))
+        create_symlinks(testing.base_directory(), self.home)
+        restore(testing.base_directory(), self.home)
+        self.assertTrue(os.path.exists(os.path.join(self.home, '.foo')))
+        self.assertFalse(os.path.islink(os.path.join(self.home, '.foo')))
+        self.assertTrue(os.path.exists(os.path.join(self.home, '.foo', 'bar')))
+        self.assertFalse(os.path.islink(os.path.join(self.home, '.foo', 'bar')))
 
     def test_prepare_target(self):
         """Tests that targets are removed before symlinking."""

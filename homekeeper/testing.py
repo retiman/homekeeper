@@ -18,7 +18,7 @@ def init():
     fake_shutil = fake_filesystem_shutil.FakeShutilModule(fake_fs)
     _replace_modules(fake_fs, fake_os, fake_shutil)
     _create_test_files()
-    return (fake_fs, fake_os)
+    return (fake_fs, fake_os, fake_shutil)
 
 def dotfiles_directory():
     """The dotfiles directory in the fake filesystem."""

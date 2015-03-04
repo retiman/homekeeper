@@ -7,11 +7,13 @@ import unittest
 config = homekeeper.config
 os = None
 patch = mock.patch
+shutil = None
 testing = homekeeper.testing
 
 class HomekeeperTest(unittest.TestCase):
     def setUp(self):
-        self.filesystem, globals()['os'] = testing.init()
+        global os, shutil
+        self.filesystem, os, shutil = testing.init()
         self.config = None
         self.homekeeper = None
         self.home = os.getenv('HOME')
