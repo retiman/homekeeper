@@ -1,5 +1,6 @@
 import errno
 import fake_filesystem
+import fake_filesystem_shutil
 import homekeeper
 import homekeeper.config
 import homekeeper.util
@@ -14,7 +15,8 @@ def init():
     """
     fake_fs = fake_filesystem.FakeFilesystem()
     fake_os = _create_fake_os(fake_fs)
-    _replace_modules(fake_fs, fake_os)
+    fake_shutil = fake_filesystem_shutil.FakeShutilModule(fake_fs)
+    _replace_modules(fake_fs, fake_os, fake_shutil)
     _create_test_files()
     return (fake_fs, fake_os)
 
@@ -38,15 +40,16 @@ def configuration_file():
     """
     return os.path.join(os.getenv('HOME'), 'homekeeper.json')
 
-def _replace_modules(fake_fs, fake_os):
+def _replace_modules(fake_fs, fake_os, fake_shutil):
     """Replaces filesystem modules and functions with fakes."""
     homekeeper.os = fake_os
+    homekeeper.shutil = fake_shutil
     homekeeper.config.os = fake_os
+    homekeeper.config.shutil = fake_shutil
     homekeeper.testing.os = fake_os
     homekeeper.util.fopen = fake_filesystem.FakeFileOpen(fake_fs)
     homekeeper.util.os = fake_os
-    homekeeper.util.shutil.move = fake_os.rename
-    homekeeper.util.shutil.rmtree = fake_os.rmdir
+    homekeeper.util.shutil = fake_shutil
 
 def _makedirs(makedirs):
     """Returns a version of makedirs that does not raise an exception if the

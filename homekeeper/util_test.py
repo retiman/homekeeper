@@ -3,10 +3,11 @@ import homekeeper.util
 import unittest
 
 os = None
-create_symlinks = homekeeper.util.create_symlinks
 cleanup_symlinks = homekeeper.util.cleanup_symlinks
-prepare_target = homekeeper.util.prepare_target
+create_symlinks = homekeeper.util.create_symlinks
 firstdir = homekeeper.util.firstdir
+prepare_target = homekeeper.util.prepare_target
+restore = homekeeper.util.restore
 testing = homekeeper.testing
 
 class UtilTest(unittest.TestCase):
@@ -154,6 +155,22 @@ class UtilTest(unittest.TestCase):
         self.assertFalse(os.path.exists('nonexistent1.txt'))
         self.assertFalse(os.path.exists('nonexistent2.txt'))
         self.assertTrue(os.path.exists('exists.txt'))
+
+    def test_restore(self):
+        """Tests symlinking 'base/.vimrc' to '$HOME/.vimrc' and then restoring
+        will undo the action.
+        """
+        source = os.path.join(testing.base_directory(), '.vimrc')
+        target = os.path.join(self.home, '.vimrc')
+        self.filesystem.CreateFile(source)
+        self.assertTrue(os.path.exists(source))
+        self.assertFalse(os.path.exists(target))
+        create_symlinks(testing.base_directory(), self.home)
+        restore(testing.base_directory(), self.home)
+        self.assertTrue(os.path.exists(source))
+        self.assertTrue(os.path.exists(target))
+        self.assertFalse(os.path.islink(source))
+        self.assertFalse(os.path.islink(target))
 
     def test_prepare_target(self):
         """Tests that targets are removed before symlinking."""

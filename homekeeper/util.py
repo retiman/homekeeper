@@ -57,6 +57,8 @@ def restore(source_directory, target_directory, excludes=None,
         included = frozenset(map(firstdir, cherrypicks))
         for pathname in os.listdir('.'):
             basename = os.path.basename(pathname)
+            source = os.path.join(source_directory, basename)
+            target = os.path.join(target_directory, basename)
             # Skip any excluded paths.
             if basename in excludes:
                 logging.debug('skipping excluded resource: %s', basename)
@@ -70,8 +72,6 @@ def restore(source_directory, target_directory, excludes=None,
             if not os.path.islink(target):
                 logging.debug('skipping non linked resource: %s', basename)
                 continue
-            source = os.path.join(source_directory, basename)
-            target = os.path.join(target_directory, basename)
             prepare_target(target)
             shutil.copy(source, target)
             logging.info('restored %s', target)
@@ -114,6 +114,8 @@ def create_symlinks(source_directory, target_directory, excludes=None,
         included = frozenset(map(firstdir, cherrypicks))
         for pathname in os.listdir('.'):
             basename = os.path.basename(pathname)
+            source = os.path.join(source_directory, basename)
+            target = os.path.join(target_directory, basename)
             # Skip any excluded paths.
             if basename in excludes:
                 logging.debug('skipping excluded resource: %s', basename)
@@ -123,8 +125,6 @@ def create_symlinks(source_directory, target_directory, excludes=None,
                 logging.debug('skipping already symlinked resource: %s',
                               basename)
                 continue
-            source = os.path.join(source_directory, basename)
-            target = os.path.join(target_directory, basename)
             prepare_target(target)
             os.symlink(source, target)
             logging.info('symlinked %s -> %s', target, source)
