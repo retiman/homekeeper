@@ -13,7 +13,7 @@ dotfiles override them.
 
 Installation
 ============
-Install it via [https://pypi.python.org/pypi/homekeeper](pypi):
+Install it via [pypi](https://pypi.python.org/pypi/homekeeper):
 
     pip install homekeeper
     
