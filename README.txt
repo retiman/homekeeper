@@ -13,18 +13,16 @@ dotfiles override them.
 
 Installation
 ============
-Install it via pip:
+Install it via [https://pypi.python.org/pypi/homekeeper](pypi):
 
     pip install homekeeper
     
-https://pypi.python.org/pypi/homekeeper/3.2.0
-
 Examples
 ========
 
-My dotfiles repository is located here if you'd like to take a look:
+My dotfiles repository is located [here](https://github.com/retiman/dotfiles)
+if you'd like to take a look.
 
-https://github.com/retiman/dotfiles
 
 How It Works
 ============
