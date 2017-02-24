@@ -2,26 +2,21 @@
 
 Homekeeper
 ==========
-NOTE: The format for homekeeper configuration has changed; this change is not
-backwards compatible with the old version.
-
-This project helps organize and dotfiles across multiple (even across multiple
-computers).  It does so by marking a directory as your 'dotfiles directory' and
-then symlinking those files into your HOME directory.
+This project helps organize and version dotfiles.  You can keep your dotfile
+in a repository somewhere, then symlink them into your HOME directory.  This
+allows you to keep your dotfiles versioned and have them available on any
+computer you use.
 
 In the event that you use multiple computers and would like dotfiles to be
 shared, you can specify a 'base' dotfiles directory and have host specific
 dotfiles override them.
-
-One benefit of doing this is you can easily version your dotfiles directory with
-the revision control system of your choice.
 
 Examples
 ========
 
 My dotfiles repository is located here if you'd like to take a look:
 
-    https://github.com/retiman/dotfiles
+https://github.com/retiman/dotfiles
 
 How It Works
 ============
@@ -37,11 +32,7 @@ this:
         "excludes": [
             ".git",
             ".gitignore",
-        ],
-        "cherrypicks": [
-            ".mplayer/config",
-            ".config/Terminal/terminalrc",
-        ],
+        ]
     }
 
 Homekeeper will not symlink any file in the `excludes` array in the
