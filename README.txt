@@ -11,6 +11,14 @@ In the event that you use multiple computers and would like dotfiles to be
 shared, you can specify a 'base' dotfiles directory and have host specific
 dotfiles override them.
 
+Installation
+============
+Install it via pip:
+
+    pip install homekeeper
+    
+https://pypi.python.org/pypi/homekeeper/3.2.0
+
 Examples
 ========
 
