@@ -1,6 +1,5 @@
 import homekeeper.testing
 import homekeeper.util
-import unittest
 
 os = None
 cleanup_symlinks = homekeeper.util.cleanup_symlinks
@@ -11,13 +10,13 @@ restore = homekeeper.util.restore
 shutil = None
 testing = homekeeper.testing
 
-class UtilTest(unittest.TestCase):
-    def setUp(self):
+class TestUtil(object):
+    def setup_method(self):
         global os, shutil
         self.filesystem, os, shutil = testing.init()
         self.home = os.getenv('HOME')
 
-    def tearDown(self):
+    def teardown_method(self):
         del self.filesystem
 
     def test_create_symlinks(self):
@@ -54,8 +53,8 @@ class UtilTest(unittest.TestCase):
         cherrypicks = [os.path.join('.a', 'b')]
         self.filesystem.CreateFile(source)
         self.filesystem.CreateFile(unrelated)
-        self.assertTrue(os.path.exists(source))
-        self.assertFalse(os.path.exists(target))
+        assert os.path.exists(source)
+        assert not os.path.exists(target)
         create_symlinks(testing.base_directory(),
                         self.home,
                         excludes=None,
@@ -233,13 +232,12 @@ class UtilTest(unittest.TestCase):
         assert not os.path.exists(target)
         prepare_target(target)
         assert not os.path.exists(target)
-        self.assertTrue(os.path.isdir(os.path.dirname(target)))
+        assert os.path.isdir(os.path.dirname(target))
 
     def test_firstdir(self):
         """Tests that the first directory of a path is returned."""
-        self.assertEquals('home', firstdir('home/johndoe/.vimrc'))
-        self.assertEquals('home', firstdir('/home/johndoe/.vimrc'))
-        self.assertEquals('.vimrc', firstdir('.vimrc'))
-        self.assertEquals('', firstdir(''))
-        self.assertEquals('', firstdir('/'))
-
+        assert 'home' == firstdir('home/johndoe/.vimrc')
+        assert 'home' == firstdir('/home/johndoe/.vimrc')
+        assert '.vimrc' == firstdir('.vimrc')
+        assert not firstdir('')
+        assert not firstdir('/')
