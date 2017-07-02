@@ -1,5 +1,4 @@
 /build
-/cover
 /dist
 /homekeeper/*.pyc
 /homekeeper/__pycache__

@@ -1,3 +1,4 @@
+PYTEST = /usr/bin/env pytest
 PYTHON = /usr/bin/env python2
 PIP = /usr/bin/env pip2
 .PHONY = clean deploy doc doc-server install lint requirements test
@@ -33,4 +34,4 @@ requirements:
 	${PIP} install -r requirements.txt
 
 test: lint
-	nosetests --with-coverage --cover-html --cover-package=homekeeper
+	pytest --cov=homekeeper homekeeper/
