@@ -25,13 +25,13 @@ class UtilTest(unittest.TestCase):
         source = os.path.join(testing.base_directory(), '.vimrc')
         target = os.path.join(self.home, '.vimrc')
         self.filesystem.CreateFile(source)
-        self.assertTrue(os.path.exists(source))
-        self.assertFalse(os.path.exists(target))
+        assert os.path.exists(source)
+        assert not os.path.exists(target)
         create_symlinks(testing.base_directory(), self.home)
-        self.assertTrue(os.path.exists(source))
-        self.assertTrue(os.path.exists(target))
-        self.assertTrue(os.path.islink(target))
-        self.assertEquals(source, os.readlink(target))
+        assert os.path.exists(source)
+        assert os.path.exists(target)
+        assert os.path.islink(target)
+        assert source == os.readlink(target)
 
     def test_create_symlinks_with_excludes(self):
         """Tests that 'base/.vimrc' can be excluded from symlinking."""
@@ -39,12 +39,12 @@ class UtilTest(unittest.TestCase):
         target = os.path.join(self.home, '.vimrc')
         excludes = ['.vimrc']
         self.filesystem.CreateFile(source)
-        self.assertTrue(os.path.exists(source))
-        self.assertFalse(os.path.exists(target))
+        assert os.path.exists(source)
+        assert not os.path.exists(target)
         create_symlinks(testing.base_directory(), self.home, excludes=excludes)
-        self.assertTrue(os.path.exists(source))
-        self.assertFalse(os.path.exists(target))
-        self.assertFalse(os.path.islink(target))
+        assert os.path.exists(source)
+        assert not os.path.exists(target)
+        assert not os.path.islink(target)
 
     def test_create_symlinks_with_commonprefix_cherrypicks(self):
         """Tests that '.a/b' can be included without interfering with '.ab'."""
@@ -60,18 +60,13 @@ class UtilTest(unittest.TestCase):
                         self.home,
                         excludes=None,
                         cherrypicks=cherrypicks)
-        self.assertTrue(os.path.exists(source))
-        self.assertTrue(os.path.exists(target))
-        self.assertTrue(os.path.exists(unrelated),
-                        msg='Unrelated file was clobbered.')
-        self.assertTrue(os.path.islink(os.path.join(self.home, '.ab')),
-                        msg='Unrelated file was not symlinked.')
-        self.assertTrue(os.path.isdir(os.path.dirname(target)),
-                        msg='Target parent directory is no longer a directory.')
-        self.assertFalse(os.path.islink(os.path.dirname(target)),
-                         msg='Target parent should not be a symlink.')
-        self.assertTrue(os.path.islink(target),
-                        msg='Target is not a symlink as expected.')
+        assert os.path.exists(source)
+        assert os.path.exists(target)
+        assert os.path.exists(unrelated)
+        assert os.path.islink(os.path.join(self.home, '.ab'))
+        assert os.path.isdir(os.path.dirname(target))
+        assert not os.path.islink(os.path.dirname(target))
+        assert os.path.islink(target)
 
     def test_create_symlinks_without_cherrypicks(self):
         """Tests that only 'base/.config' is symlinked.
@@ -88,17 +83,18 @@ class UtilTest(unittest.TestCase):
                               'Terminal',
                               'terminalrc')
         self.filesystem.CreateFile(source)
-        self.assertTrue(os.path.exists(source))
-        self.assertFalse(os.path.exists(target))
+        assert os.path.exists(source)
+        assert not os.path.exists(target)
         create_symlinks(testing.base_directory(),
                         self.home,
                         excludes=None,
                         cherrypicks=None)
-        self.assertTrue(os.path.exists(source))
-        self.assertTrue(os.path.exists(target))
-        self.assertTrue(os.path.islink(os.path.join(self.home, '.config')))
-        self.assertEquals(os.path.join(testing.base_directory(), '.config'),
-                          os.readlink(os.path.join(self.home, '.config')))
+        assert os.path.exists(source)
+        assert os.path.exists(target)
+        assert os.path.islink(os.path.join(self.home, '.config'))
+        expected = os.path.join(testing.base_directory(), '.config')
+        result = os.readlink(os.path.join(self.home, '.config'))
+        assert expected == result
 
     def test_create_symlinks_with_cherrypicks(self):
         """Tests that only 'terminalrc' is symlinked.
@@ -125,25 +121,20 @@ class UtilTest(unittest.TestCase):
         cherrypicks = [os.path.join('.config', 'Terminal', 'terminalrc')]
         self.filesystem.CreateFile(source)
         self.filesystem.CreateFile(unrelated)
-        self.assertTrue(os.path.exists(source))
-        self.assertTrue(os.path.exists(unrelated))
-        self.assertFalse(os.path.exists(target))
+        assert os.path.exists(source)
+        assert os.path.exists(unrelated)
+        assert not os.path.exists(target)
         create_symlinks(testing.base_directory(),
                         self.home,
                         excludes=None,
                         cherrypicks=cherrypicks)
-        self.assertTrue(os.path.exists(source))
-        self.assertTrue(os.path.exists(target))
-        self.assertTrue(os.path.exists(unrelated),
-                        msg='Unrelated file was clobbered.')
-        self.assertFalse(os.path.islink(unrelated),
-                         msg='Unrelated file was transformed into symlink.')
-        self.assertTrue(os.path.isdir(os.path.dirname(target)),
-                        msg='Target parent directory is no longer a directory.')
-        self.assertFalse(os.path.islink(os.path.dirname(target)),
-                         msg='Target parent should not be a symlink.')
-        self.assertTrue(os.path.islink(target),
-                        msg='Target is not a symlink as expected.')
+        assert os.path.exists(source)
+        assert os.path.exists(target)
+        assert os.path.exists(unrelated), 'Unrelated file was clobbered.'
+        assert not os.path.islink(unrelated)
+        assert os.path.isdir(os.path.dirname(target))
+        assert not os.path.islink(os.path.dirname(target))
+        assert os.path.islink(target), 'Target is not a symlink as expected.'
 
     def test_cleanup_symlinks(self):
         """Tests that non-existant symlinks are removed."""
@@ -151,12 +142,12 @@ class UtilTest(unittest.TestCase):
         os.symlink('a.txt', 'exists.txt')
         os.symlink('b.txt', 'nonexistent1.txt')
         os.symlink('c.txt', 'nonexistent2.txt')
-        self.assertTrue(os.path.islink('nonexistent1.txt'))
-        self.assertTrue(os.path.islink('nonexistent2.txt'))
+        assert os.path.islink('nonexistent1.txt')
+        assert os.path.islink('nonexistent2.txt')
         cleanup_symlinks('/')
-        self.assertFalse(os.path.exists('nonexistent1.txt'))
-        self.assertFalse(os.path.exists('nonexistent2.txt'))
-        self.assertTrue(os.path.exists('exists.txt'))
+        assert not os.path.exists('nonexistent1.txt')
+        assert not os.path.exists('nonexistent2.txt')
+        assert os.path.exists('exists.txt')
 
     def test_restore_file(self):
         """Tests symlinking 'base/.vimrc' to '$HOME/.vimrc' and then restoring
@@ -165,14 +156,14 @@ class UtilTest(unittest.TestCase):
         source = os.path.join(testing.base_directory(), '.vimrc')
         target = os.path.join(self.home, '.vimrc')
         self.filesystem.CreateFile(source)
-        self.assertTrue(os.path.exists(source))
-        self.assertFalse(os.path.exists(target))
+        assert os.path.exists(source)
+        assert not os.path.exists(target)
         create_symlinks(testing.base_directory(), self.home)
         restore(testing.base_directory(), self.home)
-        self.assertTrue(os.path.exists(source))
-        self.assertTrue(os.path.exists(target))
-        self.assertFalse(os.path.islink(source))
-        self.assertFalse(os.path.islink(target))
+        assert os.path.exists(source)
+        assert os.path.exists(target)
+        assert not os.path.islink(source)
+        assert not os.path.islink(target)
 
     def test_restore_directory(self):
         """Tests symlinking directory 'base/.foo' to '$HOME/.foo' and then
@@ -182,14 +173,14 @@ class UtilTest(unittest.TestCase):
         target = os.path.join(self.home, '.foo', 'bar')
         os.makedirs(source)
         shutil.rmtree(target)
-        self.assertTrue(os.path.exists(source))
-        self.assertFalse(os.path.exists(target))
+        assert os.path.exists(source)
+        assert not os.path.exists(target)
         create_symlinks(testing.base_directory(), self.home)
         restore(testing.base_directory(), self.home)
-        self.assertTrue(os.path.exists(os.path.join(self.home, '.foo')))
-        self.assertFalse(os.path.islink(os.path.join(self.home, '.foo')))
-        self.assertTrue(os.path.exists(os.path.join(self.home, '.foo', 'bar')))
-        self.assertFalse(os.path.islink(os.path.join(self.home, '.foo', 'bar')))
+        assert os.path.exists(os.path.join(self.home, '.foo'))
+        assert not os.path.islink(os.path.join(self.home, '.foo'))
+        assert os.path.exists(os.path.join(self.home, '.foo', 'bar'))
+        assert not os.path.islink(os.path.join(self.home, '.foo', 'bar'))
 
     def test_restore_with_excludes(self):
         """Test that excluded files are not restored."""
@@ -198,11 +189,11 @@ class UtilTest(unittest.TestCase):
         excludes = ['.git']
         self.filesystem.CreateFile(source)
         self.filesystem.CreateFile(unrelated)
-        self.assertTrue(os.path.exists(unrelated))
-        self.assertFalse(os.path.exists(os.path.join(self.home, '.git')))
+        assert os.path.exists(unrelated)
+        assert not os.path.exists(os.path.join(self.home, '.git'))
         create_symlinks(testing.base_directory(), self.home, excludes=excludes)
         restore(testing.base_directory(), self.home, excludes=excludes)
-        self.assertFalse(os.path.exists(os.path.join(self.home, '.git')))
+        assert not os.path.exists(os.path.join(self.home, '.git'))
 
     def test_restore_with_cherrypicks(self):
         """Test that restoring cherrypicked files does not clobber other files.
@@ -212,36 +203,36 @@ class UtilTest(unittest.TestCase):
         cherrypicks = [os.path.join('.a', 'b', 'c')]
         self.filesystem.CreateFile(source)
         self.filesystem.CreateFile(unrelated)
-        self.assertTrue(os.path.exists(unrelated))
+        assert os.path.exists(unrelated)
         create_symlinks(testing.base_directory(),
                         self.home,
                         cherrypicks=cherrypicks)
         restore(testing.base_directory(),
                 self.home,
                 cherrypicks=cherrypicks)
-        self.assertTrue(os.path.exists(unrelated))
-        self.assertFalse(os.path.islink(unrelated))
-        self.assertTrue(os.path.exists(os.path.join(self.home, '.a', 'b', 'c')))
-        self.assertFalse(os.path.islink(os.path.join(self.home,
-                                                     '.a',
-                                                     'b',
-                                                     'c')))
+        assert os.path.exists(unrelated)
+        assert not os.path.islink(unrelated)
+        assert os.path.exists(os.path.join(self.home, '.a', 'b', 'c'))
+        assert not os.path.islink(os.path.join(self.home,
+                                               '.a',
+                                               'b',
+                                               'c'))
 
     def test_prepare_target(self):
         """Tests that targets are removed before symlinking."""
         target = os.path.join(self.home, '.vimrc')
         self.filesystem.CreateFile(target)
-        self.assertTrue(os.path.exists(target))
+        assert os.path.exists(target)
         prepare_target(target)
-        self.assertFalse(os.path.exists(target))
+        assert not os.path.exists(target)
 
     def test_prepare_target_creates_parent_directory(self):
         """Tests that target parent directories are created before symlinking.
         """
         target = os.path.join(self.home, '.foo', 'bar', 'bif')
-        self.assertFalse(os.path.exists(target))
+        assert not os.path.exists(target)
         prepare_target(target)
-        self.assertFalse(os.path.exists(target))
+        assert not os.path.exists(target)
         self.assertTrue(os.path.isdir(os.path.dirname(target)))
 
     def test_firstdir(self):

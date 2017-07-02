@@ -1,7 +1,7 @@
+**/*.pyc
+**/__pycache__
 /build
 /dist
-/homekeeper/*.pyc
-/homekeeper/__pycache__
+.cache
 .coverage
-*.egg-info
 homekeeper.html
