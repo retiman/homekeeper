@@ -1,7 +1,7 @@
 PYTEST = /usr/bin/env pytest
 PYTHON = /usr/bin/env python2
 PIP = /usr/bin/env pip2
-.PHONY = clean deploy doc doc-server install lint requirements test
+.PHONY = clean deploy doc doc-server install requirements test
 
 all: clean requirements doc test
 
@@ -26,12 +26,8 @@ doc-server:
 install: clean requirements
 	${PIP} install --upgrade .
 
-lint:
-	pylint -rn bin/homekeeper
-	pylint -rn homekeeper
-
 requirements:
 	${PIP} install -r requirements.txt
 
-test: lint
+test:
 	pytest --cov=homekeeper homekeeper/
