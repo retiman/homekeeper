@@ -8,10 +8,13 @@ setuptools.setup(
     long_description=open('README.txt').read(),
     name='homekeeper',
     packages=['homekeeper'],
-    scripts=['bin/homekeeper'],
     version=homekeeper.__version__,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Topic :: Utilities',
     ],
+    entry_points="""
+        [console_scripts]
+            homekeeper = homekeeper.cli:main
+    """,
 )
