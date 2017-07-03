@@ -35,8 +35,8 @@ class Main(object):
         Args:
             directory: The directory to look for broken symlinks.
         """
-        for pathname in os.listdir(directory):
-            pathname = os.path.join(directory, pathname)
+        for item in os.listdir(directory):
+            pathname = os.path.join(directory, item)
             if not os.path.islink(pathname):
                 continue
             if os.path.exists(os.readlink(pathname)):
