@@ -23,6 +23,10 @@ class FilesystemTestCase(object):
     def path(self, *args):
         return self.os.path.join(*args)
 
+    def touch(self, path):
+        self.fs.CreateFile(path)
+        return path
+
     def patch_fs(self, module):
         self.patch(module, 'fopen', self.fopen)
         self.patch(module, 'os', self.os)
