@@ -2,7 +2,6 @@ import homekeeper
 import homekeeper.config
 import homekeeper.testing
 import mock
-import unittest
 
 config = homekeeper.config
 os = None
@@ -10,8 +9,8 @@ patch = mock.patch
 shutil = None
 testing = homekeeper.testing
 
-class HomekeeperTest(unittest.TestCase):
-    def setUp(self):
+class TestHomekeeper():
+    def setup_method(self):
         global os, shutil
         self.filesystem, os, shutil = testing.init()
         self.config = None
@@ -19,7 +18,7 @@ class HomekeeperTest(unittest.TestCase):
         self.home = os.getenv('HOME')
         self._configure()
 
-    def tearDown(self):
+    def teardown_method(self):
         del self.filesystem
 
     def _configure(self):
@@ -33,29 +32,30 @@ class HomekeeperTest(unittest.TestCase):
     def test_track(self):
         self.filesystem.CreateFile(os.path.join(self.home, '.gitconfig'))
         self.homekeeper.track(os.path.join(self.home, '.gitconfig'))
-        self.assertEquals(os.path.join(self.config.directory, '.gitconfig'),
-                          os.readlink(os.path.join(self.home, '.gitconfig')))
+        expected = os.path.join(self.config.directory, '.gitconfig')
+        result = os.readlink(os.path.join(self.home, '.gitconfig'))
+        assert expected == result
 
     def test_track_target_that_doesnt_exist(self):
-        self.assertFalse(os.path.exists(os.path.join(self.home, '.gitconfig')))
+        assert not os.path.exists(os.path.join(self.home, '.gitconfig'))
         self.homekeeper.track(os.path.join(self.home, '.gitconfig'))
-        self.assertFalse(os.path.exists(os.path.join(self.config.directory,
-                                                     '.gitconfig')))
-        self.assertFalse(os.path.islink(os.path.join(self.home, '.gitconfig')))
+        assert not os.path.exists(os.path.join(self.config.directory,
+                                               '.gitconfig'))
+        assert not os.path.islink(os.path.join(self.home, '.gitconfig'))
 
     def test_track_target_that_already_exists(self):
         self.filesystem.CreateFile(os.path.join(self.home, '.gitconfig'))
         self.filesystem.CreateFile(os.path.join(self.config.directory,
                                                 '.gitconfig'))
         self.homekeeper.track(os.path.join(self.home, '.gitconfig'))
-        self.assertFalse(os.path.islink(os.path.join(self.home, '.gitconfig')))
+        assert not os.path.islink(os.path.join(self.home, '.gitconfig'))
 
     def test_init(self):
         os.unlink(testing.configuration_file())
-        self.assertFalse(os.path.exists(testing.configuration_file()))
+        assert not os.path.exists(testing.configuration_file())
         self.homekeeper = homekeeper.Homekeeper(testing.configuration_file())
         self.homekeeper.init()
-        self.assertTrue(os.path.exists(testing.configuration_file()))
+        assert os.path.exists(testing.configuration_file())
 
     def test_link(self):
         self.filesystem.CreateFile(os.path.join(self.config.base, '.bashrc'))
@@ -63,10 +63,12 @@ class HomekeeperTest(unittest.TestCase):
         self.filesystem.CreateFile(os.path.join(self.config.directory,
                                                 '.vimrc'))
         self.homekeeper.link()
-        self.assertEquals(os.path.join(self.config.base, '.bashrc'),
-                          os.readlink(os.path.join(self.home, '.bashrc')))
-        self.assertEquals(os.path.join(self.config.directory, '.vimrc'),
-                          os.readlink(os.path.join(self.home, '.vimrc')))
+        expected = os.path.join(self.config.base, '.bashrc')
+        result = os.readlink(os.path.join(self.home, '.bashrc'))
+        assert expected == result
+        expected = os.path.join(self.config.directory, '.vimrc')
+        result = os.readlink(os.path.join(self.home, '.vimrc'))
+        assert expected == result
 
     @patch('homekeeper.util.create_symlinks')
     @patch('homekeeper.util.cleanup_symlinks')
@@ -95,4 +97,3 @@ class HomekeeperTest(unittest.TestCase):
                                            excludes=self.config.excludes,
                                            cherrypicks=self.config.cherrypicks)
         cleanup_symlinks.assert_called_with(os.getenv('HOME'))
-
