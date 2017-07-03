@@ -34,12 +34,10 @@ class Homekeeper(object):
         if self.config.override:
             homekeeper.util.restore(self.config.base,
                                     home,
-                                    excludes=self.config.excludes,
-                                    cherrypicks=self.config.cherrypicks)
+                                    excludes=self.config.excludes)
         homekeeper.util.restore(self.config.directory,
                                 home,
-                                excludes=self.config.excludes,
-                                cherrypicks=self.config.cherrypicks)
+                                excludes=self.config.excludes)
         homekeeper.util.cleanup_symlinks(home)
 
     def link(self):
@@ -50,11 +48,9 @@ class Homekeeper(object):
         if self.config.override:
             homekeeper.util.create_symlinks(self.config.base,
                                             home,
-                                            excludes=self.config.excludes,
-                                            cherrypicks=self.config.cherrypicks)
+                                            excludes=self.config.excludes)
         homekeeper.util.create_symlinks(self.config.directory,
                                         home,
-                                        excludes=self.config.excludes,
-                                        cherrypicks=self.config.cherrypicks)
+                                        excludes=self.config.excludes)
         homekeeper.util.cleanup_symlinks(home)
 

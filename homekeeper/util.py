@@ -16,8 +16,7 @@ class cd(object):
         os.chdir(self.saved_pathname)
 
 # pylint: disable=unused-argument
-def restore(source_directory, target_directory, excludes=None,
-            cherrypicks=None):
+def restore(source_directory, target_directory, excludes=None):
     """Restores symlinks from the source directory to the target directory.
 
     For example, suppose that there is a symlink:
@@ -30,31 +29,13 @@ def restore(source_directory, target_directory, excludes=None,
     directory is $HOME.
     """
     assert not isinstance(excludes, basestring)
-    assert not isinstance(cherrypicks, basestring)
     excludes = frozenset(excludes or [])
-    cherrypicks = frozenset(cherrypicks or [])
     if not os.path.isdir(source_directory):
         logging.info('dotfiles directory not found: %s', source_directory)
         return
     logging.info('restoring files from %s', source_directory)
-    # Restore the manually included files from the include directive; these will
-    # never be excluded.
     with cd(source_directory):
-        for pathname in cherrypicks:
-            source = os.path.join(source_directory, pathname)
-            target = os.path.join(target_directory, pathname)
-            if os.path.exists(source) and os.path.islink(target):
-                prepare_target(target)
-                shutil.copy(source, target)
-                logging.info('restored %s', target)
-            else:
-                # This is a harmless condition that can occur if you've included
-                # a file from your base directory (and it is present), but it is
-                # not present from your dotfiles directory.
-                logging.debug('skipping missing resource: %s', source)
-    # Restore the rest of the files, excluding any from the exclude directive.
-    with cd(source_directory):
-        included = frozenset(map(firstdir, cherrypicks))
+        included = frozenset()
         for pathname in os.listdir('.'):
             basename = os.path.basename(pathname)
             source = os.path.join(source_directory, basename)
@@ -82,42 +63,22 @@ def restore(source_directory, target_directory, excludes=None,
                 continue
             logging.info('restored %s', target)
 
-def create_symlinks(source_directory, target_directory, excludes=None,
-                    cherrypicks=None):
+def create_symlinks(source_directory, target_directory, excludes=None):
     """Symlinks files from the dotfiles directory to the home directory.
 
     Args:
         source_directory: The source directory where your dotfiles are.
         target_directory: The target directory for symlinking.
         excludes: An array of paths excluded from symlinking.
-        cherrypicks: An array of paths in which only the base gets symlinked.
     """
     assert not isinstance(excludes, basestring)
-    assert not isinstance(cherrypicks, basestring)
     excludes = frozenset(excludes or [])
-    cherrypicks = frozenset(cherrypicks or [])
     if not os.path.isdir(source_directory):
         logging.info('dotfiles directory not found: %s', source_directory)
         return
     logging.info('symlinking files from %s', source_directory)
-    # Symlink the manually included files from the include directive; these will
-    # never be excluded.
     with cd(source_directory):
-        for pathname in cherrypicks:
-            source = os.path.join(source_directory, pathname)
-            target = os.path.join(target_directory, pathname)
-            if os.path.exists(source):
-                prepare_target(target)
-                os.symlink(source, target)
-                logging.info('symlinked %s -> %s', target, source)
-            else:
-                # This is a harmless condition that can occur if you've included
-                # a file from your base directory (and it is present), but it is
-                # not present from your dotfiles directory.
-                logging.debug('skipping missing resource: %s', source)
-    # Symlink the rest of the files, excluding any from the exclude directive.
-    with cd(source_directory):
-        included = frozenset(map(firstdir, cherrypicks))
+        included = frozenset()
         for pathname in os.listdir('.'):
             basename = os.path.basename(pathname)
             source = os.path.join(source_directory, basename)

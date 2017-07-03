@@ -60,19 +60,5 @@ class TestHomekeeper():
         self.homekeeper.link()
         create_symlinks.assert_called_with(self.config.directory,
                                            self.home,
-                                           excludes=self.config.excludes,
-                                           cherrypicks=self.config.cherrypicks)
-        cleanup_symlinks.assert_called_with(os.getenv('HOME'))
-
-    @patch('homekeeper.util.create_symlinks')
-    @patch('homekeeper.util.cleanup_symlinks')
-    def test_link_with_cherrypicks(self, cleanup_symlinks, create_symlinks):
-        self.config.cherrypicks = [os.path.join('.foo', 'bar', 'baz')]
-        self.config.save(testing.configuration_file())
-        self.homekeeper = homekeeper.Homekeeper()
-        self.homekeeper.link()
-        create_symlinks.assert_called_with(self.config.directory,
-                                           self.home,
-                                           excludes=self.config.excludes,
-                                           cherrypicks=self.config.cherrypicks)
+                                           excludes=self.config.excludes)
         cleanup_symlinks.assert_called_with(os.getenv('HOME'))
