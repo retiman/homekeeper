@@ -5,7 +5,7 @@ import json
 class TestConfig(homekeeper.filesystem_testcase.FilesystemTestCase):
     def setup_method(self):
         super(TestConfig, self).setup_method()
-        self.patch_fs('homekeeper.config2')
+        self.patch('homekeeper.config2')
         self.config = homekeeper.config2.Config()
         self.config_path = self.path(self.home(), '.homekeeper.json')
 

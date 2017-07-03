@@ -27,12 +27,12 @@ class FilesystemTestCase(object):
         self.fs.CreateFile(path)
         return path
 
-    def patch_fs(self, module):
-        self.patch(module, 'fopen', self.fopen)
-        self.patch(module, 'os', self.os)
-        self.patch(module, 'shutil', self.shutil)
+    def patch(self, module):
+        self._patch(module, 'fopen', self.fopen)
+        self._patch(module, 'os', self.os)
+        self._patch(module, 'shutil', self.shutil)
 
-    def patch(self, module, name, fake):
+    def _patch(self, module, name, fake):
         try:
             patcher = mock.patch(module + '.' + name, fake)
             patcher.start()
