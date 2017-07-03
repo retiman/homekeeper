@@ -11,6 +11,7 @@ class Main(object):
         symlink. Also creates the parent directory if it does not exist.
 
         Args:
+            source: Original source of the symlink.
             target: Path of symlink target, can be file or directory.
         """
         dirname = os.path.dirname(target)
@@ -27,3 +28,18 @@ class Main(object):
             logging.debug('removed directory %s', target)
         os.symlink(source, target)
         logging.info('symlinked %s -> %s', target, source)
+
+    def cleanup_symlinks(self, directory):
+        """Removes broken symlinks from a directory.
+
+        Args:
+            directory: The directory to look for broken symlinks.
+        """
+        for pathname in os.listdir(directory):
+            pathname = os.path.join(directory, pathname)
+            if not os.path.islink(pathname):
+                continue
+            if os.path.exists(os.readlink(pathname)):
+                continue
+            logging.info('removing broken link: %s', pathname)
+            os.unlink(pathname)
