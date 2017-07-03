@@ -2,7 +2,7 @@ import logging
 import os
 import shutil
 
-from homekeeper.common import makedirs
+from homekeeper.common import (cd, makedirs)
 
 
 class Main(object):
@@ -27,7 +27,30 @@ class Main(object):
             shutil.rmtree(target)
             logging.debug('removed directory %s', target)
         os.symlink(source, target)
-        logging.info('symlinked %s -> %s', target, source)
+        logging.info('symlinked %s -> %s', source, target)
+
+    def create_symlinks(self, source_directory, target_directory, excludes=[]):
+        """Symlinks files from the source directory to the target directory.
+
+        Args:
+            source_directory: The source directory where your dotfiles are.
+            target_directory: The target directory for symlinking.
+            excludes: An array of paths excluded from symlinking.
+        """
+        excludes = frozenset([])
+        if not os.path.isdir(source_directory):
+            logging.info('dotfiles directory not found: %s', source_directory)
+            return
+        logging.info('symlinking files from %s', source_directory)
+        with cd(source_directory):
+            for pathname in os.listdir('.'):
+                basename = os.path.basename(pathname)
+                source = os.path.join(source_directory, basename)
+                target = os.path.join(target_directory, basename)
+                if basename in excludes:
+                    logging.debug('skipping excluded resource: %s', basename)
+                    continue
+                self.symlink(target, source)
 
     def cleanup_symlinks(self, directory):
         """Removes broken symlinks from a directory.

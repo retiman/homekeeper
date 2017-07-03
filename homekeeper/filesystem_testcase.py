@@ -1,5 +1,6 @@
 import fake_filesystem
 import fake_filesystem_shutil
+import homekeeper.common
 import mock
 
 
@@ -8,7 +9,7 @@ class FilesystemTestCase(object):
         self.fs = fake_filesystem.FakeFilesystem()
         self.fopen = fake_filesystem.FakeFileOpen(self.fs)
         self.os = fake_filesystem.FakeOsModule(self.fs)
-        self.os.environ['HOME'] = self.path('', 'home', 'johndoe')
+        self.os.environ['HOME'] = self.path(self.os.sep, 'home', 'johndoe')
         self.shutil = fake_filesystem_shutil.FakeShutilModule(self.fs)
         self.patchers = []
 
@@ -23,9 +24,11 @@ class FilesystemTestCase(object):
     def path(self, *args):
         return self.os.path.join(*args)
 
-    def touch(self, path):
-        self.fs.CreateFile(path)
-        return path
+    def touch(self, pathname):
+        dirname = self.os.path.dirname(pathname)
+        homekeeper.common.makedirs(dirname)
+        self.fs.CreateFile(pathname)
+        return pathname
 
     def patch(self, module):
         self._patch(module, 'fopen', self.fopen)
@@ -38,4 +41,4 @@ class FilesystemTestCase(object):
             patcher.start()
             self.patchers.append(patcher)
         except AttributeError:
-            print 'Can not patch: %s.%s' % (module, name)
+            print 'can not patch: %s.%s' % (module, name)

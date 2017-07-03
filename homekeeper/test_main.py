@@ -1,8 +1,11 @@
 import homekeeper.filesystem_testcase
 import homekeeper.main
+import logging
 
 from homekeeper.common import (cd, makedirs)
 
+
+logging.basicConfig(format='%(message)s', level=logging.DEBUG)
 
 class TestMain(homekeeper.filesystem_testcase.FilesystemTestCase):
     def setup_method(self):
@@ -43,6 +46,20 @@ class TestMain(homekeeper.filesystem_testcase.FilesystemTestCase):
         self.os.symlink(original_source, target)
         self.main.symlink(source, target)
         self.verify_symlink(source, target)
+
+    #def test_create_symlinks(self):
+    #    """Tests symlinking 'base/.vimrc' to '$HOME/.vimrc'."""
+    #    base_directory = self.path(self.home(), 'base')
+    #    source = self.path(base_directory, '.vimrc')
+    #    target = self.path(self.home(), '.vimrc')
+    #    self.touch(source)
+    #    assert self.os.path.exists(source)
+    #    assert not self.os.path.exists(target)
+    #    self.main.create_symlinks(base_directory, self.home())
+    #    assert self.os.path.exists(source)
+    #    assert self.os.path.exists(target)
+    #    assert self.os.path.islink(target)
+    #    assert source == self.os.readlink(target)
 
     def test_cleanup_symlinks(self):
         self.touch('existing.txt')

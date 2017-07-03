@@ -17,9 +17,10 @@ class cd(object):
 
 def makedirs(pathname):
     try:
-        os.makedirs(pathname)
-    except OSError as exc:
-        if exc.errno == errno.EEXIST and os.path.isdir(pathname):
+        dirname = os.path.dirname(pathname) or '/'
+        os.makedirs(dirname)
+    except OSError as e:
+        if e.errno == errno.EEXIST and os.path.isdir(dirname):
             pass
         else:
             raise
