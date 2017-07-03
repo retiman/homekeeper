@@ -20,6 +20,8 @@ class TestMain(homekeeper.filesystem_testcase.FilesystemTestCase):
         return source, target
 
     def verify_symlink(self, source, target):
+        assert self.os.path.exists(source)
+        assert self.os.path.exists(target)
         assert self.os.path.islink(target)
         assert source == self.os.readlink(target)
 
@@ -47,19 +49,15 @@ class TestMain(homekeeper.filesystem_testcase.FilesystemTestCase):
         self.main.symlink(source, target)
         self.verify_symlink(source, target)
 
-    #def test_create_symlinks(self):
-    #    """Tests symlinking 'base/.vimrc' to '$HOME/.vimrc'."""
-    #    base_directory = self.path(self.home(), 'base')
-    #    source = self.path(base_directory, '.vimrc')
-    #    target = self.path(self.home(), '.vimrc')
-    #    self.touch(source)
-    #    assert self.os.path.exists(source)
-    #    assert not self.os.path.exists(target)
-    #    self.main.create_symlinks(base_directory, self.home())
-    #    assert self.os.path.exists(source)
-    #    assert self.os.path.exists(target)
-    #    assert self.os.path.islink(target)
-    #    assert source == self.os.readlink(target)
+    def test_create_symlinks(self):
+        source = self.path(self.home(), 'dotfiles', '.vimrc')
+        target = self.path(self.home(), '.vimrc')
+        source_directory = self.os.path.dirname(source)
+        self.touch(source)
+        assert self.os.path.exists(source)
+        assert not self.os.path.exists(target)
+        self.main.create_symlinks(source_directory, self.home())
+        self.verify_symlink(source, target)
 
     def test_cleanup_symlinks(self):
         self.touch('existing.txt')

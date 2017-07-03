@@ -50,7 +50,7 @@ class Main(object):
                 if basename in excludes:
                     logging.debug('skipping excluded resource: %s', basename)
                     continue
-                self.symlink(target, source)
+                self.symlink(source, target)
 
     def cleanup_symlinks(self, directory):
         """Removes broken symlinks from a directory.
