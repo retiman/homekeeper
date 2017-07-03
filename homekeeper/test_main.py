@@ -50,10 +50,8 @@ class TestMain(homekeeper.filesystem_testcase.FilesystemTestCase):
         self.verify_symlink(source, target)
 
     def test_create_symlinks(self):
-        source = self.path(self.home(), 'dotfiles', '.vimrc')
-        target = self.path(self.home(), '.vimrc')
+        source, target = self.setup_symlink()
         source_directory = self.os.path.dirname(source)
-        self.touch(source)
         assert self.os.path.exists(source)
         assert not self.os.path.exists(target)
         self.main.create_symlinks(source_directory, self.home())
