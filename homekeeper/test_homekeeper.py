@@ -29,27 +29,6 @@ class TestHomekeeper():
         self.config.save(testing.configuration_file())
         self.homekeeper = homekeeper.Homekeeper()
 
-    def test_track(self):
-        self.filesystem.CreateFile(os.path.join(self.home, '.gitconfig'))
-        self.homekeeper.track(os.path.join(self.home, '.gitconfig'))
-        expected = os.path.join(self.config.directory, '.gitconfig')
-        result = os.readlink(os.path.join(self.home, '.gitconfig'))
-        assert expected == result
-
-    def test_track_target_that_doesnt_exist(self):
-        assert not os.path.exists(os.path.join(self.home, '.gitconfig'))
-        self.homekeeper.track(os.path.join(self.home, '.gitconfig'))
-        assert not os.path.exists(os.path.join(self.config.directory,
-                                               '.gitconfig'))
-        assert not os.path.islink(os.path.join(self.home, '.gitconfig'))
-
-    def test_track_target_that_already_exists(self):
-        self.filesystem.CreateFile(os.path.join(self.home, '.gitconfig'))
-        self.filesystem.CreateFile(os.path.join(self.config.directory,
-                                                '.gitconfig'))
-        self.homekeeper.track(os.path.join(self.home, '.gitconfig'))
-        assert not os.path.islink(os.path.join(self.home, '.gitconfig'))
-
     def test_init(self):
         os.unlink(testing.configuration_file())
         assert not os.path.exists(testing.configuration_file())
