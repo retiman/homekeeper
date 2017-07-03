@@ -2,19 +2,7 @@ import logging
 import os
 import shutil
 
-
-class cd(object):
-    "Use with the `with` keyword to change directory."""
-    def __init__(self, pathname):
-        self.pathname = pathname
-        self.saved_pathname = None
-
-    def __enter__(self):
-        self.saved_pathname = os.getcwd()
-        os.chdir(self.pathname)
-
-    def __exit__(self, etype, value, traceback):
-        os.chdir(self.saved_pathname)
+from homekeeper.common import makedirs
 
 
 class Main(object):
@@ -25,6 +13,9 @@ class Main(object):
         Args:
             target: Path of symlink target, can be file or directory.
         """
+        dirname = os.path.dirname(target)
+        if not os.path.exists(dirname):
+            makedirs(dirname)
         if os.path.islink(target):
             os.unlink(target)
             logging.debug('removed symlink %s', target)
