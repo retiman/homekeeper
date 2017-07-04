@@ -7,7 +7,7 @@ import mock
 logging.basicConfig(format='%(message)s', level=logging.DEBUG)
 
 
-class FilesystemTestCase(object):
+class TestCase(object):
     def setup_method(self):
         self.fs = fake_filesystem.FakeFilesystem()
         self.fopen = fake_filesystem.FakeFileOpen(self.fs)

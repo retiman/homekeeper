@@ -1,8 +1,8 @@
 import homekeeper.config
-import homekeeper.filesystem_testcase
+import homekeeper.test_case
 import json
 
-class TestConfig(homekeeper.filesystem_testcase.FilesystemTestCase):
+class TestConfig(homekeeper.test_case.TestCase):
     def setup_method(self):
         super(TestConfig, self).setup_method()
         self.patch('homekeeper.config')

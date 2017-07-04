@@ -1,9 +1,9 @@
-import homekeeper.filesystem_testcase
 import homekeeper.main
+import homekeeper.test_case
 import logging
 
 
-class TestMain(homekeeper.filesystem_testcase.FilesystemTestCase):
+class TestMain(homekeeper.test_case.TestCase):
     def setup_method(self):
         super(TestMain, self).setup_method()
         self.patch('homekeeper.common')
