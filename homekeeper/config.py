@@ -1,103 +1,44 @@
-#!/usr/bin/env python2
-import homekeeper.util
 import logging
 import json
 import os
 
-util = homekeeper.util
+
+def fopen(*args, **kwargs):
+    """Alias for __builtin__.open. This exists so tests may mock this function
+    without overriding open for all modules.
+    """
+    return open(*args, **kwargs)
+
 
 class Config(object):
-    """Representation of the homekeeper configuration file (homekeeper.json)."""
+    """Representation of the homekeeper configuration file."""
 
-    PATHNAME = os.path.join(os.getenv('HOME'), '.homekeeper.json')
-    DEFAULTS = {
-        'base': None,
-        'directory': os.path.join(os.getenv('HOME'), 'dotfiles'),
-        'excludes': ['.git', '.gitignore', 'LICENSE', 'README.md'],
-        'cherrypicks': [],
-        'override': False
-    }
+    def __init__(self):
+        self.base_directory = None
+        self.dotfiles_directory = os.path.join(os.getenv('HOME'), 'dotfiles')
+        self.excludes = ['.git', '.gitignore', 'LICENSE', 'README.md']
+        self.override = False
 
-    def __init__(self, pathname=None):
-        self.data = self.DEFAULTS
-        self.pathname = self.PATHNAME
-        if pathname is None:
-            logging.info('homekeeper configuration not specified; assuming '
-                         'defaults')
-            return
-        self.pathname = os.path.realpath(pathname)
-        if not os.path.exists(self.pathname):
-            logging.info('homekeeper configuration not found; assuming '
-                         'defaults')
-            return
-        try:
-            logging.info('found homekeeper configuration at %s', self.pathname)
-            self.data = json.loads(util.fopen(self.pathname).read())
-        except ValueError:
-            logging.info('homekeeper configuration invalid; assuming defaults')
-        if 'dotfiles_directory' in self.data:
-            self.data['directory'] = self.data['dotfiles_directory']
-            del self.data['dotfiles_directory']
-        if self.directory == os.path.realpath(os.getenv('HOME')):
-            logging.info('your dotfiles directory cannot be your home '
-                         'directory')
-            self.data['directory'] = self.DEFAULTS['directory']
-            return
+    def load(self, pathname):
+        with fopen(pathname, 'r') as f:
+            data = json.loads(f.read())
+            if 'base_directory' in data:
+                self.base_directory = data['base_directory']
+            if 'dotfiles_directory' in data:
+                self.dotfiles_directory = data['dotfiles_directory']
+            if 'excludes' in data:
+                self.excludes = data['excludes']
+            else:
+                self.excludes = []
+            self.override = self.base_directory is not None
+            logging.info('loaded configuration from %s', pathname)
 
-    def reset(self):
-        self.data = self.DEFAULTS
-
-    def save(self, pathname=None):
-        """Saves the configuration data to a file. Existing configuration will
-        be removed.
-
-        Args:
-            pathname: The file to save the configuration to.
-        """
-        pathname = pathname or self.pathname
-        if os.path.exists(pathname):
-            os.remove(pathname)
-        with util.fopen(pathname, 'w') as cfile:
-            cfile.write(json.dumps(self.data, sort_keys=True, indent=4))
-        logging.info('saved configuration to %s', pathname)
-
-    @property
-    def base(self):
-        return self.data.get('base', self.DEFAULTS['base'])
-
-    @base.setter
-    def base(self, value):
-        self.data['base'] = value
-
-    @property
-    def excludes(self):
-        return self.data.get('excludes', self.DEFAULTS['excludes'])
-
-    @excludes.setter
-    def excludes(self, value):
-        self.data['excludes'] = value
-
-    @property
-    def cherrypicks(self):
-        return self.data.get('cherrypicks', self.DEFAULTS['cherrypicks'])
-
-    @cherrypicks.setter
-    def cherrypicks(self, value):
-        self.data['cherrypicks'] = value
-
-    @property
-    def override(self):
-        return self.data.get('override', self.DEFAULTS['override'])
-
-    @override.setter
-    def override(self, value):
-        self.data['override'] = value
-
-    @property
-    def directory(self):
-        return self.data.get('directory', self.DEFAULTS['directory'])
-
-    @directory.setter
-    def directory(self, value):
-        self.data['directory'] = value
-
+    def save(self, pathname):
+        with fopen(pathname, 'w') as f:
+            data = {
+                'base_directory': self.base_directory,
+                'dotfiles_directory': self.dotfiles_directory,
+                'excludes': self.excludes,
+            }
+            f.write(json.dumps(data, sort_keys=True, indent=4))
+            logging.info('saved configuration to %s', pathname)

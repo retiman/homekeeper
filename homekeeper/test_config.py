@@ -1,92 +1,49 @@
 import homekeeper.config
-import homekeeper.testing
+import homekeeper.filesystem_testcase
 import json
 
-os = None
-shutil = None
-testing = homekeeper.testing
-Config = homekeeper.config.Config
-
-class TestConfig(object):
+class TestConfig(homekeeper.filesystem_testcase.FilesystemTestCase):
     def setup_method(self):
-        global os, shutil
-        self.filesystem, os, shutil = testing.init()
-        self.defaults = {
-            'base': testing.base_directory(),
-            'directory': testing.main_directory(),
-            'excludes': ['.git'],
-            'override': True
+        super(TestConfig, self).setup_method()
+        self.patch('homekeeper.config')
+        self.config = homekeeper.config.Config()
+        self.config_path = self.path(self.home(), '.homekeeper.json')
+
+    def test_load(self):
+        base_directory = self.path(self.home(), 'base')
+        dotfiles_directory = self.path(self.home(), 'dotfiles')
+        excludes = ['.git']
+        data = {
+            'base_directory': base_directory,
+            'dotfiles_directory': dotfiles_directory,
+            'excludes': excludes
         }
-        self.create_config_file()
+        self.fs.CreateFile(self.config_path, contents=json.dumps(data))
+        self.config.load(self.config_path)
+        assert base_directory == self.config.base_directory
+        assert dotfiles_directory == self.config.dotfiles_directory
+        assert excludes == self.config.excludes
+        assert self.config.override
 
-    def teardown_method(self):
-        del self.filesystem
-
-    def create_config_file(self):
-        if os.path.exists(testing.configuration_file()):
-            self.filesystem.RemoveObject(testing.configuration_file())
-        contents = json.dumps(self.defaults)
-        self.filesystem.CreateFile(testing.configuration_file(),
-                                   contents=contents)
-
-    def test_defaults(self):
-        """Tests creating a Config object without specifying a filename."""
-        config = Config()
-        assert not os.path.exists(Config.PATHNAME)
-        assert config.base == Config.DEFAULTS['base']
-        assert config.directory == Config.DEFAULTS['directory']
-        assert config.excludes == Config.DEFAULTS['excludes']
-        assert config.cherrypicks == Config.DEFAULTS['cherrypicks']
-        assert config.override == Config.DEFAULTS['override']
-
-    def test_invalid_configuration_file(self):
-        self.filesystem.CreateFile('homekeeper.json', contents='invalid-json')
-        config = Config('homekeeper.json')
-        assert config.base == Config.DEFAULTS['base']
-        assert config.directory == Config.DEFAULTS['directory']
-        assert config.excludes == Config.DEFAULTS['excludes']
-        assert config.cherrypicks == Config.DEFAULTS['cherrypicks']
-        assert config.override == Config.DEFAULTS['override']
-
-    def test_configuration_file(self):
-        """Tests creating a Config object with a filename."""
-        config = Config(testing.configuration_file())
-        assert config.base == self.defaults['base']
-        assert config.excludes == self.defaults['excludes']
-        assert config.override == self.defaults['override']
-        assert config.directory == self.defaults['directory']
-
-    def test_dotfiles_directory_key_overrides(self):
-        """Tests that the old 'dotfiles_directory' key should override the
-        'directory' key if present."""
-        self.defaults['dotfiles_directory'] = testing.dotfiles_directory()
-        self.create_config_file()
-        config = Config(testing.configuration_file())
-        assert config.directory != self.defaults['directory']
-        assert config.directory == self.defaults['dotfiles_directory']
-
-    def test_home_directory_not_allowed(self):
-        """Tests that using the home directory as a base is not allowed."""
-        self.defaults['directory'] = os.getenv('HOME')
-        self.create_config_file()
-        config = Config(testing.configuration_file())
-        assert config.directory == Config.DEFAULTS['directory']
+    def test_load_with_defaults(self):
+        dotfiles_directory = self.path(self.home(), 'dotfiles')
+        self.fs.CreateFile(self.config_path, contents=json.dumps({}))
+        self.config.load(self.config_path)
+        assert not self.config.base_directory
+        assert dotfiles_directory == self.config.dotfiles_directory
+        assert [] == self.config.excludes
+        assert not self.config.override
 
     def test_save(self):
-        """Tests saving a config file."""
-        pathname = os.path.join(os.getenv('HOME'), 'saved.json')
-        config = Config(testing.configuration_file())
-        config.excludes = []
-        config.override = True
-        config.save(pathname)
-        config = Config(pathname)
-        assert config.excludes == []
-        assert config.override
-
-    def test_save_with_no_pathname(self):
-        """Tests saving config file without an explicit pathname."""
-        config = Config(testing.configuration_file())
-        config.excludes = []
-        config.save()
-        config = Config(testing.configuration_file())
-        assert config.excludes == []
+        self.os.makedirs(self.os.path.dirname(self.config_path))
+        self.config.base_directory = None
+        self.config.dotfiles_directory = self.path(self.home(), 'dotfiles2')
+        self.config.excludes = ['.idea']
+        self.config.override = False
+        self.config.save(self.config_path)
+        with self.fopen(self.config_path, 'r') as f:
+            data = json.loads(f.read())
+            assert data['base_directory'] == self.config.base_directory
+            assert data['dotfiles_directory'] == self.config.dotfiles_directory
+            assert data['excludes'] == self.config.excludes
+            assert 'override' not in data
