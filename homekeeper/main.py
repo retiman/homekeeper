@@ -6,7 +6,7 @@ from homekeeper.common import (cd, makedirs)
 
 
 class Main(object):
-    def symlink(self, source, target):
+    def symlink(self, source, target, overwrite=True):
         """Removes a target symlink/file/directory before replacing it with
         symlink. Also creates the parent directory if it does not exist.
 
@@ -17,6 +17,9 @@ class Main(object):
         dirname = os.path.dirname(target)
         if not os.path.exists(dirname):
             makedirs(dirname)
+        if os.path.exists(target) and not overwrite:
+            logging.warn('will not overwrite; skipping %s', target)
+            return
         if os.path.islink(target):
             os.unlink(target)
             logging.debug('removed symlink %s', target)
@@ -29,13 +32,23 @@ class Main(object):
         os.symlink(source, target)
         logging.info('symlinked %s -> %s', source, target)
 
-    def create_symlinks(self, source_directory, target_directory, excludes=[]):
+    def create_symlinks(self, source_directory, target_directory,
+                        excludes=set(), overwrite=True):
         """Symlinks files from the source directory to the target directory.
+
+        For example, suppose that your `source_directory` is your dotfiles
+        directory and contains a file named '.vimrc'.  If the `target_directory`
+        is your home directory, then this is the result:
+
+            $HOME/.vimrc -> $HOME/dotfiles/.vimrc
+
+        The existing $HOME/.vimrc will be removed.
 
         Args:
             source_directory: The source directory where your dotfiles are.
             target_directory: The target directory for symlinking.
             excludes: An array of paths excluded from symlinking.
+            ovewrite: Overwrite existing files.
         """
         if not os.path.isdir(source_directory):
             logging.info('dotfiles directory not found: %s', source_directory)
@@ -50,7 +63,7 @@ class Main(object):
                 if basename in excludes:
                     logging.debug('skipping excluded resource: %s', basename)
                     continue
-                self.symlink(source, target)
+                self.symlink(source, target, overwrite=overwrite)
 
     def cleanup_symlinks(self, directory):
         """Removes broken symlinks from a directory.
