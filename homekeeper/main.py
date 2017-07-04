@@ -6,6 +6,17 @@ from homekeeper.common import (cd, makedirs)
 
 
 class Main(object):
+    def remove(self, target):
+        if os.path.islink(target):
+            os.unlink(target)
+            logging.debug('removed symlink %s', target)
+        if os.path.isfile(target):
+            os.remove(target)
+            logging.debug('removed file %s', target)
+        if os.path.isdir(target):
+            shutil.rmtree(target)
+            logging.debug('removed directory %s', target)
+
     def symlink(self, source, target, overwrite=True):
         """Removes a target symlink/file/directory before replacing it with
         symlink. Also creates the parent directory if it does not exist.
@@ -17,18 +28,13 @@ class Main(object):
         dirname = os.path.dirname(target)
         if not os.path.exists(dirname):
             makedirs(dirname)
-        if os.path.exists(target) and not overwrite:
-            logging.warn('will not overwrite; skipping %s', target)
+        if source == target:
+            logging.debug('skipping %s; source and target are the same', source)
             return
-        if os.path.islink(target):
-            os.unlink(target)
-            logging.debug('removed symlink %s', target)
-        if os.path.isfile(target):
-            os.remove(target)
-            logging.debug('removed file %s', target)
-        if os.path.isdir(target):
-            shutil.rmtree(target)
-            logging.debug('removed directory %s', target)
+        if os.path.exists(target) and not overwrite:
+            logging.debug('will not overwrite; skipping %s', target)
+            return
+        self.remove(target)
         os.symlink(source, target)
         logging.info('symlinked %s -> %s', source, target)
 
@@ -41,6 +47,9 @@ class Main(object):
             target: Path of symlink target, can be file or directory.
             overwrite: Overwrite the target even if the doesn't exist.
         """
+        if source == target:
+            logging.debug('skipping %s; source and target are the same', source)
+            return
         if not overwrite:
             if not os.path.exists(target):
                 logging.debug('skipping missing resource: %s', target)
@@ -51,7 +60,8 @@ class Main(object):
             if os.readlink(target) != source:
                 logging.debug('skipping symlink resource: %s', target)
                 return
-        shutil.copy(source, target_directory)
+        self.remove(target)
+        shutil.copy(source, os.path.dirname(target))
         logging.info('copied %s -> %s', source, target)
 
     def create_symlinks(self, source_directory, target_directory,
