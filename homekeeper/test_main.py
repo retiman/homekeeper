@@ -129,7 +129,7 @@ class TestMain(homekeeper.test_case.TestCase):
                                     self.home(pathname))
 
     def test_cleanup_symlinks(self):
-        self.touch('existing.txt')
+        self.touch(self.os.sep, 'existing.txt')
         self.os.symlink('existing.txt', 'existing-link.txt')
         self.os.symlink('non-existing-1.txt', 'non-existing-1-link.txt')
         self.os.symlink('non-existing-2.txt', 'non-existing-2-link.txt')

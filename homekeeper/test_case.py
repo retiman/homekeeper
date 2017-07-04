@@ -35,7 +35,7 @@ class TestCase(object):
     def touch(self, *args):
         pathname = self.path(*args)
         dirname = self.os.path.dirname(pathname)
-        homekeeper.common.makedirs(dirname)
+        self.makedirs(dirname)
         self.fs.CreateFile(pathname)
         return pathname
 

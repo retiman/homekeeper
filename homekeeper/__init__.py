@@ -39,7 +39,7 @@ class Homekeeper(object):
                                   excludes=self.config.excludes)
         self.cleanup()
 
-    def restore(self, cleanup_symlinks=True):
+    def restore(self):
         """Restores all symlinks (inverse of link)."""
         self.main.restore_symlinks(self.config.dotfiles_directory, self.home,
                                    excludes=self.config.excludes)

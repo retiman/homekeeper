@@ -19,7 +19,7 @@ def link():
     homekeeper.Homekeeper().link()
 
 
-@click.command(short_help='undo all symlinks')
+@click.command(short_help='restore all symlinks in home directory')
 def restore():
     homekeeper.Homekeeper().restore()
 

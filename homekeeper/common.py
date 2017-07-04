@@ -3,6 +3,7 @@ import os
 
 
 class cd(object):
+    "Use with the `with` keyword to change directory."""
     def __init__(self, pathname):
         self.pathname = pathname
         self.saved_pathname = None
@@ -23,11 +24,13 @@ def fopen(*args, **kwargs):
 
 
 def makedirs(dirname):
-    directory = dirname or '/'
+    """Creates a directory safely. Does not raise an error if the directory
+    exists.
+    """
     try:
-        os.makedirs(directory)
+        os.makedirs(dirname)
     except OSError as e:
-        if e.errno == errno.EEXIST and os.path.isdir(directory):
+        if e.errno == errno.EEXIST and os.path.isdir(dirname):
             pass
         else:
             raise
