@@ -10,9 +10,10 @@ __version__ = '4.0.0'
 class Homekeeper(object):
     """Organizes and versions your dot files."""
 
-    def __init__(self, pathname=None):
+    def __init__(self, pathname=None, cleanup_symlinks=True):
         self.home = os.getenv('HOME')
         self.config = homekeeper.config.Config()
+        self.config.cleanup_symlinks = cleanup_symlinks
         self.main = homekeeper.main.Main()
         if pathname:
             self.config.load(pathname)
@@ -27,7 +28,7 @@ class Homekeeper(object):
         self.config.dotfiles_directory = os.path.realpath(os.getcwd())
         self.config.save()
 
-    def symlink(self, cleanup_symlinks=True):
+    def symlink(self):
         """Symlinks all files and directories from your dotfiles directory into
         your home directory.
         """

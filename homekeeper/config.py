@@ -12,6 +12,7 @@ class Config(object):
         self.base_directory = None
         self.dotfiles_directory = os.path.join(os.getenv('HOME'), 'dotfiles')
         self.excludes = ['.git', '.gitignore', 'LICENSE', 'README.md']
+        self.cleanup_symlinks = True
         self.override = False
 
     def load(self, pathname):
