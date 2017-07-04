@@ -69,6 +69,14 @@ class TestMain(homekeeper.filesystem_testcase.FilesystemTestCase):
         self.main.create_symlinks(source_directory, self.home(), overwrite=True)
         self.verify_symlink(source, target)
 
+    def test_create_symlinks_with_no_source_directory(self):
+        self.os.makedirs(self.home())
+        assert self.os.path.exists(self.home())
+        assert not self.os.path.exists(self.home('dotfiles'))
+        self.main.create_symlinks(self.home('dotfiles'), self.home(),
+                                  overwrite=True)
+        assert self.os.listdir(self.home()) == []
+
     def test_create_symlinks_with_no_overwrite(self):
         source, target = self.setup_symlink()
         source_directory = self.os.path.dirname(source)
