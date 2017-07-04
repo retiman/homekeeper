@@ -10,13 +10,15 @@ __version__ = '4.0.0'
 class Homekeeper(object):
     """Organizes and versions your dot files."""
 
+    PATHNAME = os.path.join(os.getenv('HOME'), '.homekeeper.json')
+
     def __init__(self, pathname=None, cleanup_symlinks=True):
         self.home = os.getenv('HOME')
         self.config = homekeeper.config.Config()
         self.config.cleanup_symlinks = cleanup_symlinks
         self.main = homekeeper.main.Main()
-        if pathname:
-            self.config.load(pathname)
+        self.config_path = pathname if pathname else PATHNAME
+        self.config.load(pathname)
 
     def init(self):
         """Writes a configuration file with cwd as the dotfiles directory.
@@ -24,9 +26,10 @@ class Homekeeper(object):
         already.  If configuration already exists, the new dotfiles directory
         path will be merged into existing configuration.
         """
-        logging.info('setting dotfiles directory to %s', self.config.directory)
+        dotfiles_directory = os.path.realpath(os.getcwd())
+        logging.info('setting dotfiles directory to %s', dotfiles_directory)
         self.config.dotfiles_directory = os.path.realpath(os.getcwd())
-        self.config.save()
+        self.config.save(self.config_path)
 
     def symlink(self):
         """Symlinks all files and directories from your dotfiles directory into
