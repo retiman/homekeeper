@@ -65,9 +65,11 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
         self.makedirs(self.path(self.dotfiles_directory, '.tmux'))
 
     def test_init_saves_config(self):
-        self.os.chdir(self.dotfiles_directory)
+        custom_dotfiles_directory = self.path(self.os.sep, 'custom')
+        self.makedirs(custom_dotfiles_directory)
+        self.os.chdir(custom_dotfiles_directory)
         h = homekeeper.Homekeeper(pathname=self.homekeeper_json)
         h.init()
         with self.fopen(self.homekeeper_json, 'r') as f:
             data = json.loads(f.read())
-        assert self.dotfiles_directory == data['dotfiles_directory']
+        assert custom_dotfiles_directory == data['dotfiles_directory']
