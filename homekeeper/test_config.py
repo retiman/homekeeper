@@ -2,6 +2,7 @@ import homekeeper.config
 import homekeeper.test_case
 import json
 
+
 class TestConfig(homekeeper.test_case.TestCase):
     def setup_method(self):
         super(TestConfig, self).setup_method()
