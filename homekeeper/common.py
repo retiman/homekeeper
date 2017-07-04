@@ -15,12 +15,12 @@ class cd(object):
         os.chdir(self.saved_pathname)
 
 
-def makedirs(pathname):
+def makedirs(dirname):
+    directory = dirname or '/'
     try:
-        dirname = os.path.dirname(pathname) or '/'
-        os.makedirs(dirname)
+        os.makedirs(directory)
     except OSError as e:
-        if e.errno == errno.EEXIST and os.path.isdir(dirname):
+        if e.errno == errno.EEXIST and os.path.isdir(directory):
             pass
         else:
             raise

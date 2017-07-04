@@ -61,8 +61,15 @@ class Main(object):
                 logging.debug('skipping symlink resource: %s', target)
                 return
         self.remove(target)
-        shutil.copy(source, os.path.dirname(target))
-        logging.info('copied %s -> %s', source, target)
+        if os.path.isfile(source):
+            logging.debug('copying file %s to %s', source, target)
+            shutil.copy(source, target)
+        elif os.path.isdir(source):
+            logging.debug('copying directory %s to %s', source, target)
+            shutil.copytree(source, target, symlinks=True)
+        else:
+            logging.info('skipping resource: %s', target)
+        logging.info('restored %s -> %s', target, source)
 
     def create_symlinks(self, source_directory, target_directory,
                         excludes=set(), overwrite=True):

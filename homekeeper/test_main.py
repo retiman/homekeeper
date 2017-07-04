@@ -2,10 +2,6 @@ import homekeeper.filesystem_testcase
 import homekeeper.main
 import logging
 
-from homekeeper.common import (cd, makedirs)
-
-
-logging.basicConfig(format='%(message)s', level=logging.DEBUG)
 
 class TestMain(homekeeper.filesystem_testcase.FilesystemTestCase):
     def setup_method(self):
@@ -42,7 +38,7 @@ class TestMain(homekeeper.filesystem_testcase.FilesystemTestCase):
 
     def test_symlink_with_directory_target(self):
         source, target = self.setup_symlink()
-        makedirs(self.os.path.dirname(target))
+        self.makedirs(self.os.path.dirname(target))
         self.main.symlink(source, target, overwrite=True)
         self.verify_symlink(source, target)
 
@@ -61,11 +57,24 @@ class TestMain(homekeeper.filesystem_testcase.FilesystemTestCase):
         assert self.os.path.exists(target)
         assert not self.os.path.islink(target)
 
-    def test_restore_symlink(self):
+    def test_restore_file_symlink(self):
         source, target = self.setup_symlink()
         self.main.symlink(source, target, overwrite=True)
         self.main.restore(source, target, overwrite=True)
         assert not self.os.path.islink(target)
+        assert self.os.path.isfile(target)
+
+    def test_restore_directory_symlink(self):
+        source = self.home('dotfiles', '.vim')
+        target = self.home('.vim')
+        self.makedirs(source)
+        self.touch(source, '.vim', 'autoload', 'pathogen.vim')
+        self.main.symlink(source, target, overwrite=True)
+        self.main.restore(source, target, overwrite=True)
+        assert not self.os.path.islink(target)
+        assert self.os.path.isdir(target)
+        assert self.os.path.isfile(self.path(target, '.vim', 'autoload',
+                                             'pathogen.vim'))
 
     def test_restore_symlink_with_no_target(self):
         source, target = self.setup_symlink()
@@ -83,7 +92,7 @@ class TestMain(homekeeper.filesystem_testcase.FilesystemTestCase):
         self.verify_symlink(source, target)
 
     def test_create_symlinks_with_no_source_directory(self):
-        self.os.makedirs(self.home())
+        self.makedirs(self.home())
         assert self.os.path.exists(self.home())
         assert not self.os.path.exists(self.home('dotfiles'))
         self.main.create_symlinks(self.home('dotfiles'), self.home(),
@@ -108,7 +117,7 @@ class TestMain(homekeeper.filesystem_testcase.FilesystemTestCase):
             self.touch(self.home('dotfiles', pathname))
             self.touch(self.home(pathname))
         for pathname in source_directories:
-            makedirs(self.home('dotfiles', pathname))
+            self.makedirs(self.home('dotfiles', pathname))
             self.touch(self.home(pathname))
         self.main.create_symlinks(self.home('dotfiles'), self.home(),
                                   excludes=excludes, overwrite=True)

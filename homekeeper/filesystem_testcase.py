@@ -1,7 +1,10 @@
 import fake_filesystem
 import fake_filesystem_shutil
 import homekeeper.common
+import logging
 import mock
+
+logging.basicConfig(format='%(message)s', level=logging.DEBUG)
 
 
 class FilesystemTestCase(object):
@@ -21,6 +24,10 @@ class FilesystemTestCase(object):
     def home(self, *args):
         home_directory = self.os.getenv('HOME')
         return self.os.path.join(home_directory, *args)
+
+    def makedirs(self, *args):
+        with mock.patch('homekeeper.common.os', self.os):
+            homekeeper.common.makedirs(*args)
 
     def path(self, *args):
         return self.os.path.join(*args)
@@ -43,4 +50,4 @@ class FilesystemTestCase(object):
             patcher.start()
             self.patchers.append(patcher)
         except AttributeError:
-            print 'can not patch: %s.%s' % (module, name)
+            logging.error('can not patch: %s.%s', module, name)
