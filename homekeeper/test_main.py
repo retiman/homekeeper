@@ -63,12 +63,16 @@ class TestMain(homekeeper.filesystem_testcase.FilesystemTestCase):
 
     def test_restore_symlink(self):
         source, target = self.setup_symlink()
-        self.touch(target)
         self.main.symlink(source, target, overwrite=True)
         self.main.restore(source, target, overwrite=True)
-        assert self.os.path.exists(source)
-        assert self.os.path.exists(target)
         assert not self.os.path.islink(target)
+
+    def test_restore_symlink_with_no_target(self):
+        source, target = self.setup_symlink()
+        self.main.symlink(source, target, overwrite=True)
+        self.os.unlink(target)
+        self.main.restore(source, target, overwrite=False)
+        assert not self.os.path.exists(target)
 
     def test_create_symlinks(self):
         source, target = self.setup_symlink()
