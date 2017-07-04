@@ -15,6 +15,13 @@ class cd(object):
         os.chdir(self.saved_pathname)
 
 
+def fopen(*args, **kwargs):
+    """Alias for __builtin__.open. This exists so tests may mock this function
+    without overriding open for all modules.
+    """
+    return open(*args, **kwargs)
+
+
 def makedirs(dirname):
     directory = dirname or '/'
     try:

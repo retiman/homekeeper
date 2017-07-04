@@ -2,12 +2,7 @@ import logging
 import json
 import os
 
-
-def fopen(*args, **kwargs):
-    """Alias for __builtin__.open. This exists so tests may mock this function
-    without overriding open for all modules.
-    """
-    return open(*args, **kwargs)
+from homekeeper.common import fopen
 
 
 class Config(object):
