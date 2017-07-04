@@ -10,15 +10,14 @@ __version__ = '4.0.0'
 class Homekeeper(object):
     """Organizes and versions your dot files."""
 
-    PATHNAME = os.path.join(os.getenv('HOME'), '.homekeeper.json')
-
     def __init__(self, pathname=None, cleanup_symlinks=True):
         self.home = os.getenv('HOME')
         self.config = homekeeper.config.Config()
         self.config.cleanup_symlinks = cleanup_symlinks
         self.main = homekeeper.main.Main()
-        self.config_path = pathname if pathname else PATHNAME
-        self.config.load(pathname)
+        self.config_path = (pathname if pathname
+                            else os.path.join(self.home, '.homekeeper.json'))
+        self.config.load(self.config_path)
 
     def init(self):
         """Writes a configuration file with cwd as the dotfiles directory.

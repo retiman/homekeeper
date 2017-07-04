@@ -12,13 +12,12 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
         self.patch('homekeeper.common')
         self.patch('homekeeper.config')
         self.patch('homekeeper.main')
-        self.setup_custom_homekeeper_json()
         self.setup_base_directory()
         self.setup_dotfiles_directory()
+        self.setup_homekeeper_json()
         self.os.chdir(self.os.getenv('HOME'))
 
-    def setup_custom_homekeeper_json(self):
-        self.homekeeper_json = self.home('custom', 'homekeeper.json')
+    def setup_homekeeper_json(self):
         base_directory = self.home('custom_base')
         dotfiles_directory = self.home('custom_dotfiles')
         excludes = ['.git']
@@ -27,9 +26,12 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
             'dotfiles_directory': dotfiles_directory,
             'excludes': excludes
         }
-        self.touch(self.homekeeper_json)
-        with self.fopen(self.homekeeper_json, 'w') as f:
-            f.write(json.dumps(data))
+        self.custom_homekeeper_json = self.home('custom', '.homekeeper.json')
+        self.write_homekeeper_json(self.custom_homekeeper_json, data)
+        self.homekeeper_json = self.home('.homekeeper.json')
+        data['base_directory'] = self.base_directory
+        data['dotfiles_directory'] = self.dotfiles_directory
+        self.write_homekeeper_json(self.homekeeper_json, data)
 
     def setup_base_directory(self):
         self.base_directory = self.home('dotfiles', 'base')
@@ -64,12 +66,23 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
         self.touch(self.dotfiles_directory, '.bash_aliases')
         self.makedirs(self.path(self.dotfiles_directory, '.tmux'))
 
+    def write_homekeeper_json(self, pathname, data):
+        self.touch(pathname)
+        with self.fopen(pathname, 'w') as f:
+            f.write(json.dumps(data))
+
     def test_init_saves_config(self):
         custom_dotfiles_directory = self.path(self.os.sep, 'custom')
         self.makedirs(custom_dotfiles_directory)
         self.os.chdir(custom_dotfiles_directory)
-        h = homekeeper.Homekeeper(pathname=self.homekeeper_json)
+        h = homekeeper.Homekeeper(pathname=self.custom_homekeeper_json)
         h.init()
-        with self.fopen(self.homekeeper_json, 'r') as f:
+        with self.fopen(self.custom_homekeeper_json, 'r') as f:
             data = json.loads(f.read())
         assert custom_dotfiles_directory == data['dotfiles_directory']
+
+    def test_init_with_default_config_path(self):
+        h = homekeeper.Homekeeper()
+        assert h.config.base_directory == self.base_directory
+        assert h.config.dotfiles_directory == self.dotfiles_directory
+        assert '.git' in h.config.excludes
