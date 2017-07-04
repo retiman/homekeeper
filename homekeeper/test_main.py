@@ -102,9 +102,9 @@ class TestMain(homekeeper.filesystem_testcase.FilesystemTestCase):
         for pathname in source_files:
             if pathname in excludes:
                 assert not self.os.path.islink(self.home(pathname))
-                continue
-            self.verify_symlink(self.home('dotfiles', pathname),
-                                self.home(pathname))
+            else:
+                self.verify_symlink(self.home('dotfiles', pathname),
+                                    self.home(pathname))
 
     def test_cleanup_symlinks(self):
         self.touch('existing.txt')
