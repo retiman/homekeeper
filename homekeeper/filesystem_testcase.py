@@ -18,13 +18,15 @@ class FilesystemTestCase(object):
             patcher.stop()
         del self.fs
 
-    def home(self):
-        return self.os.getenv('HOME')
+    def home(self, *args):
+        home_directory = self.os.getenv('HOME')
+        return self.os.path.join(home_directory, *args)
 
     def path(self, *args):
         return self.os.path.join(*args)
 
-    def touch(self, pathname):
+    def touch(self, *args):
+        pathname = self.path(*args)
         dirname = self.os.path.dirname(pathname)
         homekeeper.common.makedirs(dirname)
         self.fs.CreateFile(pathname)

@@ -15,8 +15,8 @@ class TestMain(homekeeper.filesystem_testcase.FilesystemTestCase):
         self.main = homekeeper.main.Main()
 
     def setup_symlink(self):
-        source = self.touch(self.path(self.home(), 'dotfiles', '.vimrc'))
-        target = self.path(self.home(), '.vimrc')
+        source = self.touch(self.home('dotfiles', '.vimrc'))
+        target = self.path(self.home('.vimrc'))
         return source, target
 
     def verify_symlink(self, source, target):
@@ -24,6 +24,10 @@ class TestMain(homekeeper.filesystem_testcase.FilesystemTestCase):
         assert self.os.path.exists(target)
         assert self.os.path.islink(target)
         assert source == self.os.readlink(target)
+        if self.os.path.isfile(source):
+            assert self.os.path.isfile(target)
+        if self.os.path.isdir(source):
+            assert self.os.path.isdir(target)
 
     def test_symlink_with_no_target(self):
         source, target = self.setup_symlink()
@@ -44,7 +48,7 @@ class TestMain(homekeeper.filesystem_testcase.FilesystemTestCase):
 
     def test_symlink_with_symlink_target(self):
         source, target = self.setup_symlink()
-        original_source = self.touch(self.path(self.home(), 'vimrc'))
+        original_source = self.touch(self.home('vimrc'))
         self.os.symlink(original_source, target)
         self.main.symlink(source, target)
         self.verify_symlink(source, target)
@@ -56,6 +60,26 @@ class TestMain(homekeeper.filesystem_testcase.FilesystemTestCase):
         assert not self.os.path.exists(target)
         self.main.create_symlinks(source_directory, self.home())
         self.verify_symlink(source, target)
+
+    def test_create_symlinks_with_multiple_sources(self):
+        source_files = ['.bash_profile', '.gitignore', '.gvimrc', '.vimrc', ]
+        source_directories = ['bin', '.git', '.vim']
+        excludes = ['.git', '.gitignore']
+        for pathname in source_files:
+            self.touch(self.home('dotfiles', pathname))
+            self.touch(self.home(pathname))
+        for pathname in source_directories:
+            makedirs(self.home('dotfiles', pathname))
+            self.touch(self.home(pathname))
+        self.main.create_symlinks(self.home('dotfiles'),
+                                  self.home(),
+                                  excludes=excludes)
+        for pathname in source_files:
+            if pathname in excludes:
+                assert not self.os.path.islink(self.home(pathname))
+                continue
+            self.verify_symlink(self.home('dotfiles', pathname),
+                                self.home(pathname))
 
     def test_cleanup_symlinks(self):
         self.touch('existing.txt')

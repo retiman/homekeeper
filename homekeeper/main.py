@@ -37,13 +37,13 @@ class Main(object):
             target_directory: The target directory for symlinking.
             excludes: An array of paths excluded from symlinking.
         """
-        excludes = frozenset([])
         if not os.path.isdir(source_directory):
             logging.info('dotfiles directory not found: %s', source_directory)
             return
         logging.info('symlinking files from %s', source_directory)
         with cd(source_directory):
             for pathname in os.listdir('.'):
+                logging.debug('examining %s', pathname)
                 basename = os.path.basename(pathname)
                 source = os.path.join(source_directory, basename)
                 target = os.path.join(target_directory, basename)
