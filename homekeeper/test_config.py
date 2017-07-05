@@ -3,12 +3,20 @@ import homekeeper.test_case
 import json
 
 
+os = None
+
+
 class TestConfig(homekeeper.test_case.TestCase):
     def setup_method(self):
         super(TestConfig, self).setup_method()
+        self.setup_filesystem()
         self.patch('homekeeper.config')
         self.config = homekeeper.config.Config()
         self.config_path = self.path(self.home(), '.homekeeper.json')
+
+    def setup_filesystem(self):
+        global os
+        os = self.os
 
     def test_load(self):
         base_directory = self.path(self.home(), 'base')
@@ -36,7 +44,7 @@ class TestConfig(homekeeper.test_case.TestCase):
         assert not self.config.override
 
     def test_save(self):
-        self.os.makedirs(self.os.path.dirname(self.config_path))
+        os.makedirs(os.path.dirname(self.config_path))
         self.config.base_directory = None
         self.config.dotfiles_directory = self.path(self.home(), 'dotfiles2')
         self.config.excludes = ['.idea']

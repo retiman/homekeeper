@@ -5,9 +5,13 @@ import homekeeper.test_case
 import json
 
 
+os = None
+
+
 class TestHomekeeper(homekeeper.test_case.TestCase):
     def setup_method(self):
         super(TestHomekeeper, self).setup_method()
+        self.setup_filesystem()
         self.patch('homekeeper')
         self.patch('homekeeper.common')
         self.patch('homekeeper.config')
@@ -15,7 +19,11 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
         self.setup_base_directory()
         self.setup_dotfiles_directory()
         self.setup_homekeeper_json()
-        self.os.chdir(self.os.getenv('HOME'))
+        os.chdir(os.getenv('HOME'))
+
+    def setup_filesystem(self):
+        global os
+        os = self.os
 
     def setup_homekeeper_json(self):
         base_directory = self.home('custom_base')
@@ -72,9 +80,9 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
             f.write(json.dumps(data))
 
     def test_init_saves_config(self):
-        custom_dotfiles_directory = self.path(self.os.sep, 'custom')
+        custom_dotfiles_directory = self.path(os.sep, 'custom')
         self.makedirs(custom_dotfiles_directory)
-        self.os.chdir(custom_dotfiles_directory)
+        os.chdir(custom_dotfiles_directory)
         h = homekeeper.Homekeeper(pathname=self.custom_homekeeper_json)
         h.init()
         with self.fopen(self.custom_homekeeper_json, 'r') as f:
