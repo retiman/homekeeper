@@ -12,6 +12,7 @@ clean:
 	rm -rf cover
 	rm -rf dist
 	rm -rf homekeeper/*.pyc
+	rm -rf homekeeper/__pycache__
 	rm -rf lib
 
 deploy: clean doc test
