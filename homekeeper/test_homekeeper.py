@@ -18,6 +18,7 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
         self.patch('homekeeper.core')
         self.setup_base_directory()
         self.setup_dotfiles_directory()
+        self.setup_overridden_paths()
         self.setup_homekeeper_json()
         os.chdir(os.getenv('HOME'))
 
