@@ -89,17 +89,18 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
         with self.fopen(pathname, 'w') as f:
             f.write(json.dumps(data))
 
-    def verify_base_files_linked(self, excludes):
-        for f in self.base_files:
-            if f in self.main_files or f in excludes:
+    def verify_base_links(self, excludes):
+        for item in self.base_files.union(self.base_directories):
+            if item in self.main_files:
                 continue
-            link = self.home(f)
-            target = self.path(self.base_directory, f)
+            if item in self.main_directories:
+                continue
+            if item in excludes:
+                continue
+            link = self.home(item)
+            target = self.path(self.base_directory, item)
             assert os.path.islink(link)
             assert target == os.readlink(link)
-
-    def verify_base_directories_linked(self):
-        pass
 
     def verify_dotfiles_file_overridden(self):
         pass
@@ -122,6 +123,5 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
     def test_keep(self):
         h = homekeeper.Homekeeper()
         h.keep()
-        self.verify_base_files_linked(h.config.excludes)
-        self.verify_base_directories_linked()
+        self.verify_base_links(h.config.excludes)
         self.verify_dotfiles_file_overridden()
