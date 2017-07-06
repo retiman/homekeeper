@@ -5,17 +5,6 @@ import shutil
 from homekeeper.common import (cd, makedirs)
 
 
-def remove(target):
-    if os.path.islink(target):
-        os.unlink(target)
-        logging.debug('removed symlink %s', target)
-    if os.path.isfile(target):
-        os.remove(target)
-        logging.debug('removed file %s', target)
-    if os.path.isdir(target):
-        shutil.rmtree(target)
-        logging.debug('removed directory %s', target)
-
 def symlink(source, target, overwrite=True):
     """Removes a target symlink/file/directory before replacing it with
     symlink. Also creates the parent directory if it does not exist.
@@ -130,6 +119,19 @@ def cleanup_symlinks(directory):
             continue
         logging.info('removing broken link: %s', pathname)
         os.unlink(pathname)
+
+
+def remove(target):
+    if os.path.islink(target):
+        os.unlink(target)
+        logging.debug('removed symlink %s', target)
+    if os.path.isfile(target):
+        os.remove(target)
+        logging.debug('removed file %s', target)
+    if os.path.isdir(target):
+        shutil.rmtree(target)
+        logging.debug('removed directory %s', target)
+
 
 def process_directories(source_directory, target_directory, process,
                         excludes=set(), overwrite=True):
