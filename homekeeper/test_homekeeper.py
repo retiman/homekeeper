@@ -15,7 +15,7 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
         self.patch('homekeeper')
         self.patch('homekeeper.common')
         self.patch('homekeeper.config')
-        self.patch('homekeeper.main')
+        self.patch('homekeeper.core')
         self.setup_base_directory()
         self.setup_dotfiles_directory()
         self.setup_homekeeper_json()
@@ -44,47 +44,71 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
     def setup_base_directory(self):
         self.base_directory = self.home('dotfiles', 'base')
         makedirs(self.base_directory)
-        self.files = [
+        self.base_files = set([
             '.bash_aliases',
             '.bash_local',
             '.bash_profile',
             '.git',
             '.gitconfig',
             '.gitignore',
-        ]
-        self.directories = [
+        ])
+        self.base_directories = ([
             '.tmux',
             '.tmuxp',
             '.vim',
-        ]
-        for filename in self.files:
+        ])
+        for filename in self.base_files:
             self.touch(self.base_directory, filename)
-        for dirname in self.directories:
+        for dirname in self.base_directories:
             makedirs(self.path(self.base_directory, dirname))
-        bash_local = self.path(self.base_directory, '.bash_local')
-        with self.fopen(bash_local, 'w') as f:
-            f.write('export BASE_DIRECTORY=1')
 
     def setup_dotfiles_directory(self):
         self.dotfiles_directory = self.home('dotfiles', 'main')
         makedirs(self.dotfiles_directory)
-        bash_local = self.path(self.dotfiles_directory, '.bash_local')
-        with self.fopen(bash_local, 'w') as f:
-            f.write('export DOTFILES_DIRECTORY=1')
-        self.touch(self.dotfiles_directory, '.bash_aliases')
-        makedirs(self.path(self.dotfiles_directory, '.tmux'))
+        self.main_files = set(['.bash_aliases', '.bash_local'])
+        self.main_directories = set(['.tmux', '.tmuxp'])
+        for filename in self.main_files:
+            self.touch(self.dotfiles_directory, filename)
+        for dirname in self.main_directories:
+            makedirs(self.path(self.dotfiles_directory, dirname))
+
+    def setup_overridden_paths(self):
+        for filename in self.main_files:
+            path = self.path(self.base_directory, filename)
+            with self.fopen(path, 'w') as f:
+                f.write('base')
+            path = self.path(self.dotfiles_directory, filename)
+            with self.fopen(path, 'w') as f:
+                f.write('main')
+        for dirname in self.main_directories:
+            self.touch(self.base_directory, dirname, 'base')
+            self.touch(self.dotfiles_directory, dirname, 'main')
 
     def write_homekeeper_json(self, pathname, data):
         self.touch(pathname)
         with self.fopen(pathname, 'w') as f:
             f.write(json.dumps(data))
 
+    def verify_base_files_linked(self, excludes):
+        for f in self.base_files:
+            if f in self.main_files or f in excludes:
+                continue
+            link = self.home(f)
+            target = self.path(self.base_directory, f)
+            assert os.path.islink(link)
+            assert target == os.readlink(link)
+
+    def verify_base_directories_linked(self):
+        pass
+
+    def verify_dotfiles_file_overridden(self):
+        pass
+
     def test_init_saves_config(self):
         custom_dotfiles_directory = self.path(os.sep, 'custom')
         makedirs(custom_dotfiles_directory)
         os.chdir(custom_dotfiles_directory)
-        h = homekeeper.Homekeeper(pathname=self.custom_homekeeper_json)
-        h.init()
+        homekeeper.Homekeeper(pathname=self.custom_homekeeper_json).init()
         with self.fopen(self.custom_homekeeper_json, 'r') as f:
             data = json.loads(f.read())
         assert custom_dotfiles_directory == data['dotfiles_directory']
@@ -94,3 +118,10 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
         assert h.config.base_directory == self.base_directory
         assert h.config.dotfiles_directory == self.dotfiles_directory
         assert '.git' in h.config.excludes
+
+    def test_keep(self):
+        h = homekeeper.Homekeeper()
+        h.keep()
+        self.verify_base_files_linked(h.config.excludes)
+        self.verify_base_directories_linked()
+        self.verify_dotfiles_file_overridden()

@@ -1,8 +1,9 @@
 import homekeeper.config
-import homekeeper.main
 import logging
 import os
 import shutil
+
+from homekeeper import core
 
 __version__ = '4.0.0'
 
@@ -14,7 +15,6 @@ class Homekeeper(object):
         self.home = os.getenv('HOME')
         self.config = homekeeper.config.Config()
         self.config.cleanup_symlinks = cleanup_symlinks
-        self.main = homekeeper.main.Main()
         self.config_path = (pathname if pathname
                             else os.path.join(self.home, '.homekeeper.json'))
         self.config.load(self.config_path)
@@ -30,27 +30,30 @@ class Homekeeper(object):
         self.config.dotfiles_directory = os.path.realpath(os.getcwd())
         self.config.save(self.config_path)
 
-    def symlink(self):
+    def keep(self):
         """Symlinks all files and directories from your dotfiles directory into
         your home directory.
         """
         if self.config.override:
-            self.main.create_symlinks(self.config.base_directory, self.home,
-                                      excludes=self.config.excludes)
-        self.main.create_symlinks(self.config.dotfiles_directory, self.home,
+            core.create_symlinks(self.config.base_directory, self.home,
+                                 excludes=self.config.excludes)
+        core.create_symlinks(self.config.dotfiles_directory, self.home,
+                             excludes=self.config.excludes)
+        self.cleanup()
+
+    def unkeep(self):
+        """Restores all symlinks (inverse of link)."""
+        core.restore_symlinks(self.config.dotfiles_directory, self.home,
+                              excludes=self.config.excludes)
+        if self.config.override:
+            core.restore_symlinks(self.config.base_directory, self.home,
                                   excludes=self.config.excludes)
         self.cleanup()
 
     def restore(self):
-        """Restores all symlinks (inverse of link)."""
-        self.main.restore_symlinks(self.config.dotfiles_directory, self.home,
-                                   excludes=self.config.excludes)
-        if self.config.override:
-            self.main.restore_symlinks(self.config.base_directory, self.home,
-                                       excludes=self.config.excludes)
-        self.cleanup()
+        self.unkeep()
 
     def cleanup(self):
         """Cleans up symlinks in the home directory."""
         if self.config.cleanup_symlinks:
-            self.main.cleanup_symlinks(self.home)
+            core.cleanup_symlinks(self.home)
