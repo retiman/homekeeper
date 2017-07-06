@@ -89,6 +89,9 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
         with self.fopen(pathname, 'w') as f:
             f.write(json.dumps(data))
 
+    def verify_original_files_still_exist(self):
+        pass
+
     def verify_base_links(self, excludes):
         for item in self.base_files.union(self.base_directories):
             if item in self.main_files:
@@ -102,8 +105,12 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
             assert os.path.islink(link)
             assert target == os.readlink(link)
 
-    def verify_dotfiles_file_overridden(self):
-        pass
+    def verify_main_dotfiles_override_base_files(self):
+        for filename in self.main_files:
+            with self.fopen(self.home(filename), 'r') as f:
+                assert 'main' == f.read()
+        for dirname in self.main_directories:
+            assert os.path.exists(self.home(dirname, 'main'))
 
     def test_init_saves_config(self):
         custom_dotfiles_directory = self.path(os.sep, 'custom')
@@ -123,5 +130,6 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
     def test_keep(self):
         h = homekeeper.Homekeeper()
         h.keep()
+        self.verify_original_files_still_exist()
         self.verify_base_links(h.config.excludes)
-        self.verify_dotfiles_file_overridden()
+        self.verify_main_dotfiles_override_base_files()
