@@ -1,8 +1,9 @@
 import homekeeper
-import homekeeper.common
 import homekeeper.config
 import homekeeper.test_case
 import json
+
+from homekeeper.common import makedirs
 
 
 os = None
@@ -43,7 +44,7 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
 
     def setup_base_directory(self):
         self.base_directory = self.home('dotfiles', 'base')
-        self.makedirs(self.base_directory)
+        makedirs(self.base_directory)
         self.files = [
             '.bash_aliases',
             '.bash_local',
@@ -60,19 +61,19 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
         for filename in self.files:
             self.touch(self.base_directory, filename)
         for dirname in self.directories:
-            self.makedirs(self.path(self.base_directory, dirname))
+            makedirs(self.path(self.base_directory, dirname))
         bash_local = self.path(self.base_directory, '.bash_local')
         with self.fopen(bash_local, 'w') as f:
             f.write('export BASE_DIRECTORY=1')
 
     def setup_dotfiles_directory(self):
         self.dotfiles_directory = self.home('dotfiles', 'main')
-        self.makedirs(self.dotfiles_directory)
+        makedirs(self.dotfiles_directory)
         bash_local = self.path(self.dotfiles_directory, '.bash_local')
         with self.fopen(bash_local, 'w') as f:
             f.write('export DOTFILES_DIRECTORY=1')
         self.touch(self.dotfiles_directory, '.bash_aliases')
-        self.makedirs(self.path(self.dotfiles_directory, '.tmux'))
+        makedirs(self.path(self.dotfiles_directory, '.tmux'))
 
     def write_homekeeper_json(self, pathname, data):
         self.touch(pathname)
@@ -81,7 +82,7 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
 
     def test_init_saves_config(self):
         custom_dotfiles_directory = self.path(os.sep, 'custom')
-        self.makedirs(custom_dotfiles_directory)
+        makedirs(custom_dotfiles_directory)
         os.chdir(custom_dotfiles_directory)
         h = homekeeper.Homekeeper(pathname=self.custom_homekeeper_json)
         h.init()

@@ -2,6 +2,8 @@ import homekeeper.main
 import homekeeper.test_case
 import logging
 
+from homekeeper.common import makedirs
+
 
 os = None
 
@@ -46,7 +48,7 @@ class TestMain(homekeeper.test_case.TestCase):
 
     def test_symlink_with_directory_target(self):
         source, target = self.setup_symlink()
-        self.makedirs(os.path.dirname(target))
+        makedirs(os.path.dirname(target))
         self.main.symlink(source, target, overwrite=True)
         self.verify_symlink(source, target)
 
@@ -75,7 +77,7 @@ class TestMain(homekeeper.test_case.TestCase):
     def test_restore_directory_symlink(self):
         source = self.home('dotfiles', '.vim')
         target = self.home('.vim')
-        self.makedirs(source)
+        makedirs(source)
         self.touch(source, '.vim', 'autoload', 'pathogen.vim')
         self.main.symlink(source, target, overwrite=True)
         self.main.restore(source, target, overwrite=True)
@@ -100,7 +102,7 @@ class TestMain(homekeeper.test_case.TestCase):
         self.verify_symlink(source, target)
 
     def test_create_symlinks_with_no_source_directory(self):
-        self.makedirs(self.home())
+        makedirs(self.home())
         assert os.path.exists(self.home())
         assert not os.path.exists(self.home('dotfiles'))
         self.main.create_symlinks(self.home('dotfiles'), self.home(),
@@ -125,7 +127,7 @@ class TestMain(homekeeper.test_case.TestCase):
             self.touch(self.home('dotfiles', pathname))
             self.touch(self.home(pathname))
         for pathname in source_directories:
-            self.makedirs(self.home('dotfiles', pathname))
+            makedirs(self.home('dotfiles', pathname))
             self.touch(self.home(pathname))
         self.main.create_symlinks(self.home('dotfiles'), self.home(),
                                   excludes=excludes, overwrite=True)
