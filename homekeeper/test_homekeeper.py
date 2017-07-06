@@ -5,7 +5,6 @@ import json
 
 from homekeeper.common import makedirs
 
-
 os = None
 
 
