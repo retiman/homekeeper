@@ -61,14 +61,13 @@ def restore(source, target, overwrite=True):
             return
     remove(target)
     if os.path.isfile(source):
-        logging.debug('copying file %s to %s', source, target)
         shutil.copy(source, target)
+        logging.debug('restored file %s to %s', source, target)
     elif os.path.isdir(source):
-        logging.debug('copying directory %s to %s', source, target)
         shutil.copytree(source, target, symlinks=True)
+        logging.debug('restored directory %s to %s', source, target)
     else:
-        logging.info('skipping resource: %s', target)
-    logging.info('restored %s -> %s', target, source)
+        logging.info('skipping uncopyable resource: %s', target)
 
 def create_symlinks(source_directory, target_directory,
                     excludes=set(), overwrite=True):
@@ -140,7 +139,6 @@ def process_directories(source_directory, target_directory, process,
     logging.info('processing files in %s', target_directory)
     with cd(source_directory):
         for pathname in os.listdir('.'):
-            logging.debug('examining %s', pathname)
             basename = os.path.basename(pathname)
             source = os.path.join(source_directory, basename)
             target = os.path.join(target_directory, basename)
