@@ -17,7 +17,7 @@ def clean(ctx):
 @click.command(short_help='set dotfiles directory to current directory')
 @click.pass_context
 def init(ctx):
-    h = homekeeper.Homekeeper(config_path=ctx['config_path'],
+    h = homekeeper.Homekeeper(config_path=ctx.obj['config_path'],
                               cleanup_symlinks=False, overwrite=False)
     h.init()
 
