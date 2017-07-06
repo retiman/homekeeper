@@ -91,7 +91,7 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
         assert h.config.dotfiles_directory == self.dotfiles_directory
         assert '.git' in h.config.excludes
 
-    def test_keep(self):
+    def test_keep_overrides_base_files(self):
         h = homekeeper.Homekeeper()
         h.keep()
         base_items = set(os.listdir(self.base_directory))
