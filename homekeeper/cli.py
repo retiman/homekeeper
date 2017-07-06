@@ -8,7 +8,7 @@ logging.basicConfig(format='%(message)s', level=logging.INFO)
 
 @click.command(short_help='removes broken symlinks only')
 @click.pass_context
-def clean(ctx):
+def cleanup(ctx):
     h = homekeeper.Homekeeper(cleanup_symlinks=True)
     h.cleanup()
 
@@ -54,7 +54,7 @@ def main(ctx, cleanup, config_path, overwrite):
     }
 
 
-main.add_command(clean)
+main.add_command(cleanup)
 main.add_command(init)
 main.add_command(keep)
 main.add_command(unkeep)

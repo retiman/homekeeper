@@ -15,8 +15,13 @@ class TestCli(object):
         assert result.output == ''
         assert result.exit_code == 0
 
-    def test_clean(self, MockHomekeeper):
-        self.verify_run_success('clean')
+    def test_cleanup(self, MockHomekeeper):
+        self.verify_run_success('cleanup')
+        MockHomekeeper.assert_called_once_with(cleanup_symlinks=True)
+        MockHomekeeper.cleanup.assert_called_once()
+
+    def test_clean_ignores_no_cleanup(self, MockHomekeeper):
+        self.verify_run_success('--no-cleanup', 'cleanup')
         MockHomekeeper.assert_called_once_with(cleanup_symlinks=True)
         MockHomekeeper.cleanup.assert_called_once()
 
