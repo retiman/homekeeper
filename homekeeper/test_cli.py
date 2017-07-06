@@ -41,8 +41,9 @@ class TestCli(object):
                                                overwrite=False)
         MockHomekeeper.init.assert_called_once()
 
-    # def test_keep_with_default_option(self, mock):
-    #     args = ['keep']
-    #     self.runner.invoke(homekeeper.cli.main, args)
-    #     assert mock.called_once_with()
-    #     assert mock.init.called_once()
+    def test_keep_with_default_options(self, MockHomekeeper):
+        self.verify_run_success('keep')
+        MockHomekeeper.assert_called_once_with(config_path=None,
+                                               cleanup_symlinks=True,
+                                               overwrite=True)
+        MockHomekeeper.keep.assert_called_once()
