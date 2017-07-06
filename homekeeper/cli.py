@@ -6,32 +6,36 @@ import sys
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 
+
+@click.command(short_help='removes broken symlinks only')
+@click.pass_context
+def clean(ctx):
+    h = homekeeper.Homekeeper(cleanup_symlinks=True)
+    h.cleanup()
+
+
 @click.command(short_help='set dotfiles directory to current directory')
-@click.argument('config', type=click.Path(exists=True, dir_okay=False))
-def init(config):
-    homekeeper.Homekeeper().init(config)
-
-
-@click.command(short_help='symlink dotfiles to home directory')
-def link():
-    homekeeper.Homekeeper().link()
-
-
-@click.command(short_help='restore all symlinks in home directory')
-def restore():
-    homekeeper.Homekeeper().restore()
-
-@click.command(short_help='restore all symlinks in home directory')
-def unlink():
-    restore()
+@click.pass_context
+def init(ctx):
+    h = homekeeper.Homekeeper(config_path=ctx['config_path'],
+                              cleanup_symlinks=False, overwrite=False)
+    h.init()
 
 
 @click.group()
-def main():
-    pass
+@click.option('--cleanup/--no-cleanup', default=True, is_flag=True,
+              help='removes broken symlinks')
+@click.option('--overwrite/--no-overwrite', default=True, is_flag=True,
+              help='overwrite existing files or symlinks')
+@click.option('--config-path', default=None, help='path to config file')
+@click.pass_context
+def main(ctx, cleanup, config_path, overwrite):
+    ctx.obj = {
+        'cleanup': cleanup,
+        'config_path': config_path,
+        'overwrite': overwrite
+    }
 
 
+main.add_command(clean)
 main.add_command(init)
-main.add_command(link)
-main.add_command(restore)
-main.add_command(unlink)

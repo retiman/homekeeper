@@ -81,7 +81,7 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
     def test_init_saves_config(self):
         os.chdir(self.custom_directory)
         config = os.path.join(self.custom_directory, '.homekeeper.json')
-        homekeeper.Homekeeper(pathname=config).init()
+        homekeeper.Homekeeper(config_path=config).init()
         with self.fopen(config, 'r') as f:
             data = json.loads(f.read())
         assert self.custom_directory == data['dotfiles_directory']
@@ -140,6 +140,6 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
         assert os.path.islink(self.home('.brokenrc'))
         assert os.path.islink(self.home('.vimrc'))
         h = homekeeper.Homekeeper(cleanup_symlinks=True)
-        h.cleanup()
+        h.clean()
         assert not os.path.exists(self.home('.brokenrc'))
         assert os.path.islink(self.home('.vimrc'))

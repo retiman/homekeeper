@@ -11,11 +11,12 @@ __version__ = '4.0.0'
 class Homekeeper(object):
     """Organizes and versions your dot files."""
 
-    def __init__(self, pathname=None, cleanup_symlinks=True):
+    def __init__(self, config_path=None, cleanup_symlinks=True, overwrite=True):
         self.home = os.getenv('HOME')
         self.config = homekeeper.config.Config()
+        self.config.overwrite = overwrite
         self.config.cleanup_symlinks = cleanup_symlinks
-        self.config_path = (pathname if pathname
+        self.config_path = (config_path if config_path
                             else os.path.join(self.home, '.homekeeper.json'))
         self.config.load(self.config_path)
 
@@ -39,7 +40,7 @@ class Homekeeper(object):
                                  excludes=self.config.excludes)
         core.create_symlinks(self.config.dotfiles_directory, self.home,
                              excludes=self.config.excludes)
-        self.cleanup()
+        self.clean()
 
     def link(self):
         self.keep()
@@ -51,12 +52,12 @@ class Homekeeper(object):
                                   excludes=self.config.excludes)
         core.restore_symlinks(self.config.dotfiles_directory, self.home,
                               excludes=self.config.excludes)
-        self.cleanup()
+        self.clean()
 
     def restore(self):
         self.unkeep()
 
-    def cleanup(self):
+    def clean(self):
         """Cleans up symlinks in the home directory."""
         if self.config.cleanup_symlinks:
             core.cleanup_symlinks(self.home)
