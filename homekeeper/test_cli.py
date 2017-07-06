@@ -30,12 +30,13 @@ class TestCli(object):
                                      cleanup_symlinks=False, overwrite=False)
         assert mock.init.called_once()
 
-    def test_init_with_no_config(self, mock):
-        args = ['init']
+    def test_init_cannot_cleanup_or_overwrite(self, mock):
+        args = ['--cleanup', '--overwrite', 'init']
         result = self.runner.invoke(homekeeper.cli.main, args)
         assert result.output == ''
         assert result.exit_code == 0
-        assert mock.called_once_with()
+        assert mock.called_once_with(config_path=None, cleanup_symlinks=True,
+                                     overwrite=False)
         assert mock.init.called_once()
 
     #def test_keep_with_default_option(self, mock):
