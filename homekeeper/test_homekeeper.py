@@ -77,23 +77,6 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
         dirname = os.path.join(os.sep, *args)
         makedirs(dirname)
 
-    def verify_original_files_still_exist(self):
-        pass
-
-    def verify_base_links(self, excludes):
-        base_items = set(os.listdir(self.base_directory))
-        dotfiles_items = set(os.listdir(self.dotfiles_directory))
-        for item in os.listdir(os.getenv('HOME')):
-            if item in excludes:
-                continue
-            if item not in base_items and item not in dotfiles_items:
-                continue
-            link = os.path.join(os.getenv('HOME'), item)
-            target_directory = (self.dotfiles_directory if
-                                item in dotfiles_items else self.base_directory)
-            assert os.path.islink(link)
-            assert os.path.join(target_directory, item) == os.readlink(link)
-
     def test_init_saves_config(self):
         os.chdir(self.custom_directory)
         config = os.path.join(self.custom_directory, '.homekeeper.json')
@@ -111,5 +94,15 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
     def test_keep(self):
         h = homekeeper.Homekeeper()
         h.keep()
-        self.verify_original_files_still_exist()
-        self.verify_base_links(h.config.excludes)
+        base_items = set(os.listdir(self.base_directory))
+        dotfiles_items = set(os.listdir(self.dotfiles_directory))
+        for item in os.listdir(os.getenv('HOME')):
+            if item in h.config.excludes:
+                continue
+            if item not in base_items and item not in dotfiles_items:
+                continue
+            link = os.path.join(os.getenv('HOME'), item)
+            target_directory = (self.dotfiles_directory if
+                                item in dotfiles_items else self.base_directory)
+            assert os.path.islink(link)
+            assert os.path.join(target_directory, item) == os.readlink(link)
