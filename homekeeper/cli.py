@@ -1,5 +1,3 @@
-#!/usr/bin/env python2
-# pylint: disable=import-self
 import click
 import homekeeper
 import logging
@@ -23,6 +21,10 @@ def link():
 def restore():
     homekeeper.Homekeeper().restore()
 
+@click.command(short_help='restore all symlinks in home directory')
+def unlink():
+    restore()
+
 
 @click.group()
 def main():
@@ -32,3 +34,4 @@ def main():
 main.add_command(init)
 main.add_command(link)
 main.add_command(restore)
+main.add_command(unlink)
