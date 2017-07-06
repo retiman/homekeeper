@@ -106,3 +106,22 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
                                 item in dotfiles_items else self.base_directory)
             assert os.path.islink(link)
             assert os.path.join(target_directory, item) == os.readlink(link)
+
+    def test_unkeep_restores_files(self):
+        self.setup_file(os.getenv('HOME'), '.unrelatedrc')
+        os.symlink(os.path.join(self.base_directory, '.vimrc'),
+                   self.home('.vimrc'))
+        os.symlink(os.path.join(self.base_directory, '.vim'),
+                   self.home('.vim'))
+        os.symlink(os.path.join(self.dotfiles_directory, '.bash_local'),
+                   self.home('.bash_local'))
+        os.symlink(os.path.join(self.dotfiles_directory, '.tmux'),
+                   self.home('.tmux'))
+        h = homekeeper.Homekeeper()
+        h.unkeep()
+        assert not os.path.islink(self.home('.tmux'))
+        assert not os.path.islink(self.home('.vim'))
+        assert not os.path.islink(self.home('.bash_local'))
+        assert not os.path.islink(self.home('.vimrc'))
+        with self.fopen(self.home('.bash_local'), 'r') as f:
+            assert 'dotfiles' == f.read()

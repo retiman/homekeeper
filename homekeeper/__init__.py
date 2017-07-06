@@ -46,11 +46,11 @@ class Homekeeper(object):
 
     def unkeep(self):
         """Restores all symlinks (inverse of link)."""
-        core.restore_symlinks(self.config.dotfiles_directory, self.home,
-                              excludes=self.config.excludes)
         if self.config.override:
             core.restore_symlinks(self.config.base_directory, self.home,
                                   excludes=self.config.excludes)
+        core.restore_symlinks(self.config.dotfiles_directory, self.home,
+                              excludes=self.config.excludes)
         self.cleanup()
 
     def restore(self):
