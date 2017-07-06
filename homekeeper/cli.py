@@ -3,7 +3,6 @@ import homekeeper
 import logging
 import sys
 
-
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 
 
@@ -20,6 +19,24 @@ def init(ctx):
     h = homekeeper.Homekeeper(config_path=ctx.obj['config_path'],
                               cleanup_symlinks=False, overwrite=False)
     h.init()
+
+
+@click.command(short_help='symlinks dotfiles to your home directory')
+@click.pass_context
+def keep(ctx):
+    h = homekeeper.Homekeeper(config_path=ctx.obj['config_path'],
+                              cleanup_symlinks=ctx.obj['cleanup'],
+                              overwrite=ctx.obj['overwrite'])
+    h.keep()
+
+
+@click.command(short_help='restores dotfiles and replacing symlinks')
+@click.pass_context
+def unkeep(ctx):
+    h = homekeeper.Homekeeper(config_path=ctx.obj['config_path'],
+                              cleanup_symlinks=ctx.obj['cleanup'],
+                              overwrite=ctx.obj['overwrite'])
+    h.keep()
 
 
 @click.group()
@@ -39,3 +56,5 @@ def main(ctx, cleanup, config_path, overwrite):
 
 main.add_command(clean)
 main.add_command(init)
+main.add_command(keep)
+main.add_command(unkeep)
