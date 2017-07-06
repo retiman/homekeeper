@@ -136,7 +136,7 @@ def process_directories(source_directory, target_directory, process,
     if not os.path.isdir(source_directory):
         logging.info('dotfiles directory not found: %s', source_directory)
         return
-    logging.info('processing files in %s', target_directory)
+    logging.info('processing files in %s', source_directory)
     with cd(source_directory):
         for pathname in os.listdir('.'):
             basename = os.path.basename(pathname)
