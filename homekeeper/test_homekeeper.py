@@ -14,16 +14,9 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
         self.patch('homekeeper.common')
         self.patch('homekeeper.config')
         self.patch('homekeeper.core')
-        self.setup_files(self.fake_os)
+        self.setup_files()
 
-    def setup_files(self, os):
-        with cd(self.home):
-            self.base_directory = os.path.abspath('base')
-            self.dotfiles_directory = os.path.abspath('dotfiles')
-            self.custom_directory = os.path.abspath('custom')
-            self.setup_directory(self.base_directory)
-            self.setup_directory(self.dotfiles_directory)
-            self.setup_directory(self.custom_directory)
+    def setup_files(self):
         with cd(self.base_directory):
             self.setup_file('.bash_aliases', data='base')
             self.setup_file('.bash_local', data='base')

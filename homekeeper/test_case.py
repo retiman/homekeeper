@@ -12,6 +12,7 @@ logging.basicConfig(format='%(message)s', level=logging.DEBUG)
 
 # pylint: disable=attribute-defined-outside-init
 # pylint: disable=no-self-use
+# pylint: disable=too-many-instance-attributes
 class TestCase(object):
     def setup_method(self):
         self.fake_fs = fake_filesystem.FakeFilesystem()

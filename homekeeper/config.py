@@ -12,6 +12,7 @@ class Config(object):
     def __init__(self):
         self.base_directory = None
         self.dotfiles_directory = os.path.join(os.getenv('HOME'), 'dotfiles')
+        self.includes = []
         self.excludes = ['.git', '.gitignore', 'LICENSE', 'README.md']
         self.cleanup_symlinks = True
         self.overwrite = True
@@ -20,10 +21,18 @@ class Config(object):
     def load(self, pathname):
         with fopen(pathname, 'r') as f:
             data = json.loads(f.read())
+            if 'base' in data:
+                self.base_directory = data['base']
             if 'base_directory' in data:
                 self.base_directory = data['base_directory']
+            if 'directory' in data:
+                self.dotfiles_directory = data['directory']
             if 'dotfiles_directory' in data:
                 self.dotfiles_directory = data['dotfiles_directory']
+            if 'cherrypicks' in data:
+                self.includes = data['cherrypicks']
+            if 'includes' in data:
+                self.includes = data['includes']
             if 'excludes' in data:
                 self.excludes = data['excludes']
             else:
@@ -36,6 +45,7 @@ class Config(object):
             data = {
                 'base_directory': self.base_directory,
                 'dotfiles_directory': self.dotfiles_directory,
+                'includes': self.includes,
                 'excludes': self.excludes,
             }
             f.write(json.dumps(data, sort_keys=True, indent=4))
