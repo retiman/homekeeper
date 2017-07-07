@@ -40,4 +40,4 @@ requirements:
 
 test: lint
 	${PYTEST} -v --tb=long --full-trace --junit-xml=tests.xml \
-			--cov=homekeeper --cov-report=html homekeeper
+			--cov=homekeeper --cov-report=term homekeeper
