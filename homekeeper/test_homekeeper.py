@@ -15,7 +15,6 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
         self.setup_files(self.fake_os)
         self.setup_homekeeper_json(self.fake_os)
         self.setup_custom_homekeeper_json(self.fake_os)
-        self.fake_os.chdir(self.fake_os.getenv('HOME'))
 
     def setup_files(self, os):
         os.chdir(self.home)
@@ -49,7 +48,7 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
             'dotfiles_directory': self.dotfiles_directory,
             'excludes': ['.git', '.gitignore'],
         })
-        self.setup_file(os.getenv('HOME'), '.homekeeper.json', data=data)
+        self.setup_file(self.home, '.homekeeper.json', data=data)
 
     def setup_custom_homekeeper_json(self, os):
         data = json.dumps({
