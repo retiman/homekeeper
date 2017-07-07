@@ -3,19 +3,15 @@ import logging
 import os
 import shutil
 
-from homekeeper import core
-
 __version__ = '4.0.0'
 
 
 class Homekeeper(object):
     """Organizes and versions your dot files."""
 
-    def __init__(self, config_path=None, cleanup_symlinks=True, overwrite=True):
+    def __init__(self, config_path=None):
         self.home = os.getenv('HOME')
         self.config = homekeeper.config.Config()
-        self.config.overwrite = overwrite
-        self.config.cleanup_symlinks = cleanup_symlinks
         self.config_path = (config_path if config_path
                             else os.path.join(self.home, '.homekeeper.json'))
         self.config.load(self.config_path)
@@ -36,10 +32,12 @@ class Homekeeper(object):
         your home directory.
         """
         if self.config.override:
-            core.create_symlinks(self.config.base_directory, self.home,
-                                 excludes=self.config.excludes)
-        core.create_symlinks(self.config.dotfiles_directory, self.home,
-                             excludes=self.config.excludes)
+            homekeeper.core.create_symlinks(self.config.base_directory,
+                                            self.home,
+                                            excludes=self.config.excludes)
+        homekeeper.core.create_symlinks(self.config.dotfiles_directory,
+                                        self.home,
+                                        excludes=self.config.excludes)
         self.clean()
 
     def link(self):
@@ -48,10 +46,12 @@ class Homekeeper(object):
     def unkeep(self):
         """Restores all symlinks (inverse of link)."""
         if self.config.override:
-            core.restore_symlinks(self.config.base_directory, self.home,
-                                  excludes=self.config.excludes)
-        core.restore_symlinks(self.config.dotfiles_directory, self.home,
-                              excludes=self.config.excludes)
+            homekeeper.core.restore_symlinks(self.config.base_directory,
+                                             self.home,
+                                             excludes=self.config.excludes)
+        homekeeper.core.restore_symlinks(self.config.dotfiles_directory,
+                                         self.home,
+                                         excludes=self.config.excludes)
         self.clean()
 
     def restore(self):
@@ -62,10 +62,18 @@ class Homekeeper(object):
         if self.config.cleanup_symlinks:
             core.cleanup_symlinks(self.home)
 
-    def __setattr__(self, name, value):
-        if name == 'cleanup_symlinks':
-            self.config.cleanup_symlinks = value
-        elif name == 'overwrite':
-            self.config.overwrite = value
-        else:
-            super(Homekeeper, self).__setattr__(name, value)
+    @property
+    def cleanup_symlinks(self):
+        return self.config.cleanup_symlinks
+
+    @property
+    def overwrite(self):
+        return self.config.overwrite
+
+    @cleanup_symlinks.setter
+    def cleanup_symlinks(self, value):
+        self.config.cleanup_symlinks = value
+
+    @overwrite.setter
+    def overwrite(self, value):
+        self.overwrite = value
