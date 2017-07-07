@@ -2,8 +2,6 @@ import homekeeper.config
 import homekeeper.test_case
 import json
 
-from homekeeper.common import makedirs
-
 os = None
 
 
@@ -46,7 +44,7 @@ class TestConfig(homekeeper.test_case.TestCase):
         assert not self.config.override
 
     def test_save(self):
-        makedirs(os.path.dirname(self.config_path))
+        self.setup_directory(os.path.dirname(self.config_path))
         self.config.base_directory = None
         self.config.dotfiles_directory = self.path(self.home(), 'dotfiles2')
         self.config.excludes = ['.idea']

@@ -3,8 +3,6 @@ import homekeeper.config
 import homekeeper.test_case
 import json
 
-from homekeeper.common import makedirs
-
 os = None
 
 
