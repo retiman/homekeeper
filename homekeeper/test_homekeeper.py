@@ -15,7 +15,7 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
         self.patch('homekeeper.config')
         self.patch('homekeeper.core')
         self.setup_files(self.fake_os)
-        self.setup_homekeeper_json(self.fake_os)
+        self.setup_homekeeper_json()
         self.setup_custom_homekeeper_json(self.fake_os)
 
     def setup_files(self, os):
@@ -51,7 +51,7 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
             self.setup_directory('base')
             self.setup_directory('dotfiles')
 
-    def setup_homekeeper_json(self, os):
+    def setup_homekeeper_json(self):
         data = json.dumps({
             'base_directory': self.base_directory,
             'dotfiles_directory': self.dotfiles_directory,
@@ -69,11 +69,11 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
         self.setup_file(self.custom_directory, '.homekeeper.json', data=data)
 
     def test_init_saves_config(self, os):
-        os.chdir(self.custom_directory)
-        config = os.path.join(self.custom_directory, '.homekeeper.json')
-        homekeeper.Homekeeper(config_path=config).init()
-        data = json.loads(self.read_file(config))
-        assert self.custom_directory == data['dotfiles_directory']
+        with cd(self.custom_directory):
+            config = os.path.join(self.custom_directory, '.homekeeper.json')
+            homekeeper.Homekeeper(config_path=config).init()
+            data = json.loads(self.read_file(config))
+            assert self.custom_directory == data['dotfiles_directory']
 
     def test_init_with_default_config_path(self):
         h = homekeeper.Homekeeper()
