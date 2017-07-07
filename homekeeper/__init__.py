@@ -38,7 +38,7 @@ class Homekeeper(object):
         homekeeper.core.create_symlinks(self.config.dotfiles_directory,
                                         self.home,
                                         excludes=self.config.excludes)
-        self.clean()
+        self.cleanup()
 
     def link(self):
         self.keep()
@@ -52,15 +52,15 @@ class Homekeeper(object):
         homekeeper.core.restore_symlinks(self.config.dotfiles_directory,
                                          self.home,
                                          excludes=self.config.excludes)
-        self.clean()
+        self.cleanup()
 
     def restore(self):
         self.unkeep()
 
-    def clean(self):
+    def cleanup(self):
         """Cleans up symlinks in the home directory."""
         if self.config.cleanup_symlinks:
-            core.cleanup_symlinks(self.home)
+            homekeeper.core.cleanup_symlinks(self.home)
 
     @property
     def cleanup_symlinks(self):

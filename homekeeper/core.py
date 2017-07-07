@@ -60,8 +60,8 @@ def restore(source, target, overwrite=True):
     else:
         logging.info('skipping uncopyable resource: %s', target)
 
-def create_symlinks(source_directory, target_directory,
-                    excludes=set(), overwrite=True):
+def create_symlinks(source_directory, target_directory, excludes=None,
+                    overwrite=True):
     """Symlinks files from the source directory to the target directory.
 
     For example, suppose that your `source_directory` is your dotfiles
@@ -81,7 +81,7 @@ def create_symlinks(source_directory, target_directory,
     process_directories(source_directory, target_directory, symlink,
                         excludes=excludes, overwrite=overwrite)
 
-def restore_symlinks(source_directory, target_directory, excludes=set(),
+def restore_symlinks(source_directory, target_directory, excludes=None,
                      overwrite=True):
     """Realizes the symlinks files in the source directory that have been
     symlinked to the target directory.
@@ -136,7 +136,8 @@ def remove(target):
 
 
 def process_directories(source_directory, target_directory, process,
-                        excludes=set(), overwrite=True):
+                        excludes=None, overwrite=True):
+    excluded_items = excludes or set()
     if not os.path.isdir(source_directory):
         logging.info('dotfiles directory not found: %s', source_directory)
         return
@@ -146,7 +147,7 @@ def process_directories(source_directory, target_directory, process,
             basename = os.path.basename(pathname)
             source = os.path.join(source_directory, basename)
             target = os.path.join(target_directory, basename)
-            if basename in excludes:
+            if basename in excluded_items:
                 logging.debug('skipping excluded resource: %s', basename)
                 continue
             process(source, target, overwrite=overwrite)

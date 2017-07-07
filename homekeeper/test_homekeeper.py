@@ -123,6 +123,6 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
         assert os.path.islink(os.path.join(self.home(), '.vimrc'))
         h = homekeeper.Homekeeper()
         h.cleanup_symlinks = True
-        h.clean()
+        h.cleanup()
         assert not os.path.exists(os.path.join(self.home(), '.brokenrc'))
         assert os.path.islink(os.path.join(self.home(), '.vimrc'))

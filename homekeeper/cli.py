@@ -1,7 +1,6 @@
 import click
 import homekeeper
 import logging
-import sys
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 
