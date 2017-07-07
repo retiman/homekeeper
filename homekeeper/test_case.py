@@ -1,9 +1,8 @@
 import fake_filesystem
 import fake_filesystem_shutil
+import homekeeper.common
 import logging
 import mock
-
-from homekeeper.common import makedirs
 
 logging.basicConfig(format='%(message)s', level=logging.DEBUG)
 
@@ -29,18 +28,29 @@ class TestCase(object):
     def path(self, *args):
         return self.os.path.join(*args)
 
-    def touch(self, *args):
-        with mock.patch('homekeeper.common.os', self.os):
-            pathname = self.path(*args)
-            dirname = self.os.path.dirname(pathname)
-            makedirs(dirname)
-            self.fs.CreateFile(pathname)
-            return pathname
-
     def patch(self, module):
         self._patch(module, 'fopen', self.fopen)
         self._patch(module, 'os', self.os)
         self._patch(module, 'shutil', self.shutil)
+
+    def setup_file(self, *args, **kwargs):
+        filename = self.os.path.join(self.os.sep, *args)
+        dirname = self.os.path.dirname(filename)
+        self.setup_directory(dirname)
+        contents = '' if ('data' not in kwargs) else kwargs['data']
+        self.fs.CreateFile(filename, contents=contents)
+        return filename
+
+    def setup_directory(self, *args):
+        if args == []:
+            return
+        items = args
+        if not args[0].startswith(self.os.sep):
+            items = (self.os.sep,) + items
+        dirname = self.os.path.join(*items)
+        with mock.patch('homekeeper.common.os', self.os):
+            homekeeper.common.makedirs(dirname)
+        return dirname
 
     def _patch(self, module, name, fake):
         try:

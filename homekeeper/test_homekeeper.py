@@ -67,17 +67,6 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
         })
         self.setup_file(self.custom_directory, '.homekeeper.json', data=data)
 
-    def setup_file(self, *args, **kwargs):
-        filename = os.path.join(os.sep, *args)
-        dirname = os.path.dirname(filename)
-        makedirs(dirname)
-        contents = '' if ('data' not in kwargs) else kwargs['data']
-        self.fs.CreateFile(filename, contents=contents)
-
-    def setup_directory(self, *args):
-        dirname = os.path.join(os.sep, *args)
-        makedirs(dirname)
-
     def test_init_saves_config(self):
         os.chdir(self.custom_directory)
         config = os.path.join(self.custom_directory, '.homekeeper.json')

@@ -19,8 +19,8 @@ class TestCore(homekeeper.test_case.TestCase):
         os = self.os
 
     def setup_symlink(self):
-        source = self.touch(self.home('dotfiles', '.vimrc'))
-        target = self.path(self.home('.vimrc'))
+        source = self.setup_file(self.home(), 'dotfiles', '.vimrc')
+        target = os.path.join(self.home(), '.vimrc')
         return source, target
 
     def verify_symlink(self, source, target):
@@ -40,7 +40,7 @@ class TestCore(homekeeper.test_case.TestCase):
 
     def test_symlink_with_file_target(self):
         source, target = self.setup_symlink()
-        self.touch(target)
+        self.setup_file(target)
         core.symlink(source, target, overwrite=True)
         self.verify_symlink(source, target)
 
@@ -52,14 +52,14 @@ class TestCore(homekeeper.test_case.TestCase):
 
     def test_symlink_with_symlink_target(self):
         source, target = self.setup_symlink()
-        original_source = self.touch(self.home('vimrc'))
+        original_source = self.setup_file(self.home(), 'vimrc')
         os.symlink(original_source, target)
         core.symlink(source, target, overwrite=True)
         self.verify_symlink(source, target)
 
     def test_symlink_with_no_overwrite(self):
         source, target = self.setup_symlink()
-        self.touch(target)
+        self.setup_file(target)
         core.symlink(source, target, overwrite=False)
         assert os.path.exists(source)
         assert os.path.exists(target)
@@ -75,8 +75,7 @@ class TestCore(homekeeper.test_case.TestCase):
     def test_restore_directory_symlink(self):
         source = self.home('dotfiles', '.vim')
         target = self.home('.vim')
-        makedirs(source)
-        self.touch(source, '.vim', 'autoload', 'pathogen.vim')
+        self.setup_file(source, '.vim', 'autoload', 'pathogen.vim')
         core.symlink(source, target, overwrite=True)
         core.restore(source, target, overwrite=True)
         assert not os.path.islink(target)
@@ -109,7 +108,7 @@ class TestCore(homekeeper.test_case.TestCase):
     def test_create_symlinks_with_no_overwrite(self):
         source, target = self.setup_symlink()
         source_directory = os.path.dirname(source)
-        self.touch(target)
+        self.setup_file(target)
         core.create_symlinks(source_directory, self.home(),
                                   overwrite=False)
         assert os.path.exists(source)
@@ -120,23 +119,23 @@ class TestCore(homekeeper.test_case.TestCase):
         source_files = ['.bash_profile', '.gitignore', '.gvimrc', '.vimrc']
         source_directories = ['bin', '.git', '.vim']
         excludes = ['.git', '.gitignore']
-        for pathname in source_files:
-            self.touch(self.home('dotfiles', pathname))
-            self.touch(self.home(pathname))
-        for pathname in source_directories:
-            makedirs(self.home('dotfiles', pathname))
-            self.touch(self.home(pathname))
+        for item in source_files:
+            self.setup_file(self.home(), 'dotfiles', item)
+            self.setup_file(self.home(), item)
+        for item in source_directories:
+            self.setup_directory(self.home(), 'dotfiles', item)
+            self.setup_file(self.home(), item)
         core.create_symlinks(self.home('dotfiles'), self.home(),
                              excludes=excludes, overwrite=True)
-        for pathname in source_files:
-            if pathname in excludes:
-                assert not os.path.islink(self.home(pathname))
+        for item in source_files:
+            if item in excludes:
+                assert not os.path.islink(self.home(item))
             else:
-                self.verify_symlink(self.home('dotfiles', pathname),
-                                    self.home(pathname))
+                self.verify_symlink(self.home('dotfiles', item),
+                                    self.home(item))
 
     def test_cleanup_symlinks(self):
-        self.touch(os.sep, 'existing.txt')
+        self.setup_file('existing.txt')
         os.symlink('existing.txt', 'existing-link.txt')
         os.symlink('non-existing-1.txt', 'non-existing-1-link.txt')
         os.symlink('non-existing-2.txt', 'non-existing-2-link.txt')
