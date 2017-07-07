@@ -68,15 +68,3 @@ Excludes
 Any paths listed in the `excludes` directive in `homekeeper.json` will be
 ignored by homekeeper when linking.  The only exception is if the path is also
 in the `cherrypicks` directive (see below).
-
-Cherry Picks
-============
-
-This directive tells homekeeper to 'cherry pick' a particular path for linking.
-This is useful if you want to version control a single file, but not the other
-files in the same directory, or any of the parent directories.
-
-Once you have done so, copy the file manually (with the appropriate directory
-structure) into your dotfiles directory.
-
-NOTE: This feature is experimental and may change.
