@@ -9,6 +9,7 @@ logging.basicConfig(format='%(message)s', level=logging.DEBUG)
 
 
 # pylint: disable=attribute-defined-outside-init
+# pylint: disable=no-self-use
 class TestCase(object):
     def setup_method(self):
         self.fake_fs = fake_filesystem.FakeFilesystem()
@@ -46,15 +47,13 @@ class TestCase(object):
     def setup_directory(self, *args):
         return self._setup_directory(self.fake_os, args)
 
-    # pylint: disable=no-self-use
     def _read_file(self, os, fopen, *args):
         filename = os.path.join(*args)
         with fopen(filename, 'r') as f:
             return f.read()
 
-    # pylint: disable=star-args
     def _setup_file(self, os, args, kwargs):
-        filename = os.path.join(os.sep, *args)
+        filename = os.path.join(os.sep, *args) # pylint: disable=star-args
         dirname = os.path.dirname(filename)
         self.setup_directory(dirname)
         contents = '' if ('data' not in kwargs) else kwargs['data']
@@ -63,14 +62,13 @@ class TestCase(object):
         self.fake_fs.CreateFile(filename, contents=contents)
         return filename
 
-    # pylint: disable=star-args
     def _setup_directory(self, os, args):
         if args == []:
             return
         items = args
         if not args[0].startswith(os.sep):
             items = (os.sep,) + items
-        dirname = os.path.join(*items)
+        dirname = os.path.join(*items) # pylint: disable=star-args
         with mock.patch('homekeeper.common.os', os):
             homekeeper.common.makedirs(dirname)
         return dirname

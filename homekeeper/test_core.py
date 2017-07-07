@@ -15,8 +15,7 @@ class TestCore(homekeeper.test_case.TestCase):
         target = os.path.join(self.home, '.vimrc')
         return source, target
 
-    # pylint: disable=no-self-use
-    def verify_symlink(self, os, source, target):
+    def verify_symlink(self, os, source, target): # pylint: disable=no-self-use
         assert os.path.exists(source)
         assert os.path.exists(target)
         assert os.path.islink(target)

@@ -2,8 +2,7 @@ import errno
 import os
 
 
-# pylint: disable=too-few-public-methods
-class cd(object):
+class cd(object): # pylint: disable=too-few-public-methods
     "Use with the `with` keyword to change directory."""
     def __init__(self, pathname):
         self.pathname = pathname
