@@ -22,7 +22,7 @@ class TestConfig(homekeeper.test_case.TestCase):
         assert includes == self.config.includes
         assert self.config.override
 
-    def test_load_with_defaults(self, os):
+    def test_load_with_defaults(self):
         self.setup_file(self.config_path, data=json.dumps({}))
         self.config.load(self.config_path)
         assert not self.config.base_directory
