@@ -38,15 +38,18 @@ class TestCase(object):
         self._patch(module, 'shutil', self.shutil)
 
     def read_file(self, *args):
-        filename = self.os.path.join(*args)
-        with self.fake_fopen(filename, 'r') as f:
-            return f.read()
+        return self._read_file(self.os, self.fake_fopen, *args)
 
     def setup_file(self, *args, **kwargs):
         return self._setup_file(self.os, args, kwargs)
 
     def setup_directory(self, *args):
         return self._setup_directory(self.os, args)
+
+    def _read_file(self, os, fopen, *args):
+        filename = os.path.join(*args)
+        with fopen(filename, 'r') as f:
+            return f.read()
 
     def _setup_file(self, os, args, kwargs):
         filename = os.path.join(os.sep, *args)
