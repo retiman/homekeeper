@@ -10,8 +10,8 @@ class TestCore(homekeeper.test_case.TestCase):
         self.patch('homekeeper.core')
 
     def setup_symlink(self, os):
-        source = self.setup_file(self.home(), 'dotfiles', '.vimrc')
-        target = os.path.join(self.home(), '.vimrc')
+        source = self.setup_file(self.home, 'dotfiles', '.vimrc')
+        target = os.path.join(self.home, '.vimrc')
         return source, target
 
     def verify_symlink(self, os, source, target):
@@ -43,7 +43,7 @@ class TestCore(homekeeper.test_case.TestCase):
 
     def test_symlink_with_symlink_target(self, os):
         source, target = self.setup_symlink(os)
-        original_source = self.setup_file(self.home(), 'vimrc')
+        original_source = self.setup_file(self.home, 'vimrc')
         os.symlink(original_source, target)
         homekeeper.core.symlink(source, target, overwrite=True)
         self.verify_symlink(os, source, target)
@@ -64,8 +64,8 @@ class TestCore(homekeeper.test_case.TestCase):
         assert os.path.isfile(target)
 
     def test_restore_directory_symlink(self, os):
-        source = os.path.join(self.home(), 'dotfiles', '.vim')
-        target = os.path.join(self.home(), '.vim')
+        source = os.path.join(self.home, 'dotfiles', '.vim')
+        target = os.path.join(self.home, '.vim')
         self.setup_file(source, '.vim', 'autoload', 'pathogen.vim')
         homekeeper.core.symlink(source, target, overwrite=True)
         homekeeper.core.restore(source, target, overwrite=True)
@@ -86,24 +86,24 @@ class TestCore(homekeeper.test_case.TestCase):
         source_directory = os.path.dirname(source)
         assert os.path.exists(source)
         assert not os.path.exists(target)
-        homekeeper.core.create_symlinks(source_directory, self.home(),
+        homekeeper.core.create_symlinks(source_directory, self.home,
                                         overwrite=True)
         self.verify_symlink(os, source, target)
 
     def test_create_symlinks_with_no_source_directory(self, os):
-        self.setup_directory(self.home())
-        assert os.path.exists(self.home())
-        assert not os.path.exists(os.path.join(self.home(), 'dotfiles'))
-        source_directory = os.path.join(self.home(), 'dotfiles')
-        homekeeper.core.create_symlinks(source_directory, self.home(),
+        self.setup_directory(self.home)
+        assert os.path.exists(self.home)
+        assert not os.path.exists(os.path.join(self.home, 'dotfiles'))
+        source_directory = os.path.join(self.home, 'dotfiles')
+        homekeeper.core.create_symlinks(source_directory, self.home,
                                         overwrite=True)
-        assert os.listdir(self.home()) == []
+        assert os.listdir(self.home) == []
 
     def test_create_symlinks_with_no_overwrite(self, os):
         source, target = self.setup_symlink(os)
         source_directory = os.path.dirname(source)
         self.setup_file(target)
-        homekeeper.core.create_symlinks(source_directory, self.home(),
+        homekeeper.core.create_symlinks(source_directory, self.home,
                                         overwrite=False)
         assert os.path.exists(source)
         assert os.path.exists(target)
@@ -114,21 +114,20 @@ class TestCore(homekeeper.test_case.TestCase):
         source_directories = ['bin', '.git', '.vim']
         excludes = ['.git', '.gitignore']
         for item in source_files:
-            self.setup_file(self.home(), 'dotfiles', item)
-            self.setup_file(self.home(), item)
+            self.setup_file(self.home, 'dotfiles', item)
+            self.setup_file(self.home, item)
         for item in source_directories:
-            self.setup_directory(self.home(), 'dotfiles', item)
-            self.setup_file(self.home(), item)
-        source_directory = os.path.join(self.home(), 'dotfiles')
-        target_directory = self.home()
-        homekeeper.core.create_symlinks(source_directory, target_directory,
+            self.setup_directory(self.home, 'dotfiles', item)
+            self.setup_file(self.home, item)
+        source_directory = os.path.join(self.home, 'dotfiles')
+        homekeeper.core.create_symlinks(source_directory, self.home,
                                         excludes=excludes, overwrite=True)
         for item in source_files:
             if item in excludes:
-                assert not os.path.islink(os.path.join(self.home(), item))
+                assert not os.path.islink(os.path.join(self.home, item))
             else:
-                source = os.path.join(self.home(), 'dotfiles', item)
-                target = os.path.join(self.home(), item)
+                source = os.path.join(self.home, 'dotfiles', item)
+                target = os.path.join(self.home, item)
                 self.verify_symlink(os, source, target)
 
     def test_cleanup_symlinks(self, os):

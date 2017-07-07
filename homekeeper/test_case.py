@@ -23,14 +23,12 @@ class TestCase(object):
 
     def setup_os(self, os):
         os.environ['HOME'] = os.path.join(os.sep, 'home', 'johndoe')
+        self.home = os.getenv('HOME')
 
     def teardown_method(self):
         for patcher in self.patchers:
             patcher.stop()
         del self.fake_fs
-
-    def home(self):
-        return self.fake_os.getenv('HOME')
 
     def patch(self, module):
         self._patch(module, 'fopen', self.fake_fopen)
