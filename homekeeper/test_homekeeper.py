@@ -15,11 +15,8 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
         self.patch('homekeeper.config')
         self.patch('homekeeper.core')
         self.setup_files(self.fake_os)
-        self.setup_homekeeper_json()
-        self.setup_custom_homekeeper_json(self.fake_os)
 
     def setup_files(self, os):
-        self.setup_directory(self.home)
         with cd(self.home):
             self.base_directory = os.path.abspath('base')
             self.dotfiles_directory = os.path.abspath('dotfiles')
@@ -50,23 +47,6 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
         with cd(self.custom_directory):
             self.setup_directory('base')
             self.setup_directory('dotfiles')
-
-    def setup_homekeeper_json(self):
-        data = json.dumps({
-            'base_directory': self.base_directory,
-            'dotfiles_directory': self.dotfiles_directory,
-            'excludes': ['.git', '.gitignore'],
-        })
-        self.setup_file(self.home, '.homekeeper.json', data=data)
-
-    def setup_custom_homekeeper_json(self, os):
-        data = json.dumps({
-            'base_directory': os.path.join(self.custom_directory, 'base'),
-            'dotfiles_directory': os.path.join(self.custom_directory,
-                                               'dotfiles'),
-            'excludes': ['.git', '.gitignore'],
-        })
-        self.setup_file(self.custom_directory, '.homekeeper.json', data=data)
 
     def test_init_saves_config(self, os):
         with cd(self.custom_directory):

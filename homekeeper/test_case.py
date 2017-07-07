@@ -1,6 +1,8 @@
+import contextlib
 import fake_filesystem
 import fake_filesystem_shutil
 import homekeeper.common
+import json
 import logging
 import mock
 import pytest
@@ -18,11 +20,37 @@ class TestCase(object):
         self.fake_shutil = fake_filesystem_shutil.FakeShutilModule(self.fake_fs)
         self.patchers = []
         self.setup_os(self.fake_os)
+        self.setup_configuration(self.fake_os)
 
     def setup_os(self, os):
         os.environ['HOME'] = os.path.join(os.sep, 'home', 'johndoe')
         self.home = os.getenv('HOME')
         self.setup_directory(self.home)
+
+    def setup_configuration(self, os):
+        with contextlib.nested(mock.patch('homekeeper.common.os', self.fake_os),
+                               homekeeper.common.cd(self.home)):
+            self.base_directory = os.path.abspath('base')
+            self.dotfiles_directory = os.path.abspath('dotfiles')
+            self.custom_directory = os.path.abspath('custom')
+            self.setup_directory(self.base_directory)
+            self.setup_directory(self.dotfiles_directory)
+            self.setup_directory(self.custom_directory)
+            self.setup_directory(self.custom_directory, 'base')
+            self.setup_directory(self.custom_directory, 'dotfiles')
+        data = json.dumps({
+            'base_directory': self.base_directory,
+            'dotfiles_directory': self.dotfiles_directory,
+            'excludes': ['.git', '.gitignore'],
+        })
+        self.setup_file(self.home, '.homekeeper.json', data=data)
+        data = json.dumps({
+            'base_directory': os.path.join(self.custom_directory, 'base'),
+            'dotfiles_directory': os.path.join(self.custom_directory,
+                                               'dotfiles'),
+            'excludes': ['.git', '.gitignore'],
+        })
+        self.setup_file(self.home, 'custom', '.homekeeper.json', data=data)
 
     def teardown_method(self):
         for patcher in self.patchers:

@@ -1,5 +1,8 @@
+import homekeeper.common
 import homekeeper.core
 import homekeeper.test_case
+
+cd = homekeeper.common.cd
 
 
 # pylint: disable=attribute-defined-outside-init
@@ -11,7 +14,7 @@ class TestCore(homekeeper.test_case.TestCase):
         self.patch('homekeeper.core')
 
     def setup_symlink(self, os):
-        source = self.setup_file(self.home, 'dotfiles', '.vimrc')
+        source = self.setup_file(self.dotfiles_directory, '.vimrc')
         target = os.path.join(self.home, '.vimrc')
         return source, target
 
@@ -71,7 +74,7 @@ class TestCore(homekeeper.test_case.TestCase):
         assert os.path.isfile(target)
 
     def test_restore_directory_symlink(self, os):
-        source = os.path.join(self.home, 'dotfiles', '.vim')
+        source = os.path.join(self.dotfiles_directory, '.vim')
         target = os.path.join(self.home, '.vim')
         self.setup_file(source, '.vim', 'autoload', 'pathogen.vim')
         homekeeper.core.symlink(source, target, overwrite=True)
@@ -111,12 +114,11 @@ class TestCore(homekeeper.test_case.TestCase):
 
     def test_create_symlinks_with_no_source_directory(self, os):
         self.setup_directory(self.home)
-        assert os.path.exists(self.home)
-        assert not os.path.exists(os.path.join(self.home, 'dotfiles'))
-        source_directory = os.path.join(self.home, 'dotfiles')
+        source_directory = os.path.join(self.home, 'non-existant-directory')
         homekeeper.core.create_symlinks(source_directory, self.home,
                                         overwrite=True)
-        assert os.listdir(self.home) == []
+        for item in os.listdir(self.home):
+            assert not os.path.islink(item)
 
     def test_create_symlinks_with_no_overwrite(self, os):
         source, target = self.setup_symlink(os)
@@ -133,29 +135,29 @@ class TestCore(homekeeper.test_case.TestCase):
         source_directories = ['bin', '.git', '.vim']
         excludes = ['.git', '.gitignore']
         for item in source_files:
-            self.setup_file(self.home, 'dotfiles', item)
+            self.setup_file(self.dotfiles_directory, item)
             self.setup_file(self.home, item)
         for item in source_directories:
-            self.setup_directory(self.home, 'dotfiles', item)
+            self.setup_directory(self.dotfiles_directory, item)
             self.setup_file(self.home, item)
-        source_directory = os.path.join(self.home, 'dotfiles')
-        homekeeper.core.create_symlinks(source_directory, self.home,
+        homekeeper.core.create_symlinks(self.dotfiles_directory, self.home,
                                         excludes=excludes, overwrite=True)
         for item in source_files:
             if item in excludes:
                 assert not os.path.islink(os.path.join(self.home, item))
             else:
-                source = os.path.join(self.home, 'dotfiles', item)
+                source = os.path.join(self.dotfiles_directory, item)
                 target = os.path.join(self.home, item)
                 self.verify_symlink(os, source, target)
 
     def test_cleanup_symlinks(self, os):
-        self.setup_file('existing.txt')
-        os.symlink('existing.txt', 'existing-link.txt')
-        os.symlink('non-existing-1.txt', 'non-existing-1-link.txt')
-        os.symlink('non-existing-2.txt', 'non-existing-2-link.txt')
-        homekeeper.core.cleanup_symlinks(self.home)
-        assert os.path.exists('existing.txt')
-        assert os.path.exists('existing-link.txt')
-        assert not os.path.exists('non-existing-1-link.txt')
-        assert not os.path.exists('non-existing-2-link.txt')
+        with cd(self.home):
+            self.setup_file('existing.txt')
+            os.symlink('existing.txt', 'existing-link.txt')
+            os.symlink('non-existing-1.txt', 'non-existing-1-link.txt')
+            os.symlink('non-existing-2.txt', 'non-existing-2-link.txt')
+            homekeeper.core.cleanup_symlinks(self.home)
+            assert os.path.exists('existing.txt')
+            assert os.path.exists('existing-link.txt')
+            assert not os.path.exists('non-existing-1-link.txt')
+            assert not os.path.exists('non-existing-2-link.txt')
