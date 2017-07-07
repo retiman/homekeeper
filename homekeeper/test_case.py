@@ -12,7 +12,8 @@ class TestCase(object):
         self.fs = fake_filesystem.FakeFilesystem()
         self.fopen = fake_filesystem.FakeFileOpen(self.fs)
         self.os = fake_filesystem.FakeOsModule(self.fs)
-        self.os.environ['HOME'] = self.path(self.os.sep, 'home', 'johndoe')
+        self.os.environ['HOME'] = self.os.path.join(self.os.sep, 'home',
+                                                    'johndoe')
         self.shutil = fake_filesystem_shutil.FakeShutilModule(self.fs)
         self.patchers = []
 
@@ -24,9 +25,6 @@ class TestCase(object):
     def home(self, *args):
         home_directory = self.os.getenv('HOME')
         return self.os.path.join(home_directory, *args)
-
-    def path(self, *args):
-        return self.os.path.join(*args)
 
     def patch(self, module):
         self._patch(module, 'fopen', self.fopen)

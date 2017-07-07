@@ -78,8 +78,8 @@ class TestCore(homekeeper.test_case.TestCase):
         homekeeper.core.restore(source, target, overwrite=True)
         assert not os.path.islink(target)
         assert os.path.isdir(target)
-        assert os.path.isfile(self.path(target, '.vim', 'autoload',
-                              'pathogen.vim'))
+        assert os.path.isfile(os.path.join(target, '.vim', 'autoload',
+                                           'pathogen.vim'))
 
     def test_restore_symlink_with_no_target(self):
         source, target = self.setup_symlink()
