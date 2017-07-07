@@ -1,3 +1,4 @@
+PYDOC = /usr/bin/env pydoc
 PYLINT = /usr/bin/env pylint
 PYTEST = /usr/bin/env pytest
 PYTHON = /usr/bin/env python2
@@ -23,10 +24,10 @@ debug:
 	${PYTEST} --pdb homekeeper
 
 doc:
-	pydoc -w homekeeper
+	${PYDOC} -w homekeeper
 
 doc-server:
-	pydoc -p 8080 -w homekeeper
+	${PYDOC} -p 8080 -w homekeeper
 
 install: clean requirements
 	${PIP} install --upgrade .
