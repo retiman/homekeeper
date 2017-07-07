@@ -18,6 +18,9 @@ clean:
 deploy: clean doc test
 	${PYTHON} setup.py sdist upload -r homekeeper
 
+debug:
+	pytest --pdb homekeeper
+
 doc:
 	pydoc -w homekeeper
 
