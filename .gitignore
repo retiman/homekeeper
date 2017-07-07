@@ -5,4 +5,5 @@ homekeeper/*.pyc
 htmlcov/
 .cache/
 .coverage
+homekeeper.html
 tests.xml
