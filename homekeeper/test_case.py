@@ -43,13 +43,14 @@ class TestCase(object):
             'base_directory': self.base_directory,
             'dotfiles_directory': self.dotfiles_directory,
             'excludes': ['.git', '.gitignore'],
+            'includes': [os.path.join(self.home, '.foo', 'foorc')],
         })
         self.setup_file(self.home, '.homekeeper.json', data=data)
         data = json.dumps({
-            'base_directory': os.path.join(self.custom_directory, 'base'),
-            'dotfiles_directory': os.path.join(self.custom_directory,
-                                               'dotfiles'),
-            'excludes': ['.git', '.gitignore'],
+            'base': os.path.join(self.custom_directory, 'base'),
+            'directory': os.path.join(self.custom_directory, 'dotfiles'),
+            'excludes': ['.git'],
+            'cherrypicks': [os.path.join(self.home, '.bar', 'barrc')],
         })
         self.setup_file(self.home, 'custom', '.homekeeper.json', data=data)
 

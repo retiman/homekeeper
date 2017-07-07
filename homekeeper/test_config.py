@@ -13,29 +13,46 @@ class TestConfig(homekeeper.test_case.TestCase):
         self.config_path = self.fake_os.path.join(self.home, '.homekeeper.json')
 
     def test_load(self, os):
-        base_directory = os.path.join(self.home, 'base')
-        dotfiles_directory = os.path.join(self.home, 'dotfiles')
-        excludes = ['.git']
-        data = {
-            'base_directory': base_directory,
-            'dotfiles_directory': dotfiles_directory,
-            'excludes': excludes
-        }
-        self.setup_file(self.config_path, data=json.dumps(data))
         self.config.load(self.config_path)
-        assert base_directory == self.config.base_directory
-        assert dotfiles_directory == self.config.dotfiles_directory
+        excludes = ['.git', '.gitignore']
+        includes = [os.path.join(self.home, '.foo', 'foorc')]
+        assert self.base_directory == self.config.base_directory
+        assert self.dotfiles_directory == self.config.dotfiles_directory
         assert excludes == self.config.excludes
+        assert includes == self.config.includes
         assert self.config.override
 
     def test_load_with_defaults(self, os):
-        dotfiles_directory = os.path.join(self.home, 'dotfiles')
         self.setup_file(self.config_path, data=json.dumps({}))
         self.config.load(self.config_path)
         assert not self.config.base_directory
-        assert dotfiles_directory == self.config.dotfiles_directory
+        assert self.dotfiles_directory == self.config.dotfiles_directory
         assert [] == self.config.excludes
+        assert [] == self.config.includes
         assert not self.config.override
+
+    def test_load_and_save_old_config(self, os):
+        config_path = os.path.join(self.home, 'custom', '.homekeeper.json')
+        base_directory = os.path.join(self.home, 'custom', 'base')
+        dotfiles_directory = os.path.join(self.home, 'custom', 'dotfiles')
+        excludes = ['.git']
+        includes = [os.path.join(self.home, '.bar', 'barrc')]
+        self.config.load(config_path)
+        assert base_directory == self.config.base_directory
+        assert dotfiles_directory == self.config.dotfiles_directory
+        assert excludes == self.config.excludes
+        assert includes == self.config.includes
+        assert self.config.override
+        self.config.save(config_path)
+        data = json.loads(self.read_file(config_path))
+        assert data['base_directory'] == base_directory
+        assert data['dotfiles_directory'] == dotfiles_directory
+        assert data['excludes'] == excludes
+        assert data['includes'] == includes
+        assert 'override' not in data
+        assert 'cherrypicks' not in data
+        assert 'base' not in data
+        assert 'directory' not in data
 
     def test_save(self, os):
         self.setup_directory(os.path.dirname(self.config_path))
@@ -49,3 +66,6 @@ class TestConfig(homekeeper.test_case.TestCase):
         assert data['dotfiles_directory'] == self.config.dotfiles_directory
         assert data['excludes'] == self.config.excludes
         assert 'override' not in data
+        assert 'cherrypicks' not in data
+        assert 'base' not in data
+        assert 'directory' not in data
