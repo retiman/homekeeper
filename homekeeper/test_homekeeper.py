@@ -1,8 +1,10 @@
 import homekeeper
+import homekeeper.common
 import homekeeper.config
 import homekeeper.test_case
 import json
 
+cd = homekeeper.common.cd
 
 # pylint: disable=attribute-defined-outside-init
 class TestHomekeeper(homekeeper.test_case.TestCase):
@@ -17,30 +19,37 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
         self.setup_custom_homekeeper_json(self.fake_os)
 
     def setup_files(self, os):
-        os.chdir(self.home)
-        self.base_directory = os.path.abspath('base')
-        self.dotfiles_directory = os.path.abspath('dotfiles')
-        self.custom_directory = os.path.abspath('custom')
-        self.setup_file('base', '.bash_aliases', data='base')
-        self.setup_file('base', '.bash_local', data='base')
-        self.setup_file('base', '.bash_profile')
-        self.setup_file('base', '.git')
-        self.setup_file('base', '.gitconfig')
-        self.setup_file('base', '.gitignore')
-        self.setup_file('base', '.vimrc')
-        self.setup_file('dotfiles', '.bash_aliases', data='dotfiles')
-        self.setup_file('dotfiles', '.bash_local', data='dotfiles')
-        self.setup_file('dotfiles', '.xbindkeysrc', data='dotfiles')
-        self.setup_directory('base', '.tmux')
-        self.setup_directory('base', '.tmux', 'base')
-        self.setup_directory('base', '.tmuxp')
-        self.setup_directory('base', '.tmuxp', 'base')
-        self.setup_directory('base', '.vim')
-        self.setup_directory('custom', 'base')
-        self.setup_directory('custom', 'dotfiles')
-        self.setup_directory('dotfiles', '.tmux')
-        self.setup_directory('dotfiles', '.tmuxp')
-        self.setup_directory('dotfiles', 'bin')
+        self.setup_directory(self.home)
+        with cd(self.home):
+            self.base_directory = os.path.abspath('base')
+            self.dotfiles_directory = os.path.abspath('dotfiles')
+            self.custom_directory = os.path.abspath('custom')
+            self.setup_directory(self.base_directory)
+            self.setup_directory(self.dotfiles_directory)
+            self.setup_directory(self.custom_directory)
+        with cd(self.base_directory):
+            self.setup_file('.bash_aliases', data='base')
+            self.setup_file('.bash_local', data='base')
+            self.setup_file('.bash_profile')
+            self.setup_file('.git')
+            self.setup_file('.gitconfig')
+            self.setup_file('.gitignore')
+            self.setup_file('.vimrc')
+            self.setup_directory('.tmux')
+            self.setup_directory('.tmux', 'base')
+            self.setup_directory('.tmuxp')
+            self.setup_directory('.tmuxp', 'base')
+            self.setup_directory('.vim')
+        with cd(self.dotfiles_directory):
+            self.setup_file('.bash_aliases', data='dotfiles')
+            self.setup_file('.bash_local', data='dotfiles')
+            self.setup_file('.xbindkeysrc', data='dotfiles')
+            self.setup_directory('.tmux')
+            self.setup_directory('.tmuxp')
+            self.setup_directory('bin')
+        with cd(self.custom_directory):
+            self.setup_directory('base')
+            self.setup_directory('dotfiles')
 
     def setup_homekeeper_json(self, os):
         data = json.dumps({
