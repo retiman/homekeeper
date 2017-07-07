@@ -41,7 +41,7 @@ class Config(object):
             else:
                 self.excludes = []
             self.override = self.base_directory is not None
-            logging.info('loaded configuration from %s', pathname)
+            logging.info('loaded configuration from %s', config_path)
 
     def save(self, pathname):
         with fopen(pathname, 'w') as f:
