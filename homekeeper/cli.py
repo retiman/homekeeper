@@ -5,7 +5,7 @@ import logging
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 
 
-@click.command(short_help='removes broken symlinks only')
+@click.command(short_help='Removes broken symlinks only.')
 @click.pass_context
 def cleanup(ctx):
     h = ctx.obj['homekeeper']
@@ -14,7 +14,7 @@ def cleanup(ctx):
     h.cleanup()
 
 
-@click.command(short_help='set dotfiles directory to current directory')
+@click.command(short_help='Set dotfiles directory to current directory.')
 @click.pass_context
 def init(ctx):
     h = ctx.obj['homekeeper']
@@ -23,14 +23,14 @@ def init(ctx):
     h.cleanup()
 
 
-@click.command(short_help='symlinks dotfiles to your home directory')
+@click.command(short_help='Symlinks dotfiles to your home directory.')
 @click.pass_context
 def keep(ctx):
     h = ctx.obj['homekeeper']
     h.keep()
 
 
-@click.command(short_help='restores dotfiles and replacing symlinks')
+@click.command(short_help='Restores dotfiles and replacing symlinks.')
 @click.pass_context
 def unkeep(ctx):
     h = ctx.obj['homekeeper']
@@ -39,10 +39,11 @@ def unkeep(ctx):
 
 @click.group()
 @click.option('--cleanup-symlinks/--no-cleanup-symlinks', default=True,
-              is_flag=True, help='removes broken symlinks')
+              is_flag=True, help='Removes broken symlinks (default true).')
 @click.option('--overwrite/--no-overwrite', default=True, is_flag=True,
-              help='overwrite existing files or symlinks')
-@click.option('--config-path', default=None, help='path to config file')
+              help='Overwrite existing files or symlinks (default true).')
+@click.option('--config-path', metavar='FILE', default=None,
+              help='Path to .homekeeper.json config file.')
 @click.pass_context
 def main(ctx, cleanup_symlinks, config_path, overwrite):
     h = homekeeper.Homekeeper(config_path=config_path)
