@@ -34,4 +34,5 @@ requirements:
 	${PIP} install -r requirements.txt
 
 test:
-	pytest -v --cov=homekeeper homekeeper
+	pytest -v --tb=long --full-trace --junit-xml=tests.xml --cov=homekeeper \
+			homekeeper
