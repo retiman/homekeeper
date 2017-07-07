@@ -2,8 +2,6 @@ import click
 import homekeeper
 import logging
 
-logging.basicConfig(format='%(message)s', level=logging.INFO)
-
 
 @click.command(short_help='Removes broken symlinks only.')
 @click.pass_context
@@ -44,8 +42,14 @@ def unkeep(ctx):
               help='Overwrite existing files or symlinks (default true).')
 @click.option('--config-path', metavar='FILE', default=None,
               help='Path to .homekeeper.json config file.')
+@click.option('--debug/--no-debug', default=False, is_flag=True,
+              help='Enables debug output (default false).')
 @click.pass_context
-def main(ctx, cleanup_symlinks, config_path, overwrite):
+def main(ctx, cleanup_symlinks, config_path, overwrite, debug):
+    if debug:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(format='%(message)s', level=logging.INFO)
     h = homekeeper.Homekeeper(config_path=config_path)
     h.cleanup_symlinks = cleanup_symlinks
     h.overwrite = overwrite
