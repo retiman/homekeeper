@@ -1,8 +1,10 @@
+import homekeeper.common
 import logging
 import os
 import shutil
 
-from homekeeper.common import (cd, makedirs)
+cd = homekeeper.common.cd
+makedirs = homekeeper.common.makedirs
 
 
 def symlink(source, target, overwrite=True):

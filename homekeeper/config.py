@@ -1,8 +1,9 @@
+import homekeeper.common
 import logging
 import json
 import os
 
-from homekeeper.common import fopen
+fopen = homekeeper.common.fopen
 
 
 class Config(object):
