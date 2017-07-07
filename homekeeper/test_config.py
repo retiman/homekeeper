@@ -1,24 +1,22 @@
 import homekeeper.config
 import homekeeper.test_case
 import json
-
-os = None
+import pytest
 
 
 class TestConfig(homekeeper.test_case.TestCase):
+    @pytest.fixture
+    def os(self):
+        return self.os
+
     def setup_method(self):
         super(TestConfig, self).setup_method()
-        self.setup_filesystem()
         self.patch('homekeeper.common')
         self.patch('homekeeper.config')
         self.config = homekeeper.config.Config()
-        self.config_path = os.path.join(self.home(), '.homekeeper.json')
+        self.config_path = self.os.path.join(self.home(), '.homekeeper.json')
 
-    def setup_filesystem(self):
-        global os
-        os = self.os
-
-    def test_load(self):
+    def test_load(self, os):
         base_directory = os.path.join(self.home(), 'base')
         dotfiles_directory = os.path.join(self.home(), 'dotfiles')
         excludes = ['.git']
@@ -34,7 +32,7 @@ class TestConfig(homekeeper.test_case.TestCase):
         assert excludes == self.config.excludes
         assert self.config.override
 
-    def test_load_with_defaults(self):
+    def test_load_with_defaults(self, os):
         dotfiles_directory = os.path.join(self.home(), 'dotfiles')
         self.fs.CreateFile(self.config_path, contents=json.dumps({}))
         self.config.load(self.config_path)
@@ -43,7 +41,7 @@ class TestConfig(homekeeper.test_case.TestCase):
         assert [] == self.config.excludes
         assert not self.config.override
 
-    def test_save(self):
+    def test_save(self, os):
         self.setup_directory(os.path.dirname(self.config_path))
         self.config.base_directory = None
         self.config.dotfiles_directory = os.path.join(self.home(), 'custom')
