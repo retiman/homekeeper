@@ -7,6 +7,7 @@ import json
 cd = homekeeper.common.cd
 
 # pylint: disable=attribute-defined-outside-init
+# pylint: disable=no-self-use
 class TestHomekeeper(homekeeper.test_case.TestCase):
     def setup_method(self):
         super(TestHomekeeper, self).setup_method()
@@ -40,6 +41,15 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
         with cd(self.custom_directory):
             self.setup_directory('base')
             self.setup_directory('dotfiles')
+
+    def test_setters_override_config(self):
+        h = homekeeper.Homekeeper()
+        assert h.config.overwrite
+        assert h.config.cleanup_symlinks
+        h.overwrite = False
+        h.cleanup_symlinks = False
+        assert not h.config.overwrite
+        assert not h.config.cleanup_symlinks
 
     def test_init_saves_config(self, os):
         with cd(self.custom_directory):

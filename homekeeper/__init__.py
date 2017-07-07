@@ -66,4 +66,4 @@ class Homekeeper(object):
 
     @overwrite.setter
     def overwrite(self, value):
-        self.overwrite = value
+        self.config.overwrite = value
