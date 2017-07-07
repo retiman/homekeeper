@@ -31,4 +31,4 @@ requirements:
 	${PIP} install -r requirements.txt
 
 test:
-	pytest --cov=homekeeper homekeeper/
+	pytest -v --cov=homekeeper homekeeper
