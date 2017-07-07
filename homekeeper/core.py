@@ -137,11 +137,14 @@ def remove(target):
 
 def process_directories(source_directory, target_directory, process,
                         excludes=None, overwrite=True):
-    excluded_items = excludes or set()
     if not os.path.isdir(source_directory):
         logging.info('dotfiles directory not found: %s', source_directory)
         return
+    if source_directory == target_directory:
+        logging.error('source and target directory are the same')
+        return
     logging.info('processing files in %s', source_directory)
+    excluded_items = excludes or set()
     with cd(source_directory):
         for pathname in os.listdir('.'):
             basename = os.path.basename(pathname)

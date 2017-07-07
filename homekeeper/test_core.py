@@ -104,6 +104,11 @@ class TestCore(homekeeper.test_case.TestCase):
                                         overwrite=True)
         self.verify_symlink(os, source, target)
 
+    def test_create_symlinks_with_same_source_and_target(self, os):
+        homekeeper.core.create_symlinks(self.home, self.home)
+        for item in os.listdir(self.home):
+            assert not os.path.islink(os.path.join(self.home, item))
+
     def test_create_symlinks_with_no_source_directory(self, os):
         self.setup_directory(self.home)
         assert os.path.exists(self.home)
