@@ -1,19 +1,19 @@
 import homekeeper.config
+import homekeeper.core
 import logging
 import os
 import shutil
 
 __version__ = '4.0.0'
+core = homekeeper.core
 
 
 class Homekeeper(object):
     """Organizes and versions your dot files."""
 
     def __init__(self, config_path=None):
-        self.home = os.getenv('HOME')
+        self.config_path = config_path
         self.config = homekeeper.config.Config()
-        self.config_path = (config_path if config_path
-                            else os.path.join(self.home, '.homekeeper.json'))
         self.config.load(self.config_path)
 
     def init(self):
@@ -31,13 +31,8 @@ class Homekeeper(object):
         """Symlinks all files and directories from your dotfiles directory into
         your home directory.
         """
-        if self.config.override:
-            homekeeper.core.create_symlinks(self.config.base_directory,
-                                            self.home,
-                                            excludes=self.config.excludes)
-        homekeeper.core.create_symlinks(self.config.dotfiles_directory,
-                                        self.home,
-                                        excludes=self.config.excludes)
+        core.create_symlinks_from_base(self.config)
+        core.create_symlinks_from_dotfiles(self.config)
         self.cleanup()
 
     def link(self):
@@ -45,13 +40,8 @@ class Homekeeper(object):
 
     def unkeep(self):
         """Restores all symlinks (inverse of link)."""
-        if self.config.override:
-            homekeeper.core.restore_symlinks(self.config.base_directory,
-                                             self.home,
-                                             excludes=self.config.excludes)
-        homekeeper.core.restore_symlinks(self.config.dotfiles_directory,
-                                         self.home,
-                                         excludes=self.config.excludes)
+        core.restore_symlinks_from_base(self.config)
+        core.restore_symlinks_from_dotfiles(self.config)
         self.cleanup()
 
     def restore(self):
@@ -60,7 +50,7 @@ class Homekeeper(object):
     def cleanup(self):
         """Cleans up symlinks in the home directory."""
         if self.config.cleanup_symlinks:
-            homekeeper.core.cleanup_symlinks(self.home)
+            core.cleanup_symlinks(self.config.home)
 
     @property
     def cleanup_symlinks(self):

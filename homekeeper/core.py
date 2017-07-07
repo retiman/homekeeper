@@ -7,11 +7,12 @@ cd = homekeeper.common.cd
 makedirs = homekeeper.common.makedirs
 
 
-def symlink(source, target, overwrite=True):
+def symlink(config, source, target):
     """Removes a target symlink/file/directory before replacing it with
     symlink. Also creates the parent directory if it does not exist.
 
     Args:
+        config: Homekeeper configuration.
         source: Original source of the symlink.
         target: Path of symlink target, can be file or directory.
     """
@@ -21,26 +22,26 @@ def symlink(source, target, overwrite=True):
     if source == target:
         logging.debug('skipping %s; source and target are the same', source)
         return
-    if os.path.exists(target) and not overwrite:
+    if os.path.exists(target) and not config.overwrite:
         logging.debug('skipping %s; will not overwrite', target)
         return
     remove(target)
     os.symlink(source, target)
     logging.info('symlinked %s -> %s', source, target)
 
-def restore(source, target, overwrite=True):
+def restore(config, source, target):
     """Restores a symlink to its target. Afterwards, the target will no
     longer be a symlink.
 
     Args:
+        config: Homekeeper configuration.
         source: Original source of the symlink.
         target: Path of symlink target, can be file or directory.
-        overwrite: Overwrite the target even if the doesn't exist.
     """
     if source == target:
         logging.debug('skipping %s; source and target are the same', source)
         return
-    if not overwrite:
+    if not config.overwrite:
         if not os.path.exists(target):
             logging.debug('skipping %s; missing link target', target)
             return
@@ -60,8 +61,7 @@ def restore(source, target, overwrite=True):
     else:
         logging.info('skipping %s; not a file or directory', target)
 
-def create_symlinks(source_directory, target_directory, excludes=None,
-                    overwrite=True):
+def create_symlinks(config, source_directory, target_directory):
     """Symlinks files from the source directory to the target directory.
 
     For example, suppose that your `source_directory` is your dotfiles
@@ -73,16 +73,21 @@ def create_symlinks(source_directory, target_directory, excludes=None,
     The existing $HOME/.vimrc will be removed.
 
     Args:
+        config: Homekeeper configuration.
         source_directory: The source directory where your dotfiles are.
         target_directory: The target directory for symlinking.
-        excludes: An array of paths excluded from symlinking.
-        overwrite: Overwrite existing files.
     """
-    process_directories(source_directory, target_directory, symlink,
-                        excludes=excludes, overwrite=overwrite)
+    process_directories(config, source_directory, target_directory, symlink)
 
-def restore_symlinks(source_directory, target_directory, excludes=None,
-                     overwrite=True):
+def create_symlinks_from_base(config):
+    if not config.override:
+        return
+    create_symlinks(config, config.base_directory, config.home)
+
+def create_symlinks_from_dotfiles(config):
+    create_symlinks(config, config.dotfiles_directory, config.home)
+
+def restore_symlinks(config, source_directory, target_directory):
     """Realizes the symlinks files in the source directory that have been
     symlinked to the target directory.
 
@@ -99,13 +104,19 @@ def restore_symlinks(source_directory, target_directory, excludes=None,
     directory will not be restored.
 
     Args:
+        config: Homekeeper configuration.
         source_directory: The source directory where your dotfiles are.
         target_directory: The target directory for symlinking.
-        excludes: An array of paths excluded from symlinking.
-        overwrite: Overwrite existing target even if it's not a symlink.
     """
-    process_directories(source_directory, target_directory, restore,
-                        excludes=excludes, overwrite=overwrite)
+    process_directories(config, source_directory, target_directory, restore)
+
+def restore_symlinks_from_base(config):
+    if not config.override:
+        return
+    restore_symlinks(config, config.base_directory, config.home)
+
+def restore_symlinks_from_dotfiles(config):
+    restore_symlinks(config, config.dotfiles_directory, config.home)
 
 def cleanup_symlinks(directory):
     """Removes broken symlinks from a directory.
@@ -135,8 +146,7 @@ def remove(target):
         logging.debug('removed directory %s', target)
 
 
-def process_directories(source_directory, target_directory, process,
-                        excludes=None, overwrite=True):
+def process_directories(config, source_directory, target_directory, process):
     if not os.path.isdir(source_directory):
         logging.info('dotfiles directory not found: %s', source_directory)
         return
@@ -144,13 +154,12 @@ def process_directories(source_directory, target_directory, process,
         logging.error('source and target directory are the same')
         return
     logging.info('processing files in %s', source_directory)
-    excluded_items = excludes or set()
     with cd(source_directory):
         for pathname in os.listdir('.'):
             basename = os.path.basename(pathname)
             source = os.path.join(source_directory, basename)
             target = os.path.join(target_directory, basename)
-            if basename in excluded_items:
+            if basename in config.excludes:
                 logging.debug('skipping %s; resource is excluded', basename)
                 continue
-            process(source, target, overwrite=overwrite)
+            process(config, source, target)

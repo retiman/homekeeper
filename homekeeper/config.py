@@ -9,17 +9,20 @@ fopen = homekeeper.common.fopen
 class Config(object):
     """Representation of the homekeeper configuration file."""
 
+    # pylint: disable=too-many-instance-attributes
     def __init__(self):
+        self.home = os.getenv('HOME')
         self.base_directory = None
-        self.dotfiles_directory = os.path.join(os.getenv('HOME'), 'dotfiles')
+        self.dotfiles_directory = os.path.join(self.home, 'dotfiles')
         self.includes = []
         self.excludes = ['.git', '.gitignore', 'LICENSE', 'README.md']
         self.cleanup_symlinks = True
         self.overwrite = True
         self.override = False
 
-    def load(self, pathname):
-        with fopen(pathname, 'r') as f:
+    def load(self, pathname=None):
+        config_path = pathname or os.path.join(self.home, '.homekeeper.json')
+        with fopen(config_path, 'r') as f:
             data = json.loads(f.read())
             if 'base' in data:
                 self.base_directory = data['base']
