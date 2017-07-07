@@ -1,14 +1,15 @@
 import click.testing
 import homekeeper
 import homekeeper.cli
+import homekeeper.test_case
 import mock
-import os
 
 
 # pylint: disable=attribute-defined-outside-init
 # pylint: disable=maybe-no-member
-class TestCli(object):
+class TestCli(homekeeper.test_case.TestCase):
     def setup_method(self):
+        super(TestCli, self).setup_method()
         self.runner = click.testing.CliRunner()
         self.mock_instance = mock.MagicMock()
         self.patcher = mock.patch('homekeeper.Homekeeper')
@@ -35,7 +36,7 @@ class TestCli(object):
         assert self.mock_instance.cleanup_symlinks == True
         assert self.mock_instance.overwrite == False
 
-    def test_init_with_custom_config(self):
+    def test_init_with_custom_config(self, os):
         dotfiles_directory = os.getcwd()
         config_path = os.path.join(dotfiles_directory, '.config.json')
         self.run('--config-path', config_path, 'init')
