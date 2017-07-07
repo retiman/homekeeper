@@ -28,7 +28,7 @@ class TestCli(object):
         assert self.mock_instance.overwrite == False
 
     def test_cleanup_ignores_no_cleanup_and_overwrite(self):
-        self.run('--no-cleanup', '--overwrite', 'cleanup')
+        self.run('--no-cleanup-symlinks', '--overwrite', 'cleanup')
         self.mock_class.cleanup.assert_called_once()
         assert self.mock_instance.cleanup_symlinks == True
         assert self.mock_instance.overwrite == False
@@ -43,7 +43,7 @@ class TestCli(object):
         assert self.mock_instance.overwrite == False
 
     def test_init_cannot_cleanup_or_overwrite(self):
-        self.run('--cleanup', '--overwrite', 'init')
+        self.run('--cleanup-symlinks', '--overwrite', 'init')
         self.mock_class.init.assert_called_once()
         self.mock_class.assert_called_once_with(config_path=None)
         assert self.mock_instance.cleanup_symlinks == False

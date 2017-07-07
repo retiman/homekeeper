@@ -38,15 +38,15 @@ def unkeep(ctx):
 
 
 @click.group()
-@click.option('--cleanup/--no-cleanup', default=True, is_flag=True,
-              help='removes broken symlinks')
+@click.option('--cleanup-symlinks/--no-cleanup-symlinks', default=True,
+              is_flag=True, help='removes broken symlinks')
 @click.option('--overwrite/--no-overwrite', default=True, is_flag=True,
               help='overwrite existing files or symlinks')
 @click.option('--config-path', default=None, help='path to config file')
 @click.pass_context
-def main(ctx, cleanup, config_path, overwrite):
+def main(ctx, cleanup_symlinks, config_path, overwrite):
     h = homekeeper.Homekeeper(config_path=config_path)
-    h.cleanup_symlinks = cleanup
+    h.cleanup_symlinks = cleanup_symlinks
     h.overwrite = overwrite
     ctx.obj = dict()
     ctx.obj['config_path'] = config_path
