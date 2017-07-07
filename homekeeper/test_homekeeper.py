@@ -4,6 +4,7 @@ import homekeeper.test_case
 import json
 
 
+# pylint: disable=attribute-defined-outside-init
 class TestHomekeeper(homekeeper.test_case.TestCase):
     def setup_method(self):
         super(TestHomekeeper, self).setup_method()
@@ -65,7 +66,7 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
         data = json.loads(self.read_file(config))
         assert self.custom_directory == data['dotfiles_directory']
 
-    def test_init_with_default_config_path(self, os):
+    def test_init_with_default_config_path(self):
         h = homekeeper.Homekeeper()
         assert h.config.base_directory == self.base_directory
         assert h.config.dotfiles_directory == self.dotfiles_directory

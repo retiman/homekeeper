@@ -5,6 +5,8 @@ import mock
 import os
 
 
+# pylint: disable=attribute-defined-outside-init
+# pylint: disable=maybe-no-member
 class TestCli(object):
     def setup_method(self):
         self.runner = click.testing.CliRunner()

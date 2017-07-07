@@ -1,8 +1,9 @@
 import homekeeper.core
 import homekeeper.test_case
-import logging
 
 
+# pylint: disable=attribute-defined-outside-init
+# pylint: disable=too-many-public-methods
 class TestCore(homekeeper.test_case.TestCase):
     def setup_method(self):
         super(TestCore, self).setup_method()
@@ -14,6 +15,7 @@ class TestCore(homekeeper.test_case.TestCase):
         target = os.path.join(self.home, '.vimrc')
         return source, target
 
+    # pylint: disable=no-self-use
     def verify_symlink(self, os, source, target):
         assert os.path.exists(source)
         assert os.path.exists(target)

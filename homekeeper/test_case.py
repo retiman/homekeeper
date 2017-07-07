@@ -8,11 +8,8 @@ import pytest
 logging.basicConfig(format='%(message)s', level=logging.DEBUG)
 
 
+# pylint: disable=attribute-defined-outside-init
 class TestCase(object):
-    @pytest.fixture
-    def os(self):
-        return self.fake_os
-
     def setup_method(self):
         self.fake_fs = fake_filesystem.FakeFilesystem()
         self.fake_fopen = fake_filesystem.FakeFileOpen(self.fake_fs)
@@ -31,6 +28,10 @@ class TestCase(object):
             patcher.stop()
         del self.fake_fs
 
+    @pytest.fixture
+    def os(self):
+        return self.fake_os
+
     def patch(self, module):
         self._patch(module, 'fopen', self.fake_fopen)
         self._patch(module, 'os', self.fake_os)
@@ -45,11 +46,13 @@ class TestCase(object):
     def setup_directory(self, *args):
         return self._setup_directory(self.fake_os, args)
 
+    # pylint: disable=no-self-use
     def _read_file(self, os, fopen, *args):
         filename = os.path.join(*args)
         with fopen(filename, 'r') as f:
             return f.read()
 
+    # pylint: disable=star-args
     def _setup_file(self, os, args, kwargs):
         filename = os.path.join(os.sep, *args)
         dirname = os.path.dirname(filename)
@@ -60,6 +63,7 @@ class TestCase(object):
         self.fake_fs.CreateFile(filename, contents=contents)
         return filename
 
+    # pylint: disable=star-args
     def _setup_directory(self, os, args):
         if args == []:
             return

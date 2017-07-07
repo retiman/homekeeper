@@ -21,12 +21,6 @@ persistent=yes
 # usually to register additional checkers.
 load-plugins=
 
-# DEPRECATED
-include-ids=no
-
-# DEPRECATED
-symbols=no
-
 
 [MESSAGES CONTROL]
 
@@ -44,7 +38,7 @@ symbols=no
 # --enable=similarities". If you want to run only the classes checker, but have
 # no Warning level messages displayed, use"--disable=all --enable=classes
 # --disable=W"
-#disable=
+disable=invalid-name, locally-disabled, missing-docstring,
 
 
 [REPORTS]
