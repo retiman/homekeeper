@@ -96,37 +96,39 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
             assert os.path.join(target_directory, item) == os.readlink(link)
 
     def test_unkeep_restores_files(self):
-        self.setup_file(self.home('.unrelatedrc'))
-        os.symlink(self.home('.unrelatedrc'), self.home('.link-to-unrelatedrc'))
+        self.setup_file(self.home(), '.unrelatedrc')
+        os.symlink(os.path.join(self.home(), '.unrelatedrc'),
+                   os.path.join(self.home(), '.link-to-unrelatedrc'))
         os.symlink(os.path.join(self.base_directory, '.vimrc'),
-                   self.home('.vimrc'))
+                   os.path.join(self.home(), '.vimrc'))
         os.symlink(os.path.join(self.base_directory, '.vim'),
-                   self.home('.vim'))
+                   os.path.join(self.home(), '.vim'))
         os.symlink(os.path.join(self.dotfiles_directory, '.bash_local'),
-                   self.home('.bash_local'))
+                   os.path.join(self.home(), '.bash_local'))
         os.symlink(os.path.join(self.dotfiles_directory, '.tmux'),
-                   self.home('.tmux'))
+                   os.path.join(self.home(), '.tmux'))
         h = homekeeper.Homekeeper()
         h.unkeep()
-        assert os.path.exists(self.home('.unrelatedrc'))
-        assert os.path.islink(self.home('.link-to-unrelatedrc'))
-        assert not os.path.islink(self.home('.unrelatedrc'))
-        assert not os.path.islink(self.home('.tmux'))
-        assert not os.path.islink(self.home('.vim'))
-        assert not os.path.islink(self.home('.bash_local'))
-        assert not os.path.islink(self.home('.vimrc'))
-        with self.fopen(self.home('.bash_local'), 'r') as f:
+        assert os.path.exists(os.path.join(self.home(), '.unrelatedrc'))
+        assert os.path.islink(os.path.join(self.home(), '.link-to-unrelatedrc'))
+        assert not os.path.islink(os.path.join(self.home(), '.unrelatedrc'))
+        assert not os.path.islink(os.path.join(self.home(), '.tmux'))
+        assert not os.path.islink(os.path.join(self.home(), '.vim'))
+        assert not os.path.islink(os.path.join(self.home(), '.bash_local'))
+        assert not os.path.islink(os.path.join(self.home(), '.vimrc'))
+        with self.fopen(os.path.join(self.home(), '.bash_local'), 'r') as f:
             assert 'dotfiles' == f.read()
 
     def test_cleanup_symlinks(self):
-        self.setup_file(self.home('.missingrc'))
-        os.symlink(self.home('.missingrc'), self.home('.brokenrc'))
-        os.unlink(self.home('.missingrc'))
+        self.setup_file(self.home(), '.missingrc')
+        os.symlink(os.path.join(self.home(), '.missingrc'),
+                   os.path.join(self.home(), '.brokenrc'))
+        os.unlink(os.path.join(self.home(), '.missingrc'))
         os.symlink(os.path.join(self.base_directory, '.vimrc'),
-                   self.home('.vimrc'))
-        assert os.path.islink(self.home('.brokenrc'))
-        assert os.path.islink(self.home('.vimrc'))
+                   os.path.join(self.home(), '.vimrc'))
+        assert os.path.islink(os.path.join(self.home(), '.brokenrc'))
+        assert os.path.islink(os.path.join(self.home(), '.vimrc'))
         h = homekeeper.Homekeeper(cleanup_symlinks=True)
         h.clean()
-        assert not os.path.exists(self.home('.brokenrc'))
-        assert os.path.islink(self.home('.vimrc'))
+        assert not os.path.exists(os.path.join(self.home(), '.brokenrc'))
+        assert os.path.islink(os.path.join(self.home(), '.vimrc'))

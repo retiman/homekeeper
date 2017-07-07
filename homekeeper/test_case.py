@@ -22,9 +22,8 @@ class TestCase(object):
             patcher.stop()
         del self.fs
 
-    def home(self, *args):
-        home_directory = self.os.getenv('HOME')
-        return self.os.path.join(home_directory, *args)
+    def home(self):
+        return self.os.getenv('HOME')
 
     def patch(self, module):
         self._patch(module, 'fopen', self.fopen)

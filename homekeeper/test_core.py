@@ -100,8 +100,9 @@ class TestCore(homekeeper.test_case.TestCase):
     def test_create_symlinks_with_no_source_directory(self):
         self.setup_directory(self.home())
         assert os.path.exists(self.home())
-        assert not os.path.exists(self.home('dotfiles'))
-        homekeeper.core.create_symlinks(self.home('dotfiles'), self.home(),
+        assert not os.path.exists(os.path.join(self.home(), 'dotfiles'))
+        source_directory = os.path.join(self.home(), 'dotfiles')
+        homekeeper.core.create_symlinks(source_directory, self.home(),
                                         overwrite=True)
         assert os.listdir(self.home()) == []
 
