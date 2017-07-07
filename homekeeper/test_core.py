@@ -57,6 +57,12 @@ class TestCore(homekeeper.test_case.TestCase):
         assert os.path.exists(target)
         assert not os.path.islink(target)
 
+    def test_symlink_with_same_source_and_target(self, os):
+        source, target = self.setup_symlink(os)
+        homekeeper.core.symlink(source, source, overwrite=True)
+        assert not os.path.exists(target)
+        assert not os.path.islink(source)
+
     def test_restore_file_symlink(self, os):
         source, target = self.setup_symlink(os)
         homekeeper.core.symlink(source, target, overwrite=True)
@@ -81,6 +87,13 @@ class TestCore(homekeeper.test_case.TestCase):
         os.unlink(target)
         homekeeper.core.restore(source, target, overwrite=False)
         assert not os.path.exists(target)
+
+    def test_restore_symlink_with_same_source_and_target(self, os):
+        source, target = self.setup_symlink(os)
+        homekeeper.core.symlink(source, target, overwrite=True)
+        homekeeper.core.restore(target, target, overwrite=True)
+        assert os.path.islink(target)
+        assert source == os.readlink(target)
 
     def test_create_symlinks(self, os):
         source, target = self.setup_symlink(os)
