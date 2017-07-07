@@ -151,16 +151,11 @@ class TestCore(homekeeper.test_case.TestCase):
 
     def test_cleanup_symlinks(self, os):
         self.setup_file('existing.txt')
-        os.symlink(os.path.join(os.sep, 'existing.txt'),
-                   os.path.join(os.sep, 'existing-link.txt'))
-        os.symlink(os.path.join(os.sep, 'non-existing-1.txt'),
-                   os.path.join(os.sep, 'non-existing-1-link.txt'))
-        os.symlink(os.path.join(os.sep, 'non-existing-2.txt'),
-                   os.path.join(os.sep, 'non-existing-2-link.txt'))
-        homekeeper.core.cleanup_symlinks('/')
-        assert os.path.exists(os.path.join(os.sep, 'existing.txt'))
-        assert os.path.exists(os.path.join(os.sep, 'existing-link.txt'))
-        assert not os.path.exists(os.path.join(os.sep,
-                                               'non-existing-1-link.txt'))
-        assert not os.path.exists(os.path.join(os.sep,
-                                               'non-existing-2-link.txt'))
+        os.symlink('existing.txt', 'existing-link.txt')
+        os.symlink('non-existing-1.txt', 'non-existing-1-link.txt')
+        os.symlink('non-existing-2.txt', 'non-existing-2-link.txt')
+        homekeeper.core.cleanup_symlinks(self.home)
+        assert os.path.exists('existing.txt')
+        assert os.path.exists('existing-link.txt')
+        assert not os.path.exists('non-existing-1-link.txt')
+        assert not os.path.exists('non-existing-2-link.txt')

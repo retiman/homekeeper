@@ -23,6 +23,7 @@ class TestCase(object):
         os.environ['HOME'] = os.path.join(os.sep, 'home', 'johndoe')
         self.home = os.getenv('HOME')
         self.setup_directory(self.home)
+        os.chdir(self.home)
 
     def teardown_method(self):
         for patcher in self.patchers:
@@ -53,7 +54,7 @@ class TestCase(object):
             return f.read()
 
     def _setup_file(self, os, args, kwargs):
-        filename = os.path.join(os.sep, *args) # pylint: disable=star-args
+        filename = os.path.join(*args) # pylint: disable=star-args
         dirname = os.path.dirname(filename)
         self.setup_directory(dirname)
         contents = '' if ('data' not in kwargs) else kwargs['data']
@@ -63,12 +64,9 @@ class TestCase(object):
         return filename
 
     def _setup_directory(self, os, args):
-        if args == []:
+        dirname = os.path.join(*args) # pylint: disable=star-args
+        if dirname == '' or dirname == os.sep:
             return
-        items = args
-        if not args[0].startswith(os.sep):
-            items = (os.sep,) + items
-        dirname = os.path.join(*items) # pylint: disable=star-args
         with mock.patch('homekeeper.common.os', os):
             homekeeper.common.makedirs(dirname)
         return dirname

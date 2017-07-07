@@ -18,9 +18,10 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
         self.fake_os.chdir(self.fake_os.getenv('HOME'))
 
     def setup_files(self, os):
-        self.base_directory = os.path.join(os.sep, 'base')
-        self.dotfiles_directory = os.path.join(os.sep, 'dotfiles')
-        self.custom_directory = os.path.join(os.sep, 'custom')
+        os.chdir(self.home)
+        self.base_directory = os.path.abspath('base')
+        self.dotfiles_directory = os.path.abspath('dotfiles')
+        self.custom_directory = os.path.abspath('custom')
         self.setup_file('base', '.bash_aliases', data='base')
         self.setup_file('base', '.bash_local', data='base')
         self.setup_file('base', '.bash_profile')
@@ -77,12 +78,12 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
         h.keep()
         base_items = set(os.listdir(self.base_directory))
         dotfiles_items = set(os.listdir(self.dotfiles_directory))
-        for item in os.listdir(os.getenv('HOME')):
+        for item in os.listdir(self.home):
             if item in h.config.excludes:
                 continue
             if item not in base_items and item not in dotfiles_items:
                 continue
-            link = os.path.join(os.getenv('HOME'), item)
+            link = os.path.join(self.home, item)
             target_directory = (self.dotfiles_directory if
                                 item in dotfiles_items else self.base_directory)
             assert os.path.islink(link)
