@@ -22,7 +22,7 @@ def symlink(source, target, overwrite=True):
         logging.debug('skipping %s; source and target are the same', source)
         return
     if os.path.exists(target) and not overwrite:
-        logging.debug('will not overwrite; skipping %s', target)
+        logging.debug('skipping %s; will not overwrite', target)
         return
     remove(target)
     os.symlink(source, target)
@@ -42,23 +42,23 @@ def restore(source, target, overwrite=True):
         return
     if not overwrite:
         if not os.path.exists(target):
-            logging.debug('skipping missing resource: %s', target)
+            logging.debug('skipping %s; missing link target', target)
             return
         if not os.path.islink(target):
-            logging.debug('skipping non-symlink resource: %s', target)
+            logging.debug('skipping %s; resource is not a link', target)
             return
         if os.readlink(target) != source:
-            logging.debug('skipping symlink resource: %s', target)
+            logging.debug('skipping %s; symlink target is wrong', target)
             return
     remove(target)
     if os.path.isfile(source):
         shutil.copy(source, target)
-        logging.debug('restored file %s to %s', source, target)
+        logging.debug('restored file %s -> %s', source, target)
     elif os.path.isdir(source):
         shutil.copytree(source, target, symlinks=True)
-        logging.debug('restored directory %s to %s', source, target)
+        logging.debug('restored directory %s -> %s', source, target)
     else:
-        logging.info('skipping uncopyable resource: %s', target)
+        logging.info('skipping %s; not a file or directory', target)
 
 def create_symlinks(source_directory, target_directory, excludes=None,
                     overwrite=True):
@@ -148,6 +148,6 @@ def process_directories(source_directory, target_directory, process,
             source = os.path.join(source_directory, basename)
             target = os.path.join(target_directory, basename)
             if basename in excluded_items:
-                logging.debug('skipping excluded resource: %s', basename)
+                logging.debug('skipping %s; resource is excluded', basename)
                 continue
             process(source, target, overwrite=overwrite)
