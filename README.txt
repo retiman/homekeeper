@@ -32,9 +32,8 @@ create one if it doesn't already exist.  The default configuration looks like
 this:
 
     {
-        "base": "/home/$USER/dotfiles/base",
-        "directory": "/home/$USER/dotfiles/$HOST",
-        "override": true,
+        "base_directory": "/home/$USER/dotfiles/base",
+        "dotfiles_directory": "/home/$USER/dotfiles/$HOST",
         "excludes": [
             ".git",
             ".gitignore",
@@ -63,29 +62,6 @@ NOTE: HOMEKEEPER WILL REMOVE THE ORIGINAL FILE ONCE YOU TELL IT TO SYMLINK.
 Make sure you back it up or are having homekeeper track the file you want to
 symlink first.
 
-Tracking
-========
-
-    $ homekeeper track ~/.vimrc
-
-This will copy your `~/.vimrc` file into your dotfiles directory.  The next time
-you run `homekeeper link` the original `~/.vimrc` will be deleted, and the
-tracked version will be symlinked there instead.
-
-If you track a directory, the entire directory and all subdirectories will be
-copied to your dotfiles directory.  You can only track a top level directory.
-For example, if you decide to track:
-
-    $ homekeeper track ~/.foo/bar/baz
-
-...then homekeeper will copy the `baz` directory into your dotfiles directory.
-In order to track all files and directories under `.foo`, track the following:
-
-    $ homekeeper track ~/.foo
-
-If you want to track *just* `~/.foo/bar/baz`, see the section about cherrypicks
-below.
-
 Excludes
 ========
 
@@ -104,4 +80,3 @@ Once you have done so, copy the file manually (with the appropriate directory
 structure) into your dotfiles directory.
 
 NOTE: This feature is experimental and may change.
-
