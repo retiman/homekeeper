@@ -71,8 +71,8 @@ class TestCore(homekeeper.test_case.TestCase):
         assert os.path.isfile(target)
 
     def test_restore_directory_symlink(self):
-        source = self.home('dotfiles', '.vim')
-        target = self.home('.vim')
+        source = os.path.join(self.home(), 'dotfiles', '.vim')
+        target = os.path.join(self.home(), '.vim')
         self.setup_file(source, '.vim', 'autoload', 'pathogen.vim')
         homekeeper.core.symlink(source, target, overwrite=True)
         homekeeper.core.restore(source, target, overwrite=True)
@@ -125,14 +125,17 @@ class TestCore(homekeeper.test_case.TestCase):
         for item in source_directories:
             self.setup_directory(self.home(), 'dotfiles', item)
             self.setup_file(self.home(), item)
-        homekeeper.core.create_symlinks(self.home('dotfiles'), self.home(),
+        source_directory = os.path.join(self.home(), 'dotfiles')
+        target_directory = self.home()
+        homekeeper.core.create_symlinks(source_directory, target_directory,
                                         excludes=excludes, overwrite=True)
         for item in source_files:
             if item in excludes:
-                assert not os.path.islink(self.home(item))
+                assert not os.path.islink(os.path.join(self.home(), item))
             else:
-                self.verify_symlink(self.home('dotfiles', item),
-                                    self.home(item))
+                source = os.path.join(self.home(), 'dotfiles', item)
+                target = os.path.join(self.home(), item)
+                self.verify_symlink(source, target)
 
     def test_cleanup_symlinks(self):
         self.setup_file('existing.txt')
