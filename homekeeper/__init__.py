@@ -61,3 +61,11 @@ class Homekeeper(object):
         """Cleans up symlinks in the home directory."""
         if self.config.cleanup_symlinks:
             core.cleanup_symlinks(self.home)
+
+    def __setattr__(self, name, value):
+        if name == 'cleanup_symlinks':
+            self.config.cleanup_symlinks = value
+        elif name == 'overwrite':
+            self.config.overwrite = value
+        else:
+            super(Homekeeper, self).__setattr__(name, value)
