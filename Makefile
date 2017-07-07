@@ -1,3 +1,4 @@
+PYLINT = /usr/bin/env pylint
 PYTEST = /usr/bin/env pytest
 PYTHON = /usr/bin/env python2
 PIP = /usr/bin/env pip2
@@ -19,7 +20,7 @@ deploy: clean doc test
 	${PYTHON} setup.py sdist upload -r homekeeper
 
 debug:
-	pytest --pdb homekeeper
+	${PYTEST} --pdb homekeeper
 
 doc:
 	pydoc -w homekeeper
@@ -30,9 +31,12 @@ doc-server:
 install: clean requirements
 	${PIP} install --upgrade .
 
+lint:
+	${PYLINT} --rcfile=pylintrc homekeeper
+
 requirements:
 	${PIP} install -r requirements.txt
 
 test:
-	pytest -v --tb=long --full-trace --junit-xml=tests.xml \
+	${PYTEST} -v --tb=long --full-trace --junit-xml=tests.xml \
 			--cov=homekeeper --cov-report=html homekeeper
