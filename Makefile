@@ -6,14 +6,14 @@ PIP = /usr/bin/env pip2
 all: clean requirements doc test
 
 clean:
-	rm -rf .coverage
-	rm -rf *.egg-info
 	rm -rf build
-	rm -rf cover
 	rm -rf dist
 	rm -rf homekeeper/*.pyc
 	rm -rf homekeeper/__pycache__
-	rm -rf lib
+	rm -rf htmlcov
+	rm -rf .cache
+	rm -rf .coverage
+	rm -rf tests.xml
 
 deploy: clean doc test
 	${PYTHON} setup.py sdist upload -r homekeeper
@@ -34,5 +34,5 @@ requirements:
 	${PIP} install -r requirements.txt
 
 test:
-	pytest -v --tb=long --full-trace --junit-xml=tests.xml --cov=homekeeper \
-			homekeeper
+	pytest -v --tb=long --full-trace --junit-xml=tests.xml \
+			--cov=homekeeper --cov-report=html homekeeper
