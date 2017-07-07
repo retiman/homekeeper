@@ -16,7 +16,7 @@ clean:
 	rm -rf .coverage
 	rm -rf tests.xml
 
-deploy: clean doc test
+deploy: clean doc lint test
 	${PYTHON} setup.py sdist upload -r homekeeper
 
 debug:
@@ -37,6 +37,6 @@ lint:
 requirements:
 	${PIP} install -r requirements.txt
 
-test:
+test: lint
 	${PYTEST} -v --tb=long --full-trace --junit-xml=tests.xml \
 			--cov=homekeeper --cov-report=html homekeeper
