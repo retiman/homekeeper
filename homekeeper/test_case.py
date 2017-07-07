@@ -14,10 +14,10 @@ class TestCase(object):
         return self.os
 
     def setup_method(self):
-        self.fs = fake_filesystem.FakeFilesystem()
-        self.fopen = fake_filesystem.FakeFileOpen(self.fs)
-        self.os = fake_filesystem.FakeOsModule(self.fs)
-        self.shutil = fake_filesystem_shutil.FakeShutilModule(self.fs)
+        self.fake_fs = fake_filesystem.FakeFilesystem()
+        self.fopen = fake_filesystem.FakeFileOpen(self.fake_fs)
+        self.os = fake_filesystem.FakeOsModule(self.fake_fs)
+        self.shutil = fake_filesystem_shutil.FakeShutilModule(self.fake_fs)
         self.patchers = []
         self.setup_os(self.os)
 
@@ -27,7 +27,7 @@ class TestCase(object):
     def teardown_method(self):
         for patcher in self.patchers:
             patcher.stop()
-        del self.fs
+        del self.fake_fs
 
     def home(self):
         return self.os.getenv('HOME')
@@ -48,7 +48,7 @@ class TestCase(object):
         dirname = os.path.dirname(filename)
         self.setup_directory(dirname)
         contents = '' if ('data' not in kwargs) else kwargs['data']
-        self.fs.CreateFile(filename, contents=contents)
+        self.fake_fs.CreateFile(filename, contents=contents)
         return filename
 
     def _setup_directory(self, os, args):

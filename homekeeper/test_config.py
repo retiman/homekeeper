@@ -20,7 +20,7 @@ class TestConfig(homekeeper.test_case.TestCase):
             'dotfiles_directory': dotfiles_directory,
             'excludes': excludes
         }
-        self.fs.CreateFile(self.config_path, contents=json.dumps(data))
+        self.setup_file(self.config_path, data=json.dumps(data))
         self.config.load(self.config_path)
         assert base_directory == self.config.base_directory
         assert dotfiles_directory == self.config.dotfiles_directory
@@ -29,7 +29,7 @@ class TestConfig(homekeeper.test_case.TestCase):
 
     def test_load_with_defaults(self, os):
         dotfiles_directory = os.path.join(self.home(), 'dotfiles')
-        self.fs.CreateFile(self.config_path, contents=json.dumps({}))
+        self.setup_file(self.config_path, data=json.dumps({}))
         self.config.load(self.config_path)
         assert not self.config.base_directory
         assert dotfiles_directory == self.config.dotfiles_directory
