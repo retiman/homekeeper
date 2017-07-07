@@ -29,6 +29,7 @@ def symlink(config, source, target):
     os.symlink(source, target)
     logging.info('symlinked %s -> %s', source, target)
 
+
 def restore(config, source, target):
     """Restores a symlink to its target. Afterwards, the target will no
     longer be a symlink.
@@ -61,6 +62,7 @@ def restore(config, source, target):
     else:
         logging.info('skipping %s; not a file or directory', target)
 
+
 def create_symlinks(config, source_directory, target_directory):
     """Symlinks files from the source directory to the target directory.
 
@@ -79,13 +81,16 @@ def create_symlinks(config, source_directory, target_directory):
     """
     process_directories(config, source_directory, target_directory, symlink)
 
+
 def create_symlinks_from_base(config):
     if not config.override:
         return
     create_symlinks(config, config.base_directory, config.home)
 
+
 def create_symlinks_from_dotfiles(config):
     create_symlinks(config, config.dotfiles_directory, config.home)
+
 
 def restore_symlinks(config, source_directory, target_directory):
     """Realizes the symlinks files in the source directory that have been
@@ -110,13 +115,16 @@ def restore_symlinks(config, source_directory, target_directory):
     """
     process_directories(config, source_directory, target_directory, restore)
 
+
 def restore_symlinks_from_base(config):
     if not config.override:
         return
     restore_symlinks(config, config.base_directory, config.home)
 
+
 def restore_symlinks_from_dotfiles(config):
     restore_symlinks(config, config.dotfiles_directory, config.home)
+
 
 def cleanup_symlinks(directory):
     """Removes broken symlinks from a directory.
