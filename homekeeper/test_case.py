@@ -15,7 +15,7 @@ class TestCase(object):
 
     def setup_method(self):
         self.fake_fs = fake_filesystem.FakeFilesystem()
-        self.fopen = fake_filesystem.FakeFileOpen(self.fake_fs)
+        self.fake_fopen = fake_filesystem.FakeFileOpen(self.fake_fs)
         self.os = fake_filesystem.FakeOsModule(self.fake_fs)
         self.shutil = fake_filesystem_shutil.FakeShutilModule(self.fake_fs)
         self.patchers = []
@@ -33,7 +33,7 @@ class TestCase(object):
         return self.os.getenv('HOME')
 
     def patch(self, module):
-        self._patch(module, 'fopen', self.fopen)
+        self._patch(module, 'fopen', self.fake_fopen)
         self._patch(module, 'os', self.os)
         self._patch(module, 'shutil', self.shutil)
 
@@ -48,6 +48,8 @@ class TestCase(object):
         dirname = os.path.dirname(filename)
         self.setup_directory(dirname)
         contents = '' if ('data' not in kwargs) else kwargs['data']
+        if os.path.exists(filename):
+            os.unlink(filename)
         self.fake_fs.CreateFile(filename, contents=contents)
         return filename
 
