@@ -23,7 +23,6 @@ class TestCase(object):
         os.environ['HOME'] = os.path.join(os.sep, 'home', 'johndoe')
         self.home = os.getenv('HOME')
         self.setup_directory(self.home)
-        os.chdir(self.home)
 
     def teardown_method(self):
         for patcher in self.patchers:
