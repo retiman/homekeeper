@@ -17,7 +17,7 @@ class TestCase(object):
         self.fake_fs = fake_filesystem.FakeFilesystem()
         self.fake_fopen = fake_filesystem.FakeFileOpen(self.fake_fs)
         self.fake_os = fake_filesystem.FakeOsModule(self.fake_fs)
-        self.shutil = fake_filesystem_shutil.FakeShutilModule(self.fake_fs)
+        self.fake_shutil = fake_filesystem_shutil.FakeShutilModule(self.fake_fs)
         self.patchers = []
         self.setup_os(self.fake_os)
 
@@ -35,7 +35,7 @@ class TestCase(object):
     def patch(self, module):
         self._patch(module, 'fopen', self.fake_fopen)
         self._patch(module, 'os', self.fake_os)
-        self._patch(module, 'shutil', self.shutil)
+        self._patch(module, 'shutil', self.fake_shutil)
 
     def read_file(self, *args):
         return self._read_file(self.fake_os, self.fake_fopen, *args)
