@@ -62,8 +62,7 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
         os.chdir(self.custom_directory)
         config = os.path.join(self.custom_directory, '.homekeeper.json')
         homekeeper.Homekeeper(config_path=config).init()
-        with self.fake_fopen(config, 'r') as f:
-            data = json.loads(f.read())
+        data = json.loads(self.read_file(config))
         assert self.custom_directory == data['dotfiles_directory']
 
     def test_init_with_default_config_path(self, os):
@@ -109,8 +108,7 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
         assert not os.path.islink(os.path.join(self.home(), '.vim'))
         assert not os.path.islink(os.path.join(self.home(), '.bash_local'))
         assert not os.path.islink(os.path.join(self.home(), '.vimrc'))
-        with self.fake_fopen(os.path.join(self.home(), '.bash_local'), 'r') as f:
-            assert 'dotfiles' == f.read()
+        assert 'dotfiles' == self.read_file(self.home(), '.bash_local')
 
     def test_cleanup_symlinks(self, os):
         self.setup_file(self.home(), '.missingrc')

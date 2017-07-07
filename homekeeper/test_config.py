@@ -43,9 +43,8 @@ class TestConfig(homekeeper.test_case.TestCase):
         self.config.excludes = ['.idea']
         self.config.override = False
         self.config.save(self.config_path)
-        with self.fake_fopen(self.config_path, 'r') as f:
-            data = json.loads(f.read())
-            assert data['base_directory'] == self.config.base_directory
-            assert data['dotfiles_directory'] == self.config.dotfiles_directory
-            assert data['excludes'] == self.config.excludes
-            assert 'override' not in data
+        data = json.loads(self.read_file(self.config_path))
+        assert data['base_directory'] == self.config.base_directory
+        assert data['dotfiles_directory'] == self.config.dotfiles_directory
+        assert data['excludes'] == self.config.excludes
+        assert 'override' not in data

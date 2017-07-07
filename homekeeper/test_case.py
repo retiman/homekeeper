@@ -37,6 +37,11 @@ class TestCase(object):
         self._patch(module, 'os', self.os)
         self._patch(module, 'shutil', self.shutil)
 
+    def read_file(self, *args):
+        filename = self.os.path.join(*args)
+        with self.fake_fopen(filename, 'r') as f:
+            return f.read()
+
     def setup_file(self, *args, **kwargs):
         return self._setup_file(self.os, args, kwargs)
 
