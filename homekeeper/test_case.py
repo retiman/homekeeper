@@ -17,10 +17,12 @@ class TestCase(object):
         self.fs = fake_filesystem.FakeFilesystem()
         self.fopen = fake_filesystem.FakeFileOpen(self.fs)
         self.os = fake_filesystem.FakeOsModule(self.fs)
-        self.os.environ['HOME'] = self.os.path.join(self.os.sep, 'home',
-                                                    'johndoe')
         self.shutil = fake_filesystem_shutil.FakeShutilModule(self.fs)
         self.patchers = []
+        self.setup_os(self.os)
+
+    def setup_os(self, os):
+        os.environ['HOME'] = os.path.join(os.sep, 'home', 'johndoe')
 
     def teardown_method(self):
         for patcher in self.patchers:
@@ -36,21 +38,27 @@ class TestCase(object):
         self._patch(module, 'shutil', self.shutil)
 
     def setup_file(self, *args, **kwargs):
-        filename = self.os.path.join(self.os.sep, *args)
-        dirname = self.os.path.dirname(filename)
+        return self._setup_file(self.os, args, kwargs)
+
+    def setup_directory(self, *args):
+        return self._setup_directory(self.os, args)
+
+    def _setup_file(self, os, args, kwargs):
+        filename = os.path.join(os.sep, *args)
+        dirname = os.path.dirname(filename)
         self.setup_directory(dirname)
         contents = '' if ('data' not in kwargs) else kwargs['data']
         self.fs.CreateFile(filename, contents=contents)
         return filename
 
-    def setup_directory(self, *args):
+    def _setup_directory(self, os, args):
         if args == []:
             return
         items = args
-        if not args[0].startswith(self.os.sep):
-            items = (self.os.sep,) + items
-        dirname = self.os.path.join(*items)
-        with mock.patch('homekeeper.common.os', self.os):
+        if not args[0].startswith(os.sep):
+            items = (os.sep,) + items
+        dirname = os.path.join(*items)
+        with mock.patch('homekeeper.common.os', os):
             homekeeper.common.makedirs(dirname)
         return dirname
 
