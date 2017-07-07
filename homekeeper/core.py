@@ -20,10 +20,10 @@ def symlink(config, source, target):
     if not os.path.exists(dirname):
         makedirs(dirname)
     if source == target:
-        logging.debug('skipping %s; source and target are the same', source)
+        logging.info('skipping %s; source and target are the same', source)
         return
     if os.path.exists(target) and not config.overwrite:
-        logging.debug('skipping %s; will not overwrite', target)
+        logging.info('skipping %s; will not overwrite', target)
         return
     remove(target)
     os.symlink(source, target)
@@ -40,25 +40,25 @@ def restore(config, source, target):
         target: Path of symlink target, can be file or directory.
     """
     if source == target:
-        logging.debug('skipping %s; source and target are the same', source)
+        logging.info('skipping %s; source and target are the same', source)
         return
     if not config.overwrite:
         if not os.path.exists(target):
-            logging.debug('skipping %s; missing link target', target)
+            logging.info('skipping %s; missing link target', target)
             return
         if not os.path.islink(target):
-            logging.debug('skipping %s; resource is not a link', target)
+            logging.info('skipping %s; resource is not a link', target)
             return
         if os.readlink(target) != source:
-            logging.debug('skipping %s; symlink target is wrong', target)
+            logging.info('skipping %s; symlink target is wrong', target)
             return
     remove(target)
     if os.path.isfile(source):
         shutil.copy(source, target)
-        logging.debug('restored file %s -> %s', source, target)
+        logging.info('restored file %s -> %s', source, target)
     elif os.path.isdir(source):
         shutil.copytree(source, target, symlinks=True)
-        logging.debug('restored directory %s -> %s', source, target)
+        logging.info('restored directory %s -> %s', source, target)
     else:
         logging.info('skipping %s; not a file or directory', target)
 
