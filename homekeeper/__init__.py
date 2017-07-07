@@ -49,8 +49,10 @@ class Homekeeper(object):
 
     def cleanup(self):
         """Cleans up symlinks in the home directory."""
-        if self.config.cleanup_symlinks:
-            core.cleanup_symlinks(self.config.home)
+        if not self.config.cleanup_symlinks:
+            logging.info('skipping cleanup of broken symlinks')
+            return
+        core.cleanup_symlinks(self.config.home)
 
     @property
     def cleanup_symlinks(self):

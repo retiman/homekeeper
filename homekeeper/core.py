@@ -132,14 +132,18 @@ def cleanup_symlinks(directory):
     Args:
         directory: The directory to look for broken symlinks.
     """
+    logging.info('removing broken symlinks in %s', directory)
     for item in os.listdir(directory):
         pathname = os.path.join(directory, item)
         if not os.path.islink(pathname):
+            logging.debug('skipping %s; not a symlink', pathname)
             continue
         if os.path.exists(os.readlink(pathname)):
+            logging.debug('skipping %s; not a broken symlink', pathname)
             continue
         logging.info('removing broken link: %s', pathname)
         os.unlink(pathname)
+    logging.info('finished removing symlinks in %s', directory)
 
 
 def remove(target):
