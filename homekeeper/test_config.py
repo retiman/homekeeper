@@ -9,7 +9,8 @@ class TestConfig(homekeeper.test_case.TestCase):
         self.patch('homekeeper.common')
         self.patch('homekeeper.config')
         self.config = homekeeper.config.Config()
-        self.config_path = self.os.path.join(self.home(), '.homekeeper.json')
+        self.config_path = self.fake_os.path.join(self.home(),
+                                                  '.homekeeper.json')
 
     def test_load(self, os):
         base_directory = os.path.join(self.home(), 'base')

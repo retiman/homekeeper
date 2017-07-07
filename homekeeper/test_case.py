@@ -11,15 +11,15 @@ logging.basicConfig(format='%(message)s', level=logging.DEBUG)
 class TestCase(object):
     @pytest.fixture
     def os(self):
-        return self.os
+        return self.fake_os
 
     def setup_method(self):
         self.fake_fs = fake_filesystem.FakeFilesystem()
         self.fake_fopen = fake_filesystem.FakeFileOpen(self.fake_fs)
-        self.os = fake_filesystem.FakeOsModule(self.fake_fs)
+        self.fake_os = fake_filesystem.FakeOsModule(self.fake_fs)
         self.shutil = fake_filesystem_shutil.FakeShutilModule(self.fake_fs)
         self.patchers = []
-        self.setup_os(self.os)
+        self.setup_os(self.fake_os)
 
     def setup_os(self, os):
         os.environ['HOME'] = os.path.join(os.sep, 'home', 'johndoe')
@@ -30,21 +30,21 @@ class TestCase(object):
         del self.fake_fs
 
     def home(self):
-        return self.os.getenv('HOME')
+        return self.fake_os.getenv('HOME')
 
     def patch(self, module):
         self._patch(module, 'fopen', self.fake_fopen)
-        self._patch(module, 'os', self.os)
+        self._patch(module, 'os', self.fake_os)
         self._patch(module, 'shutil', self.shutil)
 
     def read_file(self, *args):
-        return self._read_file(self.os, self.fake_fopen, *args)
+        return self._read_file(self.fake_os, self.fake_fopen, *args)
 
     def setup_file(self, *args, **kwargs):
-        return self._setup_file(self.os, args, kwargs)
+        return self._setup_file(self.fake_os, args, kwargs)
 
     def setup_directory(self, *args):
-        return self._setup_directory(self.os, args)
+        return self._setup_directory(self.fake_os, args)
 
     def _read_file(self, os, fopen, *args):
         filename = os.path.join(*args)

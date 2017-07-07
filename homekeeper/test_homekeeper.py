@@ -11,10 +11,10 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
         self.patch('homekeeper.common')
         self.patch('homekeeper.config')
         self.patch('homekeeper.core')
-        self.setup_files(self.os)
-        self.setup_homekeeper_json(self.os)
-        self.setup_custom_homekeeper_json(self.os)
-        self.os.chdir(self.os.getenv('HOME'))
+        self.setup_files(self.fake_os)
+        self.setup_homekeeper_json(self.fake_os)
+        self.setup_custom_homekeeper_json(self.fake_os)
+        self.fake_os.chdir(self.fake_os.getenv('HOME'))
 
     def setup_files(self, os):
         self.base_directory = os.path.join(os.sep, 'base')
