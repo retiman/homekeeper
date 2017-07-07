@@ -2,14 +2,9 @@ import homekeeper
 import homekeeper.config
 import homekeeper.test_case
 import json
-import pytest
 
 
 class TestHomekeeper(homekeeper.test_case.TestCase):
-    @pytest.fixture
-    def os(self):
-        return self.os
-
     def setup_method(self):
         super(TestHomekeeper, self).setup_method()
         self.patch('homekeeper')

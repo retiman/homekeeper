@@ -3,11 +3,16 @@ import fake_filesystem_shutil
 import homekeeper.common
 import logging
 import mock
+import pytest
 
 logging.basicConfig(format='%(message)s', level=logging.DEBUG)
 
 
 class TestCase(object):
+    @pytest.fixture
+    def os(self):
+        return self.os
+
     def setup_method(self):
         self.fs = fake_filesystem.FakeFilesystem()
         self.fopen = fake_filesystem.FakeFileOpen(self.fs)

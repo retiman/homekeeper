@@ -1,14 +1,9 @@
 import homekeeper.core
 import homekeeper.test_case
 import logging
-import pytest
 
 
 class TestCore(homekeeper.test_case.TestCase):
-    @pytest.fixture
-    def os(self):
-        return self.os
-
     def setup_method(self):
         super(TestCore, self).setup_method()
         self.patch('homekeeper.common')
