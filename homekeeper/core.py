@@ -30,7 +30,7 @@ def symlink(config, source, target):
     logging.info('symlinked %s -> %s', source, target)
 
 
-def restore(config, source, target):
+def restore(unused_config, source, target): # pylint: disable=unused-argument
     """Restores a symlink to its target. Afterwards, the target will no
     longer be a symlink.
 
