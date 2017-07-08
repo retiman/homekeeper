@@ -31,6 +31,12 @@ class TestCore(homekeeper.test_case.TestCase):
         if os.path.isdir(source):
             assert os.path.isdir(target)
 
+    def test_directory_symlinks(self, os):
+        source = self.setup_directory(self.dotfiles_directory, '.vim')
+        target = self.setup_directory(self.home, '.vim')
+        core.symlink(self.config, source, target)
+        self.verify_symlink(os, source, target)
+
     def test_symlink_with_no_target(self, os):
         source, target = self.setup_symlink(os)
         core.symlink(self.config, source, target)
