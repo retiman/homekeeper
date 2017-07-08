@@ -42,16 +42,12 @@ def restore(config, source, target):
     if source == target:
         logging.info('skipping %s; source and target are the same', source)
         return
-    if not config.overwrite:
-        if not os.path.exists(target):
-            logging.info('skipping %s; missing link target', target)
-            return
-        if not os.path.islink(target):
-            logging.info('skipping %s; resource is not a link', target)
-            return
-        if os.readlink(target) != source:
-            logging.info('skipping %s; symlink target is wrong', target)
-            return
+    if not os.path.islink(target):
+        logging.info('skipping %s; resource is not a link', target)
+        return
+    if os.readlink(target) != source:
+        logging.info('skipping %s; symlink target is wrong', target)
+        return
     remove(target)
     if os.path.isfile(source):
         shutil.copy(source, target)

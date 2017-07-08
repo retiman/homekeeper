@@ -82,7 +82,6 @@ class TestCore(homekeeper.test_case.TestCase):
 
     def test_restore_file_symlink(self, os):
         source, target = self.setup_symlink(os)
-        self.config.overwrite = True
         core.symlink(self.config, source, target)
         core.restore(self.config, source, target)
         assert not os.path.islink(target)
@@ -92,7 +91,6 @@ class TestCore(homekeeper.test_case.TestCase):
         source = os.path.join(self.dotfiles_directory, '.vim')
         target = os.path.join(self.home, '.vim')
         self.setup_file(source, '.vim', 'autoload', 'pathogen.vim')
-        self.config.overwrite = True
         core.symlink(self.config, source, target)
         core.restore(self.config, source, target)
         assert not os.path.islink(target)
@@ -102,16 +100,14 @@ class TestCore(homekeeper.test_case.TestCase):
 
     def test_restore_symlink_with_no_target(self, os):
         source, target = self.setup_symlink(os)
-        self.config.overwrite = True
         core.symlink(self.config, source, target)
         os.unlink(target)
-        self.config.overwrite = False
         core.restore(self.config, source, target)
+        assert os.path.exists(source)
         assert not os.path.exists(target)
 
     def test_restore_symlink_with_same_source_and_target(self, os):
         source, target = self.setup_symlink(os)
-        self.config.overwrite = True
         core.symlink(self.config, source, target)
         core.restore(self.config, target, target)
         assert os.path.islink(target)
