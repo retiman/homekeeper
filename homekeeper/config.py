@@ -3,7 +3,7 @@ import logging
 import json
 import os
 
-fopen = homekeeper.common.fopen
+common = homekeeper.common
 
 
 class Config(object):
@@ -22,7 +22,7 @@ class Config(object):
 
     def load(self, pathname=None):
         config_path = pathname or os.path.join(self.home, '.homekeeper.json')
-        with fopen(config_path, 'r') as f:
+        with common.fopen(config_path, 'r') as f:
             data = json.loads(f.read())
             if 'base' in data:
                 self.base_directory = data['base']
@@ -44,7 +44,7 @@ class Config(object):
             logging.info('loaded configuration from %s', config_path)
 
     def save(self, pathname):
-        with fopen(pathname, 'w') as f:
+        with common.fopen(pathname, 'w') as f:
             data = {
                 'base_directory': self.base_directory,
                 'dotfiles_directory': self.dotfiles_directory,

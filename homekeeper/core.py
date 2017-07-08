@@ -3,8 +3,7 @@ import logging
 import os
 import shutil
 
-cd = homekeeper.common.cd
-makedirs = homekeeper.common.makedirs
+common = homekeeper.common
 
 
 def symlink(config, source, target):
@@ -18,7 +17,7 @@ def symlink(config, source, target):
     """
     dirname = os.path.dirname(target)
     if not os.path.exists(dirname):
-        makedirs(dirname)
+        common.makedirs(dirname)
     if source == target:
         logging.info('skipping %s; source and target are the same', source)
         return
@@ -162,7 +161,7 @@ def process_directories(config, source_directory, target_directory, process):
         logging.error('source and target directory are the same')
         return
     logging.info('processing files in %s', source_directory)
-    with cd(source_directory):
+    with common.cd(source_directory):
         for pathname in os.listdir('.'):
             basename = os.path.basename(pathname)
             source = os.path.join(source_directory, basename)
