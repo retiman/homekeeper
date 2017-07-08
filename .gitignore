@@ -1,3 +1,4 @@
+assets/
 build/
 dist/
 homekeeper/__pycache__/
@@ -6,4 +7,4 @@ htmlcov/
 .cache/
 .coverage
 homekeeper.html
-tests.xml
+homekeeper-tests.html

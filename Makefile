@@ -15,7 +15,8 @@ clean:
 	rm -rf htmlcov
 	rm -rf .cache
 	rm -rf .coverage
-	rm -rf tests.xml
+	rm -rf homekeeper.html
+	rm -rf homekeeper-tests.html
 
 deploy: clean doc lint test
 	${PYTHON} setup.py sdist upload -r homekeeper
@@ -39,4 +40,4 @@ requirements:
 	${PIP} install -r requirements.txt
 
 test: lint
-	${PYTEST} -v --junit-xml=tests.xml --cov=homekeeper --cov-report=term homekeeper
+	${PYTEST} -v --html=homekeeper-tests.html --cov=homekeeper --cov-report=html homekeeper
