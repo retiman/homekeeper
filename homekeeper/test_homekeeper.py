@@ -70,8 +70,7 @@ class TestHomekeeper(homekeeper.test_case.TestCase):
         base_items = set(os.listdir(self.base_directory))
         dotfiles_items = set(os.listdir(self.dotfiles_directory))
         for item in os.listdir(self.home):
-            if item in h.config.excludes:
-                continue
+            assert item not in h.config.excludes
             if item not in base_items and item not in dotfiles_items:
                 continue
             link = os.path.join(self.home, item)
