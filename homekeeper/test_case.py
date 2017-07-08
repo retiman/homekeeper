@@ -106,4 +106,4 @@ class TestCase(object):
             patcher.start()
             self.patchers.append(patcher)
         except AttributeError:
-            logging.error('can not patch: %s.%s', module, name)
+            logging.debug('can not patch: %s.%s', module, name)
