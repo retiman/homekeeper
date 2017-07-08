@@ -39,5 +39,4 @@ requirements:
 	${PIP} install -r requirements.txt
 
 test: lint
-	${PYTEST} -v --tb=long --full-trace --junit-xml=tests.xml \
-			--cov=homekeeper --cov-report=term homekeeper
+	${PYTEST} -v --junit-xml=tests.xml --cov=homekeeper --cov-report=term homekeeper
