@@ -1,12 +1,14 @@
 import contextlib
-import fake_filesystem
-import fake_filesystem_shutil
+import pyfakefs.fake_filesystem
+import pyfakefs.fake_filesystem_shutil
 import homekeeper.common
 import json
 import logging
 import mock
 import pytest
 
+fake_filesystem = pyfakefs.fake_filesystem
+fake_filesystem_shutil = pyfakefs.fake_filesystem_shutil
 logging.basicConfig(format='%(message)s', level=logging.DEBUG)
 
 
