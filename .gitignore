@@ -3,6 +3,7 @@ build/
 dist/
 homekeeper/__pycache__/
 homekeeper/*.pyc
+homekeeper.egg-info/
 htmlcov/
 .cache/
 .coverage
