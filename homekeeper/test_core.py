@@ -185,6 +185,12 @@ class TestCore(homekeeper.test_case.TestCase):
         assert os.path.islink(target)
         assert os.readlink(target) == include
 
+    def test_create_with_bad_includes(self, os):
+        self.config.includes = ['', 'non-existing', os.sep]
+        core.create_symlinks(self.config, self.dotfiles_directory, self.home)
+        assert not os.path.exists(os.path.join(self.dotfiles_directory,
+                                               'non-existing'))
+
     def test_cleanup_symlinks(self, os):
         with cd(self.home):
             self.setup_file('existing.txt')
@@ -207,3 +213,12 @@ class TestCore(homekeeper.test_case.TestCase):
         assert core.relativize(os.path.join(base_directory, 'bif'),
                                base_directory) == 'bif'
 
+    def test_is_valid_include(self, os):
+        commonprefix = self.dotfiles_directory
+        os.chdir(commonprefix)
+        assert core.is_valid_include(os.sep, commonprefix) == False
+        assert core.is_valid_include('foobar', commonprefix) == False
+        assert core.is_valid_include('..', commonprefix) == False
+        assert core.is_valid_include('.', commonprefix) == False
+        self.setup_file(self.dotfiles_directory, 'foobar')
+        assert core.is_valid_include('foobar', commonprefix) == True

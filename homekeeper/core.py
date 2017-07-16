@@ -164,8 +164,10 @@ def process_directories(config, source_directory, target_directory, process):
     with common.cd(source_directory):
         # Excludes must include included files; or else they will be included
         # twice in the second for loop.
+        includes = [p for p in config.includes
+                    if is_valid_include(p, source_directory)]
         excludes = [firstpart(relativize(p, source_directory))
-                    for p in config.includes] + config.excludes
+                    for p in includes] + config.excludes
         logging.debug('excluding items: %s', excludes)
         for pathname in os.listdir('.'):
             basename = os.path.basename(pathname)
@@ -176,7 +178,7 @@ def process_directories(config, source_directory, target_directory, process):
                 continue
             logging.debug('processing %s -> %s', source, target)
             process(config, source, target)
-        for pathname in config.includes:
+        for pathname in includes:
             relpath = relativize(pathname, source_directory)
             source = os.path.join(source_directory, relpath)
             target = os.path.join(target_directory, relpath)
@@ -197,3 +199,21 @@ def firstpart(pathname):
         return tail
     else:
         return firstpart(head)
+
+
+def is_valid_include(pathname, commonprefix):
+    logging.debug('checking validity of include: %s', pathname)
+    relpath = relativize(pathname, commonprefix)
+    abspath = os.path.join(commonprefix, relpath)
+    basename = os.path.basename(abspath)
+    if '.' == basename:
+        logging.debug('invalid because basename was .: %s', abspath)
+        return False
+    if '..' in abspath:
+        logging.debug('invalid due to ./.. in path: %s', abspath)
+        return False
+    if not os.path.exists(abspath):
+        logging.debug('invalid due to non-existing path: %s', abspath)
+        return False
+    logging.debug('include was valid: %s', abspath)
+    return True
