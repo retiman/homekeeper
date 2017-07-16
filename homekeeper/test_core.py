@@ -164,6 +164,17 @@ class TestCore(homekeeper.test_case.TestCase):
                 target = os.path.join(self.home, item)
                 self.verify_symlink(os, source, target)
 
+    def test_create_symlinks_with_includes(self, os):
+        include = self.setup_file(self.dotfiles_directory, '.foo', 'bar',
+                                  'bazrc')
+        target = os.path.join(self.home, '.foo', 'bar', 'bazrc')
+        self.config.includes = [include]
+        core.create_symlinks(self.config, self.dotfiles_directory, self.home)
+        assert not os.path.islink(os.path.join(self.home, '.foo'))
+        assert os.path.exists(target)
+        assert os.path.islink(target)
+        assert os.readlink(target) == include
+
     def test_cleanup_symlinks(self, os):
         with cd(self.home):
             self.setup_file('existing.txt')
@@ -175,3 +186,14 @@ class TestCore(homekeeper.test_case.TestCase):
             assert os.path.exists('existing-link.txt')
             assert not os.path.exists('non-existing-1-link.txt')
             assert not os.path.exists('non-existing-2-link.txt')
+
+    def test_firstpart(self, os):
+        assert core.firstpart(os.path.join(os.sep, 'foo', 'bar')) == os.sep
+        assert core.firstpart(os.path.join('foo', 'bar')) == 'foo'
+        assert core.firstpart('bar') == 'bar'
+
+    def test_relativize(self, os):
+        base_directory = os.path.join(os.sep, 'foo', 'bar', 'baz')
+        assert core.relativize(os.path.join(base_directory, 'bif'),
+                               base_directory) == 'bif'
+

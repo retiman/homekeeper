@@ -162,11 +162,37 @@ def process_directories(config, source_directory, target_directory, process):
         return
     logging.info('processing files in %s', source_directory)
     with common.cd(source_directory):
+        excludes = [firstpart(relativize(p, source_directory))
+                    for p in config.includes] + config.excludes
+        logging.debug('excluding items: %s', excludes)
         for pathname in os.listdir('.'):
             basename = os.path.basename(pathname)
             source = os.path.join(source_directory, basename)
             target = os.path.join(target_directory, basename)
-            if basename in config.excludes:
+            if basename in excludes:
                 logging.debug('skipping %s; resource is excluded', basename)
                 continue
+            logging.debug('processing %s -> %s', source, target)
             process(config, source, target)
+        for pathname in config.includes:
+            abspath = os.path.abspath(pathname)
+            relpath = os.path.relpath(pathname, source_directory)
+            source = os.path.join(source_directory, relpath)
+            target = os.path.join(target_directory, relpath)
+            logging.debug('processing %s -> %s', source, target)
+            process(config, source, target)
+
+
+def relativize(pathname, commonprefix):
+    abspath = os.path.abspath(pathname)
+    return os.path.relpath(pathname, commonprefix)
+
+
+def firstpart(pathname):
+    head, tail = os.path.split(pathname)
+    if head is os.sep:
+        return head
+    elif not head:
+        return tail
+    else:
+        return firstpart(head)
