@@ -19,10 +19,13 @@ class TestCli(homekeeper.test_case.TestCase):
     def teardown_method(self):
         self.patcher.stop()
 
-    def run(self, *args):
+    def run(self, *args, **kwargs):
         result = self.runner.invoke(homekeeper.cli.main, args)
-        assert result.output == ''
         assert result.exit_code == 0
+        if 'output' in kwargs:
+            assert result.output == kwargs['output']
+        else:
+            assert result.output == ''
 
     def test_cleanup(self):
         self.run('cleanup')
@@ -79,3 +82,8 @@ class TestCli(homekeeper.test_case.TestCase):
         self.mock_class.keep.assert_called_once()
         assert self.mock_instance.cleanup_symlinks == False
         assert self.mock_instance.overwrite == False
+
+    def test_version(self):
+        output = 'Homekeeper version %s\n' % homekeeper.__version__
+        self.run('version', output=output)
+        self.mock_class.assert_not_called()
