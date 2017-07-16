@@ -66,5 +66,4 @@ Excludes
 ========
 
 Any paths listed in the `excludes` directive in `homekeeper.json` will be
-ignored by homekeeper when linking.  The only exception is if the path is also
-in the `cherrypicks` directive (see below).
+ignored by homekeeper when linking.
