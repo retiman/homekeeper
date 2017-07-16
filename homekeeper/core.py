@@ -162,6 +162,8 @@ def process_directories(config, source_directory, target_directory, process):
         return
     logging.info('processing files in %s', source_directory)
     with common.cd(source_directory):
+        # Excludes must include included files; or else they will be included
+        # twice in the second for loop.
         excludes = [firstpart(relativize(p, source_directory))
                     for p in config.includes] + config.excludes
         logging.debug('excluding items: %s', excludes)
@@ -175,8 +177,7 @@ def process_directories(config, source_directory, target_directory, process):
             logging.debug('processing %s -> %s', source, target)
             process(config, source, target)
         for pathname in config.includes:
-            abspath = os.path.abspath(pathname)
-            relpath = os.path.relpath(pathname, source_directory)
+            relpath = relativize(pathname, source_directory)
             source = os.path.join(source_directory, relpath)
             target = os.path.join(target_directory, relpath)
             logging.debug('processing %s -> %s', source, target)
@@ -185,7 +186,7 @@ def process_directories(config, source_directory, target_directory, process):
 
 def relativize(pathname, commonprefix):
     abspath = os.path.abspath(pathname)
-    return os.path.relpath(pathname, commonprefix)
+    return os.path.relpath(abspath, commonprefix)
 
 
 def firstpart(pathname):

@@ -8,6 +8,7 @@ core = homekeeper.core
 
 
 # pylint: disable=attribute-defined-outside-init
+# pylint: disable=no-self-use
 # pylint: disable=too-many-public-methods
 class TestCore(homekeeper.test_case.TestCase):
     def setup_method(self):
@@ -171,6 +172,15 @@ class TestCore(homekeeper.test_case.TestCase):
         self.config.includes = [include]
         core.create_symlinks(self.config, self.dotfiles_directory, self.home)
         assert not os.path.islink(os.path.join(self.home, '.foo'))
+        assert os.path.exists(target)
+        assert os.path.islink(target)
+        assert os.readlink(target) == include
+
+    def test_create_symlinks_with_single_directory_includes(self, os):
+        include = self.setup_file(self.dotfiles_directory, '.foo')
+        target = os.path.join(self.home, '.foo')
+        self.config.includes = [include]
+        core.create_symlinks(self.config, self.dotfiles_directory, self.home)
         assert os.path.exists(target)
         assert os.path.islink(target)
         assert os.readlink(target) == include
