@@ -19,9 +19,10 @@ class Config(object):
         self.cleanup_symlinks = True
         self.overwrite = True
         self.override = False
+        self.default_path = os.path.join(self.home, '.homekeeper.json')
 
     def load(self, pathname=None):
-        config_path = pathname or os.path.join(self.home, '.homekeeper.json')
+        config_path = pathname or self.default_path
         with common.fopen(config_path, 'r') as f:
             data = json.loads(f.read())
             if 'base' in data:
