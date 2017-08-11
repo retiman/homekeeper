@@ -8,6 +8,7 @@ setuptools.setup(
     long_description=open('README.txt').read(),
     name='homekeeper',
     packages=['homekeeper'],
+    install_requires=['click >= 6.7'],
     version=homekeeper.__version__,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
