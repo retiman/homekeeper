@@ -45,6 +45,7 @@ class Config(object):
             logging.info('loaded configuration from %s', config_path)
 
     def save(self, pathname):
+        pathname = pathname or self.default_path
         with common.fopen(pathname, 'w') as f:
             data = {
                 'base_directory': self.base_directory,
