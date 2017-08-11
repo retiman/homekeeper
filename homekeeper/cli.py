@@ -18,7 +18,7 @@ def init(ctx):
     h = create_homekeeper(ctx.obj)
     h.cleanup_symlinks = False
     h.overwrite = False
-    h.cleanup()
+    h.init()
 
 
 @click.command(short_help='Symlinks dotfiles to your home directory.')

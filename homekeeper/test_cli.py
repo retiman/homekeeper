@@ -32,12 +32,14 @@ class TestCli(homekeeper.test_case.TestCase):
         self.mock_class.cleanup.assert_called_once()
         assert self.mock_instance.cleanup_symlinks == True
         assert self.mock_instance.overwrite == False
+        self.mock_instance.cleanup.assert_called_with()
 
     def test_cleanup_ignores_no_cleanup_and_overwrite(self):
         self.run('--no-cleanup-symlinks', '--overwrite', 'cleanup')
         self.mock_class.cleanup.assert_called_once()
         assert self.mock_instance.cleanup_symlinks == True
         assert self.mock_instance.overwrite == False
+        self.mock_instance.cleanup.assert_called_with()
 
     def test_init_with_custom_config(self, os):
         dotfiles_directory = os.getcwd()
@@ -47,6 +49,7 @@ class TestCli(homekeeper.test_case.TestCase):
         self.mock_class.init.assert_called_once()
         assert self.mock_instance.cleanup_symlinks == False
         assert self.mock_instance.overwrite == False
+        self.mock_instance.init.assert_called_with()
 
     def test_init_cannot_cleanup_or_overwrite(self):
         self.run('--cleanup-symlinks', '--overwrite', 'init')
@@ -54,6 +57,7 @@ class TestCli(homekeeper.test_case.TestCase):
         self.mock_class.init.assert_called_once()
         assert self.mock_instance.cleanup_symlinks == False
         assert self.mock_instance.overwrite == False
+        self.mock_instance.init.assert_called_with()
 
     def test_keep_with_default_options(self):
         self.run('keep')
@@ -61,6 +65,7 @@ class TestCli(homekeeper.test_case.TestCase):
         self.mock_class.keep.assert_called_once()
         assert self.mock_instance.cleanup_symlinks == True
         assert self.mock_instance.overwrite == True
+        self.mock_instance.keep.assert_called_with()
 
     def test_keep_with_custom_options(self):
         self.run('--no-cleanup-symlinks', '--no-overwrite', 'keep')
@@ -68,6 +73,7 @@ class TestCli(homekeeper.test_case.TestCase):
         self.mock_class.keep.assert_called_once()
         assert self.mock_instance.cleanup_symlinks == False
         assert self.mock_instance.overwrite == False
+        self.mock_instance.keep.assert_called_with()
 
     def test_unkeep_with_default_options(self):
         self.run('unkeep')
@@ -75,6 +81,7 @@ class TestCli(homekeeper.test_case.TestCase):
         self.mock_class.keep.assert_called_once()
         assert self.mock_instance.cleanup_symlinks == True
         assert self.mock_instance.overwrite == True
+        self.mock_instance.unkeep.assert_called_with()
 
     def test_unkeep_with_custom_options(self):
         self.run('--no-cleanup-symlinks', '--no-overwrite', 'unkeep')
@@ -82,6 +89,7 @@ class TestCli(homekeeper.test_case.TestCase):
         self.mock_class.keep.assert_called_once()
         assert self.mock_instance.cleanup_symlinks == False
         assert self.mock_instance.overwrite == False
+        self.mock_instance.unkeep.assert_called_with()
 
     def test_version(self):
         output = 'Homekeeper version %s\n' % homekeeper.__version__
