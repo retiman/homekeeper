@@ -24,7 +24,7 @@ class Homekeeper(object):
         """
         dotfiles_directory = os.path.realpath(os.getcwd())
         logging.info('setting dotfiles directory to %s', dotfiles_directory)
-        self.config.dotfiles_directory = os.path.realpath(os.getcwd())
+        self.config.dotfiles_directory = dotfiles_directory
         self.config.save(self.config_path)
 
     def keep(self):
