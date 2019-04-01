@@ -12,8 +12,8 @@ class Homekeeper(object):
     """Organizes and versions your dot files."""
 
     def __init__(self, config_path=None):
-        self.config_path = config_path
         self.config = homekeeper.config.Config()
+        self.config_path = config_path or self.config.default_path
         self.config.load(self.config_path)
 
     def init(self):

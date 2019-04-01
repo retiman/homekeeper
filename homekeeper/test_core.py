@@ -5,6 +5,7 @@ import homekeeper.test_case
 
 cd = homekeeper.common.cd
 core = homekeeper.core
+makedirs = homekeeper.common.makedirs
 
 
 # pylint: disable=attribute-defined-outside-init
@@ -16,6 +17,14 @@ class TestCore(homekeeper.test_case.TestCase):
         self.patch('homekeeper.common')
         self.patch('homekeeper.core')
         self.config = homekeeper.config.Config()
+
+    def test_init_finishes_successfully(self, os):
+        init_directory = os.path.join(self.home, 'testing')
+        makedirs(init_directory)
+        with cd(init_directory):
+            h = homekeeper.Homekeeper()
+            h.init()
+            assert os.path.exists(os.path.join(self.home, '.homekeeper.json'))
 
     def setup_symlink(self, os):
         source = self.setup_file(self.dotfiles_directory, '.vimrc')
