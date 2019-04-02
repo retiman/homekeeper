@@ -3,6 +3,7 @@ PYLINT = /usr/bin/env pylint
 PYTEST = /usr/bin/env pytest
 PYTHON = /usr/bin/env python2
 PIP = /usr/bin/env pip2
+TWINE = /usr/bin/env twine
 .PHONY = clean deploy doc doc-server install requirements test
 
 all: clean requirements doc test
@@ -19,7 +20,8 @@ clean:
 	rm -rf homekeeper-tests.html
 
 deploy: clean doc lint test
-	${PYTHON} setup.py sdist upload -r homekeeper
+	${PYTHON} setup.py sdist
+	${TWINE} upload --repository pypi dist/*
 
 debug:
 	${PYTEST} --pdb homekeeper
