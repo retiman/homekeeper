@@ -2,28 +2,21 @@ workspace(name = "homekeeper")
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 http_archive(
-    name = "bazel_federation",
-    url = "https://github.com/bazelbuild/bazel-federation/archive/130c84ec6d60f31b711400e8445a8d0d4a2b5de8.zip",
-    sha256 = "9d4fdf7cc533af0b50f7dd8e58bea85df3b4454b7ae00056d7090eb98e3515cc",
-    strip_prefix = "bazel-federation-130c84ec6d60f31b711400e8445a8d0d4a2b5de8",
-    type = "zip",
+    name = "rules_python",
+    url = "https://github.com/bazelbuild/rules_python/archive/94677401bc56ed5d756f50b441a6a5c7f735a6d4.tar.gz",
+    strip_prefix = "rules_python-94677401bc56ed5d756f50b441a6a5c7f735a6d4",
+    sha256 = "acbd018f11355ead06b250b352e59824fbb9e77f4874d250d230138231182c1c",
 )
-
-load("@bazel_federation//:repositories.bzl", "rules_python")
-rules_python()
-
-load("@bazel_federation//setup:rules_python.bzl", "rules_python_setup")
-rules_python_setup(use_pip=True)
 
 load("@rules_python//python:repositories.bzl", "py_repositories")
 py_repositories()
 
-load("@rules_python//python:pip.bzl", "pip_import", "pip_repositories")
+load("@rules_python//python:pip.bzl", "pip_repositories", "pip3_import")
 pip_repositories()
 
-pip_import(
+pip3_import(
     name = "pip",
-    requirements = "//:requirements.txt"
+    requirements = "//:requirements.txt",
 )
 
 load("@pip//:requirements.bzl", "pip_install")
