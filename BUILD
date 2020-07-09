@@ -1,4 +1,7 @@
-py_library(
-    name = "cli",
-    srcs = ["homekeeper/cli.py"],
+load("@pip//:requirements.bzl", "requirement")
+
+py_binary(
+    name = "application",
+    main = "cli.py",
+    srcs = ["//homekeeper:cli"],
 )
