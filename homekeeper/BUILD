@@ -39,3 +39,65 @@ py_library(
         ":common",
     ],
 )
+
+py_library(
+    name = "test_case",
+    srcs = ["test_case.py"],
+    deps = [
+        requirement("mock"),
+        requirement("pyfakefs"),
+        requirement("pytest"),
+        ":common",
+    ],
+)
+
+py_test(
+    name = "test_homekeeper",
+    size = "small",
+    srcs = ["test_homekeeper.py"],
+    deps = [
+        requirement("pytest"),
+        ":common",
+        ":config",
+        ":package",
+        ":test_case",
+    ],
+)
+
+py_test(
+    name = "test_core",
+    size = "small",
+    srcs = ["test_core.py"],
+    deps = [
+        requirement("pytest"),
+        ":common",
+        ":config",
+        ":core",
+        ":test_case",
+    ]
+)
+
+py_test(
+    name = "test_cli",
+    size = "small",
+    srcs = ["test_cli.py"],
+    deps = [
+        requirement("click"),
+        requirement("mock"),
+        requirement("pytest"),
+        ":cli",
+        ":package",
+        ":test_case",
+    ],
+)
+
+py_test(
+    name = "test_config",
+    size = "small",
+    srcs = ["test_config.py"],
+    deps = [
+        requirement("pytest"),
+        ":config",
+        ":test_case",
+    ],
+)
