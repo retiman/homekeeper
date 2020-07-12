@@ -4,7 +4,7 @@ import homekeeper.lib
 import homekeeper.symlink
 
 
-__version__ = '5.0.1'
+__version__ = '5.0.3'
 config = homekeeper.config
 lib = homekeeper.lib
 symlink = homekeeper.symlink
