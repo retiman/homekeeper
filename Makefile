@@ -4,7 +4,7 @@ PYLINT = /usr/bin/env pylint
 PYTEST = /usr/bin/env pytest
 PYTHON = /usr/bin/env python
 TWINE = /usr/bin/env twine
-.PHONY = clean deploy dist doc lint test virtualenv
+.PHONY = clean deploy dist doc install lint test virtualenv
 
 all: clean dist
 
@@ -25,6 +25,9 @@ dist: lint test
 
 doc:
 	${PYDOC} -w homekeeper
+
+install: dist
+	${PIP} install dist/*
 
 lint:
 	${PYLINT} --rcfile=pylintrc homekeeper
