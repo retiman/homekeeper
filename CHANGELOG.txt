@@ -1,5 +1,8 @@
 # Homekeeper Changelog
 
+## [5.0.1]
+    - Fixes a problem with using Markdown when uploading to Pypi.
+
 ## [5.0.0]
     - Migrated to Python 3.5.
     - Python 2 is no longer supported.

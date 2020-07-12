@@ -69,7 +69,7 @@ def remove(*args):
 def touch(*args):
     target = os.path.join(*args)
     makedirs(os.path.dirname(target))
-    with fopen(target, 'a'):
+    with fopen(target, 'a', encoding='utf-8'):
         logging.debug("touching path: %s", target)
         os.utime(target)
 
