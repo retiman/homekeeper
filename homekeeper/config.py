@@ -57,7 +57,7 @@ def write(config_data, config_file=None):
 
 
 def __read(config_file):
-    with fopen(config_file) as f:
+    with fopen(config_file, encoding='utf-8') as f:
         logging.debug("reading configuration from: %s", os.path.abspath(config_file))
         data = json.loads(f.read())
         logging.debug("read configuration: %s", data)
@@ -73,7 +73,7 @@ def __read(config_file):
 
 
 def __write(config_data, config_file=None):
-    with fopen(config_file, 'w') as f:
+    with fopen(config_file, 'w', encoding='utf-8') as f:
         data = dict()
         data['directories'] = config_data.directories
         data['excludes'] = config_data.excludes

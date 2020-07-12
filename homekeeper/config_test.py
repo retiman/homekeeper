@@ -85,8 +85,9 @@ class ConfigTest:
         config_data.directories = ['/home/johndoe/dotfiles']
         config_data.excludes = ['.git']
         config_file = config.write(config_data, os.path.join(tmpdir.strpath, 'homekeeper.json'))
-        with fopen(config_file) as f:
+        with fopen(config_file, encoding='utf-8') as f:
             actual = f.read()
-        with fopen(os.path.join(self.get_module_directory(), 'testdata', 'ConfigTest.test_write')) as f:
+        test_file = os.path.join(self.get_module_directory(), 'testdata', 'ConfigTest.test_write')
+        with fopen(test_file, encoding='utf-8') as f:
             expected = f.read()
         assert actual == expected
