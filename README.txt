@@ -17,7 +17,7 @@ Install it via [pypi](https://pypi.python.org/pypi/homekeeper):
     
 Versions 5.0.0 and above are compatible with Python 3 only.
 
-Versions 4.0.6 and below are compatible with Python 2 only.
+Versions 4.0.5 and below are compatible with Python 2 only.
 
 Usage
 =====
@@ -49,7 +49,9 @@ will contain:
 
     .bash_profile -> /home/$USER/dotfiles/.bash_profile
     
-NOTE: HOMEKEEPER WILL OVERWRITE THE FILE IN YOUR HOME DIRECTORY.  To prevent homekeeper from doing this, run with the
-`--no-overwrite` flag (although this may prevent homekeeper from doing anything useful).
+NOTE: HOMEKEEPER WILL DELETE THE ORIGINAL FILE IN YOUR HOME DIRECTORY AND CREATE A SYMLINK.
+  
+To prevent homekeeper from doing this, run with the `--no-overwrite` flag (although this may prevent homekeeper from
+doing anything useful).
 
 Run `homekeeper unkeep` to undo this process.
