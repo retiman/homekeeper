@@ -1,5 +1,8 @@
 # Homekeeper Changelog
 
+## [5.0.2]
+    - Fixes a typo.
+
 ## [5.0.1]
     - Fixes a problem with using Markdown when uploading to Pypi.
 

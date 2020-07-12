@@ -6,7 +6,7 @@ setuptools.setup(
     author='Min Huang',
     author_email='min.huang@alumni.usc.edu',
     description='Symlinks your dotfiles from anywhere to your home directory.',
-    long_description_type='text/markdown',
+    long_description_content_type='text/markdown',
     long_description=open('README.txt', encoding='utf-8').read(),
     name='homekeeper',
     packages=['homekeeper'],
