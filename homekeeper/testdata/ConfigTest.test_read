@@ -1,0 +1,10 @@
+{
+  "directories": [
+    "/home/johndoe/dotfiles/desktop",
+    "/home/johndoe/dotfiles/laptop"
+  ],
+  "excludes": [
+    ".git",
+    "README.md"
+  ]
+}

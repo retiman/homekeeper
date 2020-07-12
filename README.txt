@@ -32,8 +32,10 @@ create one if it doesn't already exist.  The default configuration looks like
 this:
 
     {
-        "base_directory": "/home/$USER/dotfiles/base",
-        "dotfiles_directory": "/home/$USER/dotfiles/$HOST",
+        "directories": [
+            "/home/$USER/dotfiles/base",
+            "/home/$USER/dotfiles/host"
+        ]
         "excludes": [
             ".git",
             ".gitignore",

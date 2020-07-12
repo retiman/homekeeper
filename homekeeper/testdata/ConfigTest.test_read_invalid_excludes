@@ -1,0 +1,7 @@
+{
+  "directories": "/home/johndoe/dotfiles",
+  "excludes": [
+    ".git",
+    0
+  ]
+}

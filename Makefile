@@ -1,39 +1,30 @@
+PIP = /usr/bin/env pip
 PYDOC = /usr/bin/env pydoc
 PYLINT = /usr/bin/env pylint
 PYTEST = /usr/bin/env pytest
-PYTHON = /usr/bin/env python2
-PIP = /usr/bin/env pip2
+PYTHON = /usr/bin/env python
 TWINE = /usr/bin/env twine
-.PHONY = clean deploy doc doc-server install requirements test
+.PHONY = clean deploy dist doc lint test virtualenv
 
-all: clean requirements doc test
+all: clean dist
 
 clean:
-	rm -rf build
+	@echo 'Removing all directories except venv'
 	rm -rf dist
-	rm -rf homekeeper/*.pyc
-	rm -rf homekeeper/__pycache__
-	rm -rf htmlcov
-	rm -rf .cache
-	rm -rf .coverage
+	rm -rf homekeeper/.pytest_cache
+	rm -rf homekeeper/homekeeper-testlogs.txt
+	rm -rf homekeeper.egg-info/
 	rm -rf homekeeper.html
-	rm -rf homekeeper-tests.html
+	rm -rf homekeeper-testlogs.txt
 
-deploy: clean doc lint test
-	${PYTHON} setup.py sdist
+deploy: dist
 	${TWINE} upload --repository pypi dist/*
 
-debug:
-	${PYTEST} --pdb homekeeper
+dist: lint test
+	${PYTHON} setup.py sdist
 
 doc:
 	${PYDOC} -w homekeeper
-
-doc-server:
-	${PYDOC} -p 8080 -w homekeeper
-
-install: clean requirements
-	${PIP} install --upgrade .
 
 lint:
 	${PYLINT} --rcfile=pylintrc homekeeper
@@ -42,4 +33,8 @@ requirements:
 	${PIP} install -r requirements.txt
 
 test: lint
-	${PYTEST} -v --html=homekeeper-tests.html --cov=homekeeper --cov-report=html homekeeper
+	${PYTEST} --verbose --color=auto homekeeper
+
+virtualenv:
+	${PYTHON} -m venv venv
+	@echo 'Now source activate and pip install -r requirements.txt'

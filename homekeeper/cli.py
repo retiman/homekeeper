@@ -1,59 +1,84 @@
+import logging
+import sys
 import click
 import homekeeper
-import logging
+import homekeeper.exceptions
 
 
-@click.command(short_help='Removes broken symlinks only.')
+ConfigException = homekeeper.exceptions.ConfigException
+Homekeeper = homekeeper.Homekeeper
+HomekeeperException = homekeeper.exceptions.HomekeeperException
+
+
+@click.command(short_help='removes broken symlinks only')
 @click.pass_context
 def cleanup(ctx):
-    h = create_homekeeper(ctx.obj)
-    h.cleanup_symlinks = True
-    h.overwrite = False
-    h.cleanup()
+    try:
+        h = Homekeeper(ctx.obj)
+        if not h.cleanup_symlinks:
+            logging.warning('read flag --no-cleanup-symlinks but forcing value to be true')
+            h.cleanup_symlinks = True
+        h.cleanup()
+    except (ConfigException, HomekeeperException) as e:
+        logging.error(e)
+        sys.exit(1)
 
 
-@click.command(short_help='Set dotfiles directory to current directory.')
-@click.pass_context
-def init(ctx):
-    h = create_homekeeper(ctx.obj)
-    h.cleanup_symlinks = False
-    h.overwrite = False
-    h.init()
-
-
-@click.command(short_help='Symlinks dotfiles to your home directory.')
+@click.command(short_help='symlinks dotfiles to your home directory')
 @click.pass_context
 def keep(ctx):
-    h = create_homekeeper(ctx.obj)
-    h.keep()
+    try:
+        h = Homekeeper(ctx.obj)
+        h.keep()
+    except (ConfigException, HomekeeperException) as e:
+        logging.error(e)
+        sys.exit(1)
 
 
-@click.command(short_help='Restores dotfiles and replacing symlinks.')
+@click.command(short_help='restores dotfiles and replacing symlinks')
 @click.pass_context
 def unkeep(ctx):
-    h = create_homekeeper(ctx.obj)
-    h.unkeep()
+    try:
+        h = Homekeeper(ctx.obj)
+        h.unkeep()
+    except (ConfigException, HomekeeperException) as e:
+        logging.error(e)
+        sys.exit(1)
 
 
-@click.command(short_help='Displays the version and then exits.')
+@click.command(short_help='displays the version and then exits')
 @click.pass_context
-def version(ctx): # pylint: disable=unused-argument
-    click.echo('Homekeeper version %s' % homekeeper.__version__)
+def version(ctx):
+    try:
+        h = Homekeeper(ctx.obj)
+        click.echo('homekeeper version %s' % h.version())
+    except (ConfigException, HomekeeperException) as e:
+        logging.error(e)
+        sys.exit(1)
 
 
 @click.group()
-@click.option('--cleanup-symlinks/--no-cleanup-symlinks', default=True,
-              is_flag=True, help='Removes broken symlinks (default true).')
-@click.option('--overwrite/--no-overwrite', default=True, is_flag=True,
-              help='Overwrite existing files or symlinks (default true).')
-@click.option('--config-path', metavar='FILE', default=None,
-              help='Path to .homekeeper.json config file.')
-@click.option('--debug/--no-debug', default=False, is_flag=True,
-              help='Enables debug output (default false).')
+@click.option('--cleanup-symlinks/--no-cleanup-symlinks',
+              default=True,
+              is_flag=True,
+              help='removes broken symlinks (default true)')
+@click.option('--overwrite/--no-overwrite',
+              default=True,
+              is_flag=True,
+              help='overwrite existing files or symlinks (default true)')
+@click.option('--config-path',
+              metavar='FILE',
+              default=None,
+              help='path to .homekeeper.json config file')
+@click.option('--debug/--no-debug',
+              default=False,
+              is_flag=True,
+              help='enables debug output (default false)')
 @click.pass_context
 def main(ctx, cleanup_symlinks, overwrite, config_path, debug):
     if debug:
         logging.basicConfig(level=logging.DEBUG)
+        logging.info('set log level to debug')
     else:
         logging.basicConfig(format='%(message)s', level=logging.INFO)
     ctx.obj = {
@@ -61,17 +86,10 @@ def main(ctx, cleanup_symlinks, overwrite, config_path, debug):
         'config_path': config_path,
         'overwrite': overwrite,
     }
-
-
-def create_homekeeper(args):
-    h = homekeeper.Homekeeper(config_path=args['config_path'])
-    h.cleanup_symlinks = args['cleanup_symlinks']
-    h.overwrite = args['overwrite']
-    return h
+    logging.debug("created click context object: %s", ctx.obj)
 
 
 main.add_command(cleanup)
-main.add_command(init)
 main.add_command(keep)
 main.add_command(unkeep)
 main.add_command(version)

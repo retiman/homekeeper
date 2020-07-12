@@ -1,56 +1,115 @@
-import homekeeper.common
-import logging
 import json
+import logging
 import os
+import homekeeper.exceptions
+import homekeeper.lib
 
-common = homekeeper.common
+
+fopen = homekeeper.lib.fopen
+lib = homekeeper.lib
+ConfigException = homekeeper.exceptions.ConfigException
+JSONDecodeError = json.JSONDecodeError
 
 
-class Config(object):
-    """Representation of the homekeeper configuration file."""
-
-    # pylint: disable=too-many-instance-attributes
+class ConfigData:
     def __init__(self):
-        self.home = os.getenv('HOME')
-        self.base_directory = None
-        self.dotfiles_directory = os.path.join(self.home, 'dotfiles')
-        self.includes = []
-        self.excludes = ['.git', '.gitignore', 'LICENSE', 'README.md']
-        self.cleanup_symlinks = True
-        self.overwrite = True
-        self.override = False
-        self.default_path = os.path.join(self.home, '.homekeeper.json')
+        self.directories = []
+        self.excludes = [
+            '.git',
+            '.gitignore',
+            'LICENSE',
+            'LICENSE.txt',
+            'README',
+            'README.md',
+            'README.txt'
+        ]
 
-    def load(self, pathname=None):
-        config_path = pathname or self.default_path
-        with common.fopen(config_path, 'r') as f:
-            data = json.loads(f.read())
-            if 'base' in data:
-                self.base_directory = data['base']
-            if 'base_directory' in data:
-                self.base_directory = data['base_directory']
-            if 'directory' in data:
-                self.dotfiles_directory = data['directory']
-            if 'dotfiles_directory' in data:
-                self.dotfiles_directory = data['dotfiles_directory']
-            if 'cherrypicks' in data:
-                self.includes = data['cherrypicks']
-            if 'includes' in data:
-                self.includes = data['includes']
-            if 'excludes' in data:
-                self.excludes = data['excludes']
-            else:
-                self.excludes = []
-            self.override = self.base_directory is not None
-            logging.info('loaded configuration from %s', config_path)
 
-    def save(self, pathname):
-        with common.fopen(pathname, 'w') as f:
-            data = {
-                'base_directory': self.base_directory,
-                'dotfiles_directory': self.dotfiles_directory,
-                'includes': self.includes,
-                'excludes': self.excludes,
-            }
-            f.write(json.dumps(data, sort_keys=True, indent=4))
-            logging.info('saved configuration to %s', pathname)
+def get_default_location():
+    return os.path.join(lib.get_home_directory(), '.homekeeper.json')
+
+
+def read(config_file):
+    try:
+        if not config_file or not os.path.exists(config_file):
+            config_file = os.path.abspath(os.path.join(os.getcwd(), '.homekeeper.json'))
+            logging.info("trying configuration from current directory: %s", config_file)
+        if not os.path.exists(config_file):
+            config_file = get_default_location()
+            logging.info("trying configuration from home directory :%s", config_file)
+        if not os.path.exists(config_file):
+            raise ConfigException("could not find configuration file anywhere; create .homekeeper.json first")
+        return __read(config_file)
+    except IOError as e:
+        raise ConfigException("couldn't read from file '{}': {}".format(config_file, e))
+    except JSONDecodeError as e:
+        raise ConfigException("configuration format in file '{}' was invalid: {}".format(config_file, e))
+
+
+def write(config_data, config_file=None):
+    try:
+        if not config_file:
+            logging.info("writing configuration to default location: %s", get_default_location())
+            config_file = get_default_location()
+        return __write(config_data, config_file=config_file)
+    except IOError as e:
+        raise ConfigException("couldn't write to file '{}': {}".format(config_file, e))
+
+
+def __read(config_file):
+    with fopen(config_file) as f:
+        logging.debug("reading configuration from: %s", os.path.abspath(config_file))
+        data = json.loads(f.read())
+        logging.debug("read configuration: %s", data)
+        config_data = ConfigData()
+        __read_directories(config_data, data)
+        __read_excludes(config_data, data)
+        if not config_data.directories:
+            raise ConfigException("no configuration key named 'directory' or 'directories' "
+                                  "found: {}".format(config_file))
+        if not config_data.excludes:
+            config_data.excludes = []
+        return config_data
+
+
+def __write(config_data, config_file=None):
+    with fopen(config_file, 'w') as f:
+        data = dict()
+        data['directories'] = config_data.directories
+        data['excludes'] = config_data.excludes
+        json_data = json.dumps(data, sort_keys=True, indent=4)
+        logging.debug("writing configuration: %s", json_data)
+        f.write(json_data)
+        logging.debug("wrote configuration to: %s", config_file)
+        return config_file
+
+
+def __read_directories(config_data, data):
+    if 'directory' in data and 'directories' in data:
+        raise ConfigException("configuration key 'directory' cannot be present with key 'directories'")
+    if 'directories' in data and isinstance(data['directories'], list):
+        config_data.directories = data['directories']
+        for directory in config_data.directories:
+            if not isinstance(directory, str):
+                raise ConfigException("configuration key 'directories' did not contain a string: {}"
+                                      .format(directory))
+        return
+    if 'directories' in data and isinstance(data['directories'], str):
+        config_data.directories = [data['directories']]
+        return
+    if 'directory' in data and isinstance(data['directory'], str):
+        config_data.directories = [data['directory']]
+        return
+    raise ConfigException("configuration key 'directories' and/or 'directory' is not a list or string")
+
+
+def __read_excludes(config_data, data):
+    if 'excludes' not in data:
+        config_data.excludes = []
+        return
+    if not isinstance(data['excludes'], list):
+        raise ConfigException("configuration key 'excludes' is not a list: {}".format(data['excludes']))
+    config_data.excludes = data['excludes']
+    for exclude in config_data.excludes:
+        if not isinstance(exclude, str):
+            raise ConfigException("configuration key 'excludes' did not contain a string: {}".format(exclude))
