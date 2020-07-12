@@ -19,6 +19,7 @@ The process for releasing is:
 1.  Ensure the package can be built and all tests pass using `make clean dist`.
 1.  Do any local testing via `make install`.
 1.  Update the `CHANGELOG.txt`.
+1.  Check that the distribution is valid via `make check`.
 1.  Merge changes from `master` onto `release`.
 1.  Create an annotated tag via `git tag -a vx.y.z -m "New release"`.
 1.  Push the branch and tags `git push origin release` and `git push --tags origin`.

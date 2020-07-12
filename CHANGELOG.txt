@@ -1,5 +1,8 @@
 # Homekeeper Changelog
 
+## [5.0.3]
+    - Bugfix release.
+
 ## [5.0.2]
     - Fixes a typo.
 

@@ -3,5 +3,7 @@ mock==3.0.5
 pyfakefs==4.0.2
 pylint==2.5.3
 pytest==5.4.3
+readme-renderer==26.0
+setuptools==49.1.2
 twine==1.15.0
 wheel==0.34.2

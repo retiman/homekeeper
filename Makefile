@@ -4,9 +4,12 @@ PYLINT = /usr/bin/env pylint
 PYTEST = /usr/bin/env pytest
 PYTHON = /usr/bin/env python
 TWINE = /usr/bin/env twine
-.PHONY = clean deploy dist doc install lint test virtualenv
+.PHONY = check clean deploy dist doc install lint test virtualenv
 
 all: clean dist
+
+check:
+	${TWINE} check dist/*
 
 clean:
 	@echo 'Removing all directories except venv'
@@ -22,6 +25,7 @@ deploy: clean dist
 
 dist: lint test
 	${PYTHON} setup.py sdist
+	${TWINE} check dist/*
 
 doc:
 	${PYDOC} -w homekeeper
