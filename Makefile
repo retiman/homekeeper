@@ -17,7 +17,7 @@ clean:
 	rm -rf homekeeper.html
 	rm -rf homekeeper-testlogs.txt
 
-deploy: dist
+deploy: clean dist
 	${TWINE} upload --repository pypi dist/*
 
 dist: lint test
