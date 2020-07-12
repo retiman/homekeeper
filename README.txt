@@ -2,34 +2,33 @@
 
 Homekeeper
 ==========
-This project helps organize and version dotfiles.  You can keep your dotfile
-in a repository somewhere, then symlink them into your HOME directory.  This
-allows you to keep your dotfiles versioned and have them available on any
-computer you use.
+This project helps organize and by symlinking them from another location.  You may opt to version your dotfiles using
+git or another SCM tool so you can have access to them easily while working on other machines.
 
-In the event that you use multiple computers and would like dotfiles to be
-shared, you can specify a 'base' dotfiles directory and have host specific
-dotfiles override them.
+In the event that you use multiple computers and would like dotfiles to be shared, you can list of dotfiles directories
+that will be overridden.  This can be useful if you have your own personal dotfiles, but then want dotfiles for work
+to be located in a separate directory or repository.
 
 Installation
 ============
 Install it via [pypi](https://pypi.python.org/pypi/homekeeper):
 
     pip install homekeeper
+    
+Versions 5.0.0 and above are compatible with Python 3 only.
 
-Examples
-========
+Versions 4.0.6 and below are compatible with Python 2 only.
 
-My dotfiles repository is located [here](https://github.com/retiman/dotfiles)
-if you'd like to take a look.
+Usage
+=====
+Create a repository or directory to store your dotfiles (like [this one](https://github.com/retiman/dotfiles)), then
+create a `$HOME/.homekeeper.json` that points to that repository.  Running `homekeeper keep` symlinks the dotfiles
+from the repository to your home directory.
 
 
-How It Works
-============
-
-Homekeeper will read a `$HOME/.homekeeper.json` file for configuration, or
-create one if it doesn't already exist.  The default configuration looks like
-this:
+Configuration
+=============
+Homekeeper will read a `$HOME/.homekeeper.json` file for configuration.  A simple configuration looks like this:
 
     {
         "directories": [
@@ -42,30 +41,15 @@ this:
         ]
     }
 
-Homekeeper will not symlink any file in the `excludes` array in the
-configuration.
+Homekeeper will symlink files from each directory in order.  Homekeeper will not symlink any file in the `excludes`
+array in the configuration.
 
-Homekeeper will symlink files in the base directory first, then override those
-symlinks with files in your normal dotfiles directory.  This can be useful if
-you have different configurations for different machines.
-
-You may have homekeeper generate this file by running `homekeeper init` in the
-directory where you store your dotfiles.
-
-Once homekeeper knows where your dotfiles live, it will remove the dotfile in
-your home directory, and symlink it from your dotfiles directory.  For example,
-if you have a `.bash_profile` in `~/dotfiles`, then your home directory will
-contain:
+For example, if you have a `.bash_profile` in `~/dotfiles`, then after running `homekeeper keep`, your home directory
+will contain:
 
     .bash_profile -> /home/$USER/dotfiles/.bash_profile
+    
+NOTE: HOMEKEEPER WILL OVERWRITE THE FILE IN YOUR HOME DIRECTORY.  To prevent homekeeper from doing this, run with the
+`--no-overwrite` flag (although this may prevent homekeeper from doing anything useful).
 
-NOTE: HOMEKEEPER WILL REMOVE THE ORIGINAL FILE ONCE YOU TELL IT TO SYMLINK.
-
-Make sure you back it up or are having homekeeper track the file you want to
-symlink first.
-
-Excludes
-========
-
-Any paths listed in the `excludes` directive in `homekeeper.json` will be
-ignored by homekeeper when linking.
+Run `homekeeper unkeep` to undo this process.
