@@ -2,7 +2,7 @@ import setuptools
 import homekeeper
 
 
-with open('README.txt', encoding='utf-8') as f:
+with open('README.rst', encoding='utf-8') as f:
     long_description = f.read()
 
 
@@ -13,7 +13,7 @@ setuptools.setup(
     install_requires=['click >= 7.1.2'],
     license='MIT',
     long_description=long_description,
-    long_description_content_type='text/markdown',
+    long_description_content_type='text/x-rst',
     name='homekeeper',
     packages=['homekeeper'],
     platforms=['any'],
