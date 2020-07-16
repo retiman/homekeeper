@@ -17,6 +17,10 @@ Homekeeper
     :alt: Supported versions
     :target: https://pypi.python.org/pypi/homekeeper
 
+.. image:: https://img.shields.io/github/commits-since/retiman/homekeeper/v5.1.0.svg
+    :alt: Commits since latest release
+    :target: https://github.com/retiman/homekeeper/compare/v5.1.0...master
+
 This project helps organize dotfiles by symlinking them from another location.  You may opt to version your dotfiles
 using git or another SCM tool so you can have access to them easily while working on other machines.
 
