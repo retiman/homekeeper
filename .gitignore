@@ -1,6 +1,5 @@
-/dist/
 /homekeeper.egg-info/
 /venv/
 /.pytest_cache/
-__pycache__
+/.tox/
 homekeeper-testlogs.txt
