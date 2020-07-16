@@ -1,6 +1,9 @@
-/dist/
+/build/
+/docs/_build/
 /homekeeper.egg-info/
+/htmlcov/
 /venv/
 /.pytest_cache/
-__pycache__
+/.tox/
+/.coverage
 homekeeper-testlogs.txt

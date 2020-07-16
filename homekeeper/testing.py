@@ -41,7 +41,6 @@ class BaseFakeFilesystemTest:
         self.patchers.append(mock.patch('homekeeper.lib.fopen', self.fake_fopen))
         self.patchers.append(mock.patch('homekeeper.lib.os', self.fake_os))
         self.patchers.append(mock.patch('homekeeper.lib.shutil', self.fake_shutil))
-        logging.info('patching homekeeper.symlink')
         self.patchers.append(mock.patch('homekeeper.symlink.os', self.fake_os))
         self.patchers.append(mock.patch('homekeeper.symlink.shutil', self.fake_shutil))
         # Note that only `shutildisk_usage()` is faked, according to fake_filesystem_shutil.py.  The rest of the

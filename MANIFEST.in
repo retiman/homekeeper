@@ -1,2 +1,5 @@
-include *.txt
-recursive-include docs *.txt
+include *.rst CHANGELOG LICENSE
+include *.py
+include tox.ini
+recursive-include docs *
+prune docs/_build
