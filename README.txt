@@ -2,12 +2,12 @@
 
 Homekeeper
 ==========
-This project helps organize dotfiles by symlinking them from another location.  You may opt to version your dotfiles using
-git or another SCM tool so you can have access to them easily while working on other machines.
+This project helps organize dotfiles by symlinking them from another location.  You may opt to version your dotfiles
+using git or another SCM tool so you can have access to them easily while working on other machines.
 
-In the event that you use multiple computers and would like dotfiles to be shared, you can list of dotfiles directories
-that will be overridden.  This can be useful if you have your own personal dotfiles, but then want dotfiles for work
-to be located in a separate directory or repository.
+In the event that you use multiple computers and would like dotfiles to be shared, you can have a list of dotfiles
+directories that will be overridden.  This can be useful if you have your own personal dotfiles, but then want dotfiles
+for work to be located in a separate directory or repository.
 
 Installation
 ============
