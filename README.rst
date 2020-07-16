@@ -48,7 +48,7 @@ Homekeeper will read a ``$HOME/.homekeeper.json`` file for configuration.  A sim
         "directories": [
             "/home/johndoe/dotfiles/base",
             "/home/johndoe/dotfiles/host"
-        ]
+        ],
         "excludes": [
             ".git",
             ".gitignore",
