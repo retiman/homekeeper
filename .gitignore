@@ -1,5 +1,7 @@
 /homekeeper.egg-info/
+/htmlcov/
 /venv/
 /.pytest_cache/
 /.tox/
+/.coverage
 homekeeper-testlogs.txt
