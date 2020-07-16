@@ -53,7 +53,8 @@ def create_symlinks(source_directory, target_directory, config_data=ConfigData()
         process=create_symlink)
 
 
-def restore_symlink(source, target, overwrite=None): # pylint: disable=unused-argument
+# pylint: disable=unused-argument
+def restore_symlink(source, target, overwrite=None):
     if source == target:
         logging.info("skipping because source and target are the same: %s", source)
         return

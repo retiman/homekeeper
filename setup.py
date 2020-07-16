@@ -1,5 +1,5 @@
-import homekeeper
 import setuptools
+import homekeeper
 
 
 with open('README.txt', encoding='utf-8') as f:

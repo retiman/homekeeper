@@ -1,3 +1,4 @@
+FLAKE8 = /usr/bin/env flake8
 PIP = /usr/bin/env pip
 PYDOC = /usr/bin/env pydoc
 PYLINT = /usr/bin/env pylint
@@ -34,12 +35,13 @@ install: dist
 	${PIP} install dist/*
 
 lint:
-	${PYLINT} --rcfile=pylintrc homekeeper
+	${PYLINT} --rcfile=pylintrc homekeeper setup.py
+	${FLAKE8} --extend-ignore=E501 homekeeper setup.py
 
 requirements:
 	${PIP} install -r requirements.txt
 
-test: lint
+test:
 	${PYTEST} --verbose --color=auto homekeeper
 
 virtualenv:
