@@ -6,8 +6,16 @@ Homekeeper
     :target: https://travis-ci.org/retiman/homekeeper
 
 .. image:: https://img.shields.io/pypi/v/homekeeper.svg
-   :target: https://pypi.org/project/homekeeper/
+   :target: https://pypi.org/project/homekeeper
    :alt: Latest Version
+
+.. image:: https://img.shields.io/pypi/wheel/homekeeper.svg
+    :alt: PyPI Wheel
+    :target: https://pypi.python.org/pypi/homekeeper
+
+.. image:: https://img.shields.io/pypi/pyversions/homekeeper.svg
+    :alt: Supported versions
+    :target: https://pypi.python.org/pypi/homekeeper
 
 This project helps organize dotfiles by symlinking them from another location.  You may opt to version your dotfiles
 using git or another SCM tool so you can have access to them easily while working on other machines.
