@@ -21,6 +21,7 @@ You may install the package locally for testing.
 #.  Invoke ``tox --sdistonly`` to build the package.
 #.  Invoke ``pip install .tox/dist/*`` to install the package locally.
 #.  Test as necessary.
+#.  Invoke ``deactivate`` to deactivate your virtual environment.
 
 ========
 Releases
@@ -31,7 +32,7 @@ releases; only tag the release branch when ready to release.
 The process for releasing is:
 
 #.  Update the ``homekeeper.__version__`` variable with the new version.
-#.  Update the ``CHANGELOG.txt`` with new version information.
+#.  Update the ``CHANGELOG`` with new version information.
 #.  Invoke ``tox`` to run the tests and lint.
 #.  Invoke ``tox -e check`` to check the package with twine.
 #.  Invoke ``git merge master`` on the ``release`` branch to merge changes from ``master``.
