@@ -6,4 +6,6 @@
 /.pytest_cache/
 /.tox/
 /.coverage
+/**/__pycache__/
 homekeeper-testlogs.txt
+*.pyc
