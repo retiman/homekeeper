@@ -3,6 +3,7 @@
 /homekeeper.egg-info/
 /htmlcov/
 /venv/
+/.mypy_cache/
 /.pytest_cache/
 /.tox/
 /.coverage
