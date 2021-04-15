@@ -2,8 +2,8 @@
 Homekeeper
 ==========
 
-.. image:: https://travis-ci.org/retiman/homekeeper.svg?branch=master
-    :target: https://travis-ci.org/retiman/homekeeper
+.. image:: https://github.com/retiman/homekeeper/actions/workflows/tox.yml/badge.svg
+    :target: https://github.com/retiman/homekeeper/actions/workflows/tox.yml
 
 .. image:: https://img.shields.io/pypi/v/homekeeper.svg
    :target: https://pypi.org/project/homekeeper
