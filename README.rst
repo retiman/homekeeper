@@ -2,8 +2,8 @@
 Homekeeper
 ==========
 
-.. image:: https://github.com/retiman/homekeeper/actions/workflows/tox.yml/badge.svg
-    :target: https://github.com/retiman/homekeeper/actions/workflows/tox.yml
+.. image:: https://github.com/retiman/homekeeper/actions/workflows/build.yml/badge.svg
+    :target: https://github.com/retiman/homekeeper/actions/workflows/build.yml
 
 .. image:: https://img.shields.io/pypi/v/homekeeper.svg
    :target: https://pypi.org/project/homekeeper
