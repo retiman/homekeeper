@@ -1,0 +1,13 @@
+name: Build and Package
+
+on:
+  pull_request:
+  push:
+    branchs: [ main ]
+
+jobs:
+  build:
+    steps:
+      - uses: actions/checkout@v2
+      - run: make dist
+      - run: make test
