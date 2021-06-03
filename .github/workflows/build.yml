@@ -7,6 +7,7 @@ on:
 
 jobs:
   build:
+    runs-on: [ linux ]
     steps:
       - uses: actions/checkout@v2
       - run: make dist
