@@ -1,7 +1,0 @@
-{
-  "directory": "/home/johndoe/dotfiles",
-  "excludes": [
-    ".git",
-    "README.md"
-  ]
-}
