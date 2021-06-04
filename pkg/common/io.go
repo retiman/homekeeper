@@ -5,6 +5,10 @@ import (
 	"os"
 )
 
+func IsSymlink(entry os.FileInfo) bool {
+	return entry.Mode()&os.ModeSymlink != 0
+}
+
 func ListEntries(directory string) (entries []os.FileInfo, err error) {
 	fh, err := os.Open(directory)
 	if err != nil {
