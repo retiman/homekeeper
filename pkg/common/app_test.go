@@ -30,6 +30,8 @@ type TestFixtures struct {
 }
 
 func init() {
+	IsDryRun = true
+
 	log.SetFormatter(&log.TextFormatter{
 		DisableTimestamp: true,
 		PadLevelText:     true,
@@ -44,12 +46,26 @@ func TestMain(t *testing.M) {
 	var err error
 	Fixtures, err = SetupFixtures()
 	if err != nil {
-		log.Errorf("error during test setup: %+v", err)
+		log.Errorf("error during test setup: %v", err)
 		os.Exit(1)
 	}
 
 	code := t.Run()
 	os.Exit(code)
+}
+
+func UpdateDryRun(value bool) func() {
+	if IsDryRun == value {
+		return func() {}
+	}
+
+	log.Tracef("setting dry run value: %v", value)
+	previousValue := IsDryRun
+	IsDryRun = value
+	return func() {
+		log.Tracef("restoring dry run value: %v", previousValue)
+		IsDryRun = previousValue
+	}
 }
 
 func GetRepositoryRoot() (repositoryRoot string, err error) {

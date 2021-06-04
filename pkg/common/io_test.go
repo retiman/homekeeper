@@ -34,6 +34,14 @@ func TestIsSymlink(t *testing.T) {
 	}
 }
 
+func TestRemoveBrokenSymlinks(t *testing.T) {
+	if !IsSymlinkSupported || !IsReadlinkSupported {
+		t.Skip("skipped because symlinks are not supported")
+	}
+
+	defer UpdateDryRun(false)()
+}
+
 func TestListEntries(t *testing.T) {
 	entries, err := ListEntries(Fixtures.RootDirectory)
 	if err != nil {
