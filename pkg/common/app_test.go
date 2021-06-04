@@ -25,24 +25,28 @@ func init() {
 	log.SetLevel(log.TraceLevel)
 }
 
-func GetRepositoryRoot() (path string, err error) {
+func GetRepositoryRoot() (repositoryRoot string, err error) {
 	cwd, err := os.Getwd()
 	if err != nil {
 		return
 	}
 
-	path = cwd
+	repositoryRoot = cwd
 	for {
-		path = filepath.Join(path, "..")
+		repositoryRoot = filepath.Join(repositoryRoot, "..")
 
-		_, err = os.Stat(filepath.Join(path, ".git"))
-		if os.IsExist(err) {
-			log.Debugf("found repository root: %s", path)
+		_, err = os.Stat(filepath.Join(repositoryRoot, ".git"))
+		if err == nil {
+			log.Debugf("found repository root: %s", repositoryRoot)
 			return
 		}
 
-		if !os.IsNotExist(err) {
-			err = fmt.Errorf("couldn't find repository root from: %s", cwd)
+		if os.IsNotExist(err) {
+			continue
+		}
+
+		if err != nil {
+			err = fmt.Errorf("couldn't find repository root from %s: %v", cwd, err)
 			return
 		}
 	}
@@ -58,13 +62,6 @@ func SetupFiles() (paths *Paths, err error) {
 	paths.RootDirectory = filepath.Join(rootDirectory, "tmp")
 	paths.HomeDirectory = filepath.Join(paths.RootDirectory, "home", "johndoe")
 	paths.DotfilesDirectory = filepath.Join(paths.HomeDirectory, "dotfiles")
-
-	log.Debugf("setting test directory to: %s", paths.RootDirectory)
-	_, err = os.Stat(filepath.Join(paths.RootDirectory, ".git"))
-	if os.IsNotExist(err) {
-		err = fmt.Errorf("couldn't find the .git directory; do")
-		return
-	}
 
 	log.Debugf("removing all files in directory: %s", paths.RootDirectory)
 	err = os.RemoveAll(paths.RootDirectory)
