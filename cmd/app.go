@@ -2,10 +2,10 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"os"
 
 	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
 )
 
 type Handler func(flags *Flags)
