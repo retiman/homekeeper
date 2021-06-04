@@ -59,10 +59,18 @@ func SetupFiles() (paths *Paths, err error) {
 		return
 	}
 
+	// It's okay to use this path as the root directory tests in golang; all tests run sequentially unless you explicitly
+	// mark them for parallel execution.
 	paths.RootDirectory = filepath.Join(rootDirectory, "tmp")
 	paths.HomeDirectory = filepath.Join(paths.RootDirectory, "home", "johndoe")
 	paths.DotfilesDirectory = filepath.Join(paths.HomeDirectory, "dotfiles")
 
+	// We could use something like afero's in-memory FS for this, but we do want to test out functionality in different
+	// platforms.  There is some argument to running the in-memory tests first, before running them on the real filesystem
+	// (just in case you messed up and put the wrong directory here, you could clear out a directory on your dev machine
+	// you didn't intend to, but the GetRepositoryRoot() method should prevent you from doing that).
+	//
+	// This way we can test out different platforms as well.
 	log.Debugf("removing all files in directory: %s", paths.RootDirectory)
 	err = os.RemoveAll(paths.RootDirectory)
 	if err != nil {
