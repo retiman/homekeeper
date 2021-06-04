@@ -3,6 +3,7 @@ package common
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -47,29 +48,31 @@ func RemoveBrokenSymlinks(directory string) (removedEntries []string, err error)
 	removedEntries = make([]string, 0)
 	entries, err := ListEntries(directory)
 	for _, entry := range entries {
+		path := filepath.Join(directory, entry.Name())
+
 		if !IsSymlink(entry) {
-			log.Tracef("skipping non-symlink entry: %s", entry.Name())
+			log.Tracef("skipping non-symlink entry: %s", path)
 			continue
 		}
 
 		if !IsBrokenSymlink(entry) {
-			log.Tracef("skipping non-broken symlink entry: %s", entry.Name())
+			log.Tracef("skipping non-broken symlink entry: %s", path)
 			continue
 		}
 
 		if IsDryRun {
-			log.Infof("not removing broken symlink on dry run: %s", entry.Name())
+			log.Infof("not removing broken symlink on dry run: %s", path)
 			continue
 		}
 
-		err = os.Remove(entry.Name())
+		log.Infof("removing broken symlink: %s", path)
+		err = os.Remove(path)
 		if err != nil {
-			log.Errorf("could not remove broken symlink %s: %v", entry.Name(), err)
+			log.Errorf("could not remove broken symlink %s: %v", path, err)
 			continue
 		}
 
-		log.Infof("removed broken symlink: %s", entry.Name())
-		removedEntries = append(removedEntries, entry.Name())
+		removedEntries = append(removedEntries, path)
 	}
 
 	return
