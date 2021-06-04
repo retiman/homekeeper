@@ -17,7 +17,7 @@ func TestIsSymlink(t *testing.T) {
 	for _, symlink := range Fixtures.Symlinks {
 		entry, err := os.Lstat(symlink)
 		if err != nil {
-			assert.Error(t, err)
+			assert.Fail(t, err.Error())
 			return
 		}
 
@@ -27,7 +27,7 @@ func TestIsSymlink(t *testing.T) {
 	for _, file := range Fixtures.Files {
 		entry, err := os.Stat(file)
 		if err != nil {
-			assert.Error(t, err)
+			assert.Fail(t, err.Error())
 			return
 		}
 
@@ -47,7 +47,7 @@ func TestRemoveBrokenSymlinks(t *testing.T) {
 	for _, symlink := range Fixtures.Symlinks {
 		oldname, err := os.Readlink(symlink)
 		if err != nil {
-			assert.Error(t, err)
+			assert.Fail(t, err.Error())
 		}
 
 		log.Tracef("creating a broken symlink; removing: %s", oldname)
@@ -57,7 +57,7 @@ func TestRemoveBrokenSymlinks(t *testing.T) {
 
 	got, err := RemoveBrokenSymlinks(Fixtures.DotfilesDirectory)
 	if err != nil {
-		assert.Error(t, err)
+		assert.Fail(t, err.Error())
 		return
 	}
 
@@ -77,5 +77,5 @@ func TestListEntries(t *testing.T) {
 		}
 	}
 
-	assert.Error(t, fmt.Errorf("didn't find any 'dotfiles' directory: %+v", Fixtures))
+	assert.Fail(t, fmt.Sprintf("didn't find any 'dotfiles' directory: %+v", Fixtures))
 }
