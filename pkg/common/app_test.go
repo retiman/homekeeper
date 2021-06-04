@@ -13,9 +13,9 @@ var (
 	// Even though Windows does support symlinks, by default, they are only available if the system administrator enables
 	// them.  The rationale is that most applications are not written to support them, and enabling them by default would
 	// present a security risk.
-	IsSymlinkSupported bool
+	IsSymlinkSupported  bool
 	IsReadlinkSupported bool
-	IsLstatSupported bool
+	IsLstatSupported    bool
 )
 
 type Paths struct {
