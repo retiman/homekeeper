@@ -7,13 +7,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestListEntries(t *testing.T) {
-	paths, err := SetupFiles()
-	if err != nil {
-		return
+func TestIsSymlink(t *testing.T) {
+	if !IsSymlinkSupported {
+		t.Skip("skipped because symlinks are not supported")
 	}
+}
 
-	entries, err := ListEntries(paths.RootDirectory)
+func TestListEntries(t *testing.T) {
+	entries, err := ListEntries(TestPaths.RootDirectory)
 	if err != nil {
 		assert.Error(t, err)
 		return
@@ -25,5 +26,5 @@ func TestListEntries(t *testing.T) {
 		}
 	}
 
-	assert.Error(t, fmt.Errorf("didn't find any 'dotfiles' directory: %+v", paths))
+	assert.Error(t, fmt.Errorf("didn't find any 'dotfiles' directory: %+v", TestPaths))
 }

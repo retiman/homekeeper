@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"testing"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -16,6 +17,7 @@ var (
 	IsSymlinkSupported  bool
 	IsReadlinkSupported bool
 	IsLstatSupported    bool
+	TestPaths           *Paths
 )
 
 type Paths struct {
@@ -33,6 +35,18 @@ func init() {
 	})
 
 	log.SetLevel(log.DebugLevel)
+}
+
+func TestMain(t *testing.M) {
+	paths, err := SetupFiles()
+	if err != nil {
+		log.Errorf("error during test setup: %+v", err)
+		os.Exit(1)
+	}
+
+	TestPaths = paths
+	code := t.Run()
+	os.Exit(code)
 }
 
 func GetRepositoryRoot() (repositoryRoot string, err error) {
@@ -97,10 +111,7 @@ func SetupFiles() (paths *Paths, err error) {
 		return
 	}
 
-	_, err = CreateTestSymlinks(paths)
-	if err != nil {
-		return
-	}
+	_ = CreateTestSymlinks(paths)
 
 	return
 }
@@ -141,31 +152,41 @@ func CreateTestFiles(paths *Paths) (files []string, err error) {
 	return
 }
 
-func CreateTestSymlinks(paths *Paths) (symlinks []string, err error) {
+func CreateTestSymlinks(paths *Paths) (symlinks []string) {
 	source := filepath.Join(paths.DotfilesDirectory, ".bash_profile")
 	target := filepath.Join(paths.DotfilesDirectory, ".bashrc")
 	symlinks = []string{target}
 
 	log.Tracef("symlinking %s -> %s", source, target)
-	err = os.Symlink(source, target)
+	err := os.Symlink(source, target)
 	if err != nil {
 		IsSymlinkSupported = false
 		log.Warnf("symlink is not supported on this system: %+v", err)
+
+		// There's no point in checking for readlink or lstat if the symlink creation fails.  If it succeeds, we can check
+		// and see if either will succeed if the other fails.
 		return
+	} else {
+		IsSymlinkSupported = true
 	}
 
 	_, err = os.Readlink(target)
 	if err != nil {
 		IsReadlinkSupported = false
 		log.Warnf("readlink is not supported on this system: %+v", err)
+		err = nil
+	} else {
+		IsReadlinkSupported = true
 	}
 
 	_, err = os.Lstat(target)
 	if err != nil {
 		IsLstatSupported = false
 		log.Warnf("lstat is not supported on this system: %+v", err)
+		err = nil
+	} else {
+		IsLstatSupported = true
 	}
 
-	err = nil
 	return
 }
