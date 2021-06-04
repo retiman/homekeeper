@@ -3,6 +3,7 @@ package common
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"testing"
 
 	log "github.com/sirupsen/logrus"
@@ -65,14 +66,19 @@ func TestRemoveBrokenSymlinks(t *testing.T) {
 }
 
 func TestListEntries(t *testing.T) {
-	entries, err := ListEntries(Fixtures.RootDirectory)
+	entries, err := ListEntries(Fixtures.HomeDirectory)
 	if err != nil {
-		assert.Error(t, err)
+		assert.Fail(t, err.Error())
 		return
 	}
 
 	for _, entry := range entries {
-		if entry.Name() == "dotfiles" {
+		parts := filepath.SplitList(entry.Name())
+		if len(parts) == 0 {
+			continue
+		}
+
+		if parts[len(parts)-1] == "dotfiles" {
 			return
 		}
 	}
