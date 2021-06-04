@@ -42,10 +42,10 @@ func IsSymlink(entry os.FileInfo) bool {
 
 func ListEntries(directory string) (entries []os.FileInfo, err error) {
 	fh, err := os.Open(directory)
+	defer fh.Close()
 	if err != nil {
 		return
 	}
-	defer fh.Close()
 
 	info, err := fh.Stat()
 	if err != nil {

@@ -2,19 +2,29 @@ package common
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestIsSymlink(t *testing.T) {
-	if !IsSymlinkSupported {
+	if !IsSymlinkSupported || !IsLstatSupported {
 		t.Skip("skipped because symlinks are not supported")
 	}
+
+	entry, err := os.Lstat(filepath.Join(Fixtures.DotfilesDirectory, ".bashrc"))
+	if err != nil {
+		assert.Error(t, err)
+		return
+	}
+
+	assert.True(t, IsSymlink(entry))
 }
 
 func TestListEntries(t *testing.T) {
-	entries, err := ListEntries(TestPaths.RootDirectory)
+	entries, err := ListEntries(Fixtures.RootDirectory)
 	if err != nil {
 		assert.Error(t, err)
 		return
@@ -26,5 +36,5 @@ func TestListEntries(t *testing.T) {
 		}
 	}
 
-	assert.Error(t, fmt.Errorf("didn't find any 'dotfiles' directory: %+v", TestPaths))
+	assert.Error(t, fmt.Errorf("didn't find any 'dotfiles' directory: %+v", Fixtures))
 }

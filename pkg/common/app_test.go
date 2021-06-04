@@ -17,10 +17,10 @@ var (
 	IsSymlinkSupported  bool
 	IsReadlinkSupported bool
 	IsLstatSupported    bool
-	TestPaths           *Paths
+	Fixtures            *TestFixtures
 )
 
-type Paths struct {
+type TestFixtures struct {
 	RootDirectory     string
 	HomeDirectory     string
 	DotfilesDirectory string
@@ -38,13 +38,13 @@ func init() {
 }
 
 func TestMain(t *testing.M) {
-	paths, err := SetupFiles()
+	var err error
+	Fixtures, err = SetupFixtures()
 	if err != nil {
 		log.Errorf("error during test setup: %+v", err)
 		os.Exit(1)
 	}
 
-	TestPaths = paths
 	code := t.Run()
 	os.Exit(code)
 }
@@ -76,8 +76,8 @@ func GetRepositoryRoot() (repositoryRoot string, err error) {
 	}
 }
 
-func SetupFiles() (paths *Paths, err error) {
-	paths = &Paths{}
+func SetupFixtures() (fixtures *TestFixtures, err error) {
+	fixtures = &TestFixtures{}
 	rootDirectory, err := GetRepositoryRoot()
 	if err != nil {
 		return
@@ -85,9 +85,9 @@ func SetupFiles() (paths *Paths, err error) {
 
 	// It's okay to use this path as the root directory tests in golang; all tests run sequentially unless you explicitly
 	// mark them for parallel execution.
-	paths.RootDirectory = filepath.Join(rootDirectory, "tmp")
-	paths.HomeDirectory = filepath.Join(paths.RootDirectory, "home", "johndoe")
-	paths.DotfilesDirectory = filepath.Join(paths.HomeDirectory, "dotfiles")
+	fixtures.RootDirectory = filepath.Join(rootDirectory, "tmp")
+	fixtures.HomeDirectory = filepath.Join(fixtures.RootDirectory, "home", "johndoe")
+	fixtures.DotfilesDirectory = filepath.Join(fixtures.HomeDirectory, "dotfiles")
 
 	// We could use something like afero's in-memory FS for this, but we do want to test out functionality in different
 	// platforms.  There is some argument to running the in-memory tests first, before running them on the real filesystem
@@ -95,32 +95,32 @@ func SetupFiles() (paths *Paths, err error) {
 	// you didn't intend to, but the GetRepositoryRoot() method should prevent you from doing that).
 	//
 	// This way we can test out different platforms as well.
-	log.Tracef("removing all files in directory: %s", paths.RootDirectory)
-	err = os.RemoveAll(paths.RootDirectory)
+	log.Tracef("removing all files in directory: %s", fixtures.RootDirectory)
+	err = os.RemoveAll(fixtures.RootDirectory)
 	if err != nil {
 		return
 	}
 
-	_, err = CreateTestDirectories(paths)
+	_, err = CreateTestDirectories(fixtures)
 	if err != nil {
 		return
 	}
 
-	_, err = CreateTestFiles(paths)
+	_, err = CreateTestFiles(fixtures)
 	if err != nil {
 		return
 	}
 
-	_ = CreateTestSymlinks(paths)
+	_ = CreateTestSymlinks(fixtures)
 
 	return
 }
 
-func CreateTestDirectories(paths *Paths) (directories []string, err error) {
+func CreateTestDirectories(fixtures *TestFixtures) (directories []string, err error) {
 	directories = []string{
-		paths.DotfilesDirectory,
-		filepath.Join(paths.DotfilesDirectory, ".git"),
-		filepath.Join(paths.DotfilesDirectory, ".vim"),
+		fixtures.DotfilesDirectory,
+		filepath.Join(fixtures.DotfilesDirectory, ".git"),
+		filepath.Join(fixtures.DotfilesDirectory, ".vim"),
 	}
 
 	for _, directory := range directories {
@@ -134,11 +134,11 @@ func CreateTestDirectories(paths *Paths) (directories []string, err error) {
 	return
 }
 
-func CreateTestFiles(paths *Paths) (files []string, err error) {
+func CreateTestFiles(fixtures *TestFixtures) (files []string, err error) {
 	files = []string{
-		filepath.Join(paths.DotfilesDirectory, ".bash_profile"),
-		filepath.Join(paths.DotfilesDirectory, ".gitconfig"),
-		filepath.Join(paths.DotfilesDirectory, ".vimrc"),
+		filepath.Join(fixtures.DotfilesDirectory, ".bash_profile"),
+		filepath.Join(fixtures.DotfilesDirectory, ".gitconfig"),
+		filepath.Join(fixtures.DotfilesDirectory, ".vimrc"),
 	}
 
 	for _, file := range files {
@@ -152,9 +152,9 @@ func CreateTestFiles(paths *Paths) (files []string, err error) {
 	return
 }
 
-func CreateTestSymlinks(paths *Paths) (symlinks []string) {
-	source := filepath.Join(paths.DotfilesDirectory, ".bash_profile")
-	target := filepath.Join(paths.DotfilesDirectory, ".bashrc")
+func CreateTestSymlinks(fixtures *TestFixtures) (symlinks []string) {
+	source := filepath.Join(fixtures.DotfilesDirectory, ".bash_profile")
+	target := filepath.Join(fixtures.DotfilesDirectory, ".bashrc")
 	symlinks = []string{target}
 
 	log.Tracef("symlinking %s -> %s", source, target)
