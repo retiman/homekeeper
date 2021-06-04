@@ -9,8 +9,8 @@ import (
 )
 
 type Paths struct {
-	RootDirectory string
-	HomeDirectory string
+	RootDirectory     string
+	HomeDirectory     string
 	DotfilesDirectory string
 }
 
