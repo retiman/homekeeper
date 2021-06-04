@@ -39,7 +39,7 @@ func init() {
 		DisableQuote:     true,
 	})
 
-	log.SetLevel(log.DebugLevel)
+	log.SetLevel(log.TraceLevel)
 }
 
 func TestMain(t *testing.M) {

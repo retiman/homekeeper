@@ -1,39 +1,19 @@
 package common
 
 import (
-	"errors"
 	"fmt"
 	"os"
 
 	log "github.com/sirupsen/logrus"
 )
 
-func IsBrokenSymlink(entry os.FileInfo) (isBroken bool, err error) {
-	isBroken = false
-	if IsSymlink(entry) {
-		return
-	}
-
-	log.Tracef("entry is symlink; checking if broken: %s", entry.Name())
-	target, err := os.Readlink(entry.Name())
+func IsBrokenSymlink(entry os.FileInfo) bool {
+	_, err := os.Readlink(entry.Name())
 	if err != nil {
-		err = fmt.Errorf("couldn't read symlink %s: %v", entry.Name(), err)
-		return
+		return true
 	}
 
-	_, err = os.Stat(target)
-	if err == nil {
-		log.Tracef("symlink is not broken; skipping: %s", entry.Name())
-		return
-	}
-
-	if !errors.Is(err, os.ErrNotExist) {
-		err = fmt.Errorf("couldn't stat file %s: %v", entry.Name(), err)
-		return
-	}
-
-	isBroken = true
-	return
+	return false
 }
 
 func IsSymlink(entry os.FileInfo) bool {
@@ -62,11 +42,18 @@ func ListEntries(directory string) (entries []os.FileInfo, err error) {
 }
 
 func RemoveBrokenSymlinks(directory string) (removedEntries []string, err error) {
+	log.Tracef("checking for broken symlinks in: %s", directory)
+
 	removedEntries = make([]string, 0)
 	entries, err := ListEntries(directory)
 	for _, entry := range entries {
 		if !IsSymlink(entry) {
 			log.Tracef("skipping non-symlink entry: %s", entry.Name())
+			continue
+		}
+
+		if !IsBrokenSymlink(entry) {
+			log.Tracef("skipping non-broken symlink entry: %s", entry.Name())
 			continue
 		}
 
