@@ -60,3 +60,30 @@ func ListEntries(directory string) (entries []os.FileInfo, err error) {
 	// Read all entries.
 	return fh.Readdir(-1)
 }
+
+func RemoveBrokenSymlinks(directory string) (removedEntries []string, err error) {
+	removedEntries = make([]string, 0)
+	entries, err := ListEntries(directory)
+	for _, entry := range entries {
+		if !IsSymlink(entry) {
+			log.Tracef("skipping non-symlink entry: %s", entry.Name())
+			continue
+		}
+
+		if IsDryRun {
+			log.Infof("not removing broken symlink on dry run: %s", entry.Name())
+			continue
+		}
+
+		err = os.Remove(entry.Name())
+		if err != nil {
+			log.Errorf("could not remove broken symlink %s: %v", entry.Name(), err)
+			continue
+		}
+
+		log.Infof("removed broken symlink: %s", entry.Name())
+		removedEntries = append(removedEntries, entry.Name())
+	}
+
+	return
+}
