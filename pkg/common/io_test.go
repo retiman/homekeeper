@@ -5,6 +5,7 @@ import (
 	"os"
 	"testing"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -37,9 +38,30 @@ func TestIsSymlink(t *testing.T) {
 func TestRemoveBrokenSymlinks(t *testing.T) {
 	if !IsSymlinkSupported || !IsReadlinkSupported {
 		t.Skip("skipped because symlinks are not supported")
+		return
 	}
 
 	defer UpdateDryRun(false)()
+
+	wanted := make([]string, 0)
+	for _, symlink := range Fixtures.Symlinks {
+		oldname, err := os.Readlink(symlink)
+		if err != nil {
+			assert.Error(t, err)
+		}
+
+		log.Tracef("creating a broken symlink; removing: %s", oldname)
+		os.Remove(oldname)
+		wanted = append(wanted, symlink)
+	}
+
+	got, err := RemoveBrokenSymlinks(Fixtures.DotfilesDirectory)
+	if err != nil {
+		assert.Error(t, err)
+		return
+	}
+
+	assert.ElementsMatch(t, got, wanted)
 }
 
 func TestListEntries(t *testing.T) {

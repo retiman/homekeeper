@@ -171,12 +171,12 @@ func CreateTestFiles(fixtures *TestFixtures) (files []string, err error) {
 }
 
 func CreateTestSymlinks(fixtures *TestFixtures) (symlinks []string) {
-	source := filepath.Join(fixtures.DotfilesDirectory, ".bash_profile")
-	target := filepath.Join(fixtures.DotfilesDirectory, ".bashrc")
-	symlinks = []string{target}
+	oldname := filepath.Join(fixtures.DotfilesDirectory, ".bash_profile")
+	newname := filepath.Join(fixtures.DotfilesDirectory, ".bashrc")
+	symlinks = []string{newname}
 
-	log.Tracef("symlinking %s -> %s", source, target)
-	err := os.Symlink(source, target)
+	log.Tracef("symlinking %s -> %s", oldname, newname)
+	err := os.Symlink(oldname, newname)
 	if err != nil {
 		IsSymlinkSupported = false
 		log.Warnf("symlink is not supported on this system: %+v", err)
@@ -188,7 +188,7 @@ func CreateTestSymlinks(fixtures *TestFixtures) (symlinks []string) {
 		IsSymlinkSupported = true
 	}
 
-	_, err = os.Readlink(target)
+	_, err = os.Readlink(newname)
 	if err != nil {
 		IsReadlinkSupported = false
 		log.Warnf("readlink is not supported on this system: %+v", err)
@@ -197,7 +197,7 @@ func CreateTestSymlinks(fixtures *TestFixtures) (symlinks []string) {
 		IsReadlinkSupported = true
 	}
 
-	_, err = os.Lstat(target)
+	_, err = os.Lstat(newname)
 	if err != nil {
 		IsLstatSupported = false
 		log.Warnf("lstat is not supported on this system: %+v", err)
