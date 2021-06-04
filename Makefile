@@ -1,5 +1,5 @@
 VERSION = $(file < VERSION)
-.PHONY = all dist test
+.PHONY = all dist format test
 
 all: dist format test
 

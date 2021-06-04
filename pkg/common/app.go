@@ -1,5 +1,5 @@
 package common
 
-type App struct {
+var (
 	IsDryRun bool
-}
+)
