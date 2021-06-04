@@ -3,7 +3,6 @@ package common
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,13 +13,25 @@ func TestIsSymlink(t *testing.T) {
 		t.Skip("skipped because symlinks are not supported")
 	}
 
-	entry, err := os.Lstat(filepath.Join(Fixtures.DotfilesDirectory, ".bashrc"))
-	if err != nil {
-		assert.Error(t, err)
-		return
+	for _, symlink := range Fixtures.Symlinks {
+		entry, err := os.Lstat(symlink)
+		if err != nil {
+			assert.Error(t, err)
+			return
+		}
+
+		assert.True(t, IsSymlink(entry))
 	}
 
-	assert.True(t, IsSymlink(entry))
+	for _, file := range Fixtures.Files {
+		entry, err := os.Stat(file)
+		if err != nil {
+			assert.Error(t, err)
+			return
+		}
+
+		assert.False(t, IsSymlink(entry))
+	}
 }
 
 func TestListEntries(t *testing.T) {

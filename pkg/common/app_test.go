@@ -24,6 +24,9 @@ type TestFixtures struct {
 	RootDirectory     string
 	HomeDirectory     string
 	DotfilesDirectory string
+	Files             []string
+	Directories       []string
+	Symlinks          []string
 }
 
 func init() {
@@ -101,18 +104,17 @@ func SetupFixtures() (fixtures *TestFixtures, err error) {
 		return
 	}
 
-	_, err = CreateTestDirectories(fixtures)
+	fixtures.Directories, err = CreateTestDirectories(fixtures)
 	if err != nil {
 		return
 	}
 
-	_, err = CreateTestFiles(fixtures)
+	fixtures.Files, err = CreateTestFiles(fixtures)
 	if err != nil {
 		return
 	}
 
-	_ = CreateTestSymlinks(fixtures)
-
+	fixtures.Symlinks = CreateTestSymlinks(fixtures)
 	return
 }
 
