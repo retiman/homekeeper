@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-func (app *App) listEntries(directory string) (entries []os.FileInfo, err error) {
+func ListEntries(directory string) (entries []os.FileInfo, err error) {
 	fh, err := os.Open(directory)
 	if err != nil {
 		return

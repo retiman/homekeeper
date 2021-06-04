@@ -1,8 +1,9 @@
 package common
 
 import (
+	"fmt"
 	"os"
-	path "path/filepath"
+	"path/filepath"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -24,16 +25,46 @@ func init() {
 	log.SetLevel(log.TraceLevel)
 }
 
-func SetupFiles() (paths *Paths, err error) {
+func GetRepositoryRoot() (path string, err error) {
 	cwd, err := os.Getwd()
 	if err != nil {
 		return
 	}
 
+	path = cwd
+	for {
+		path = filepath.Join(path, "..")
+
+		_, err = os.Stat(filepath.Join(path, ".git"))
+		if os.IsExist(err) {
+			log.Debugf("found repository root: %s", path)
+			return
+		}
+
+		if !os.IsNotExist(err) {
+			err = fmt.Errorf("couldn't find repository root from: %s", cwd)
+			return
+		}
+	}
+}
+
+func SetupFiles() (paths *Paths, err error) {
 	paths = &Paths{}
-	paths.RootDirectory = path.Join(cwd, "testdata")
-	paths.HomeDirectory = path.Join(paths.RootDirectory, "home", "johndoe")
-	paths.DotfilesDirectory = path.Join(paths.HomeDirectory, "dotfiles")
+	rootDirectory, err := GetRepositoryRoot()
+	if err != nil {
+		return
+	}
+
+	paths.RootDirectory = filepath.Join(rootDirectory, "tmp")
+	paths.HomeDirectory = filepath.Join(paths.RootDirectory, "home", "johndoe")
+	paths.DotfilesDirectory = filepath.Join(paths.HomeDirectory, "dotfiles")
+
+	log.Debugf("setting test directory to: %s", paths.RootDirectory)
+	_, err = os.Stat(filepath.Join(paths.RootDirectory, ".git"))
+	if os.IsNotExist(err) {
+		err = fmt.Errorf("couldn't find the .git directory; do")
+		return
+	}
 
 	log.Debugf("removing all files in directory: %s", paths.RootDirectory)
 	err = os.RemoveAll(paths.RootDirectory)
@@ -43,8 +74,8 @@ func SetupFiles() (paths *Paths, err error) {
 
 	directories := []string{
 		paths.DotfilesDirectory,
-		path.Join(paths.DotfilesDirectory, ".git"),
-		path.Join(paths.DotfilesDirectory, ".vim"),
+		filepath.Join(paths.DotfilesDirectory, ".git"),
+		filepath.Join(paths.DotfilesDirectory, ".vim"),
 	}
 
 	for _, directory := range directories {
@@ -56,9 +87,9 @@ func SetupFiles() (paths *Paths, err error) {
 	}
 
 	files := []string{
-		path.Join(paths.DotfilesDirectory, ".bash_profile"),
-		path.Join(paths.DotfilesDirectory, ".gitconfig"),
-		path.Join(paths.DotfilesDirectory, ".vimrc"),
+		filepath.Join(paths.DotfilesDirectory, ".bash_profile"),
+		filepath.Join(paths.DotfilesDirectory, ".gitconfig"),
+		filepath.Join(paths.DotfilesDirectory, ".vimrc"),
 	}
 
 	for _, file := range files {
