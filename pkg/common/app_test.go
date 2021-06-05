@@ -191,7 +191,7 @@ func CreateTestSymlinks(fixtures *TestFixtures) (symlinks []string) {
 	_, err = os.Readlink(newname)
 	if err != nil {
 		IsReadlinkSupported = false
-		log.Warnf("readlink is not supported on this system: %+v", err)
+		log.Warnf("readlink is not supported on this system: %v", err)
 		err = nil
 	} else {
 		IsReadlinkSupported = true
@@ -200,7 +200,7 @@ func CreateTestSymlinks(fixtures *TestFixtures) (symlinks []string) {
 	_, err = os.Lstat(newname)
 	if err != nil {
 		IsLstatSupported = false
-		log.Warnf("lstat is not supported on this system: %+v", err)
+		log.Warnf("lstat is not supported on this system: %v", err)
 		err = nil
 	} else {
 		IsLstatSupported = true

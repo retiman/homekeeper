@@ -78,7 +78,7 @@ func (app *CliApp) createHandler(handler Handler) func(*cobra.Command, []string)
 			log.SetLevel(log.DebugLevel)
 		}
 
-		log.Debugf("Invoked with flags: %+v", app.flags)
+		log.Debugf("invoked with flags: %+v", app.flags)
 
 		handler(app.flags)
 	}

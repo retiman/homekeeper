@@ -8,6 +8,26 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+func CreateSymlinks(homeDirectory string, plan map[string]string) error {
+	errs := make([]error, 0)
+	for basename, oldname := range plan {
+		newname := filepath.Join(homeDirectory, basename)
+		err := os.Symlink(oldname, newname)
+		if err != nil {
+			log.Warnf("could not symlink: %s -> %s", oldname, newname)
+			errs = append(errs, err)
+		} else {
+			log.Infof("created symlink: %s -> %s", oldname, newname)
+		}
+	}
+
+	if len(errs) != 0 {
+		return fmt.Errorf("could not symlink some entries")
+	} else {
+		return nil
+	}
+}
+
 func IsBrokenSymlink(entry os.FileInfo) bool {
 	_, err := os.Readlink(entry.Name())
 	if err != nil {
@@ -34,12 +54,25 @@ func ListEntries(directory string) (entries []os.FileInfo, err error) {
 	}
 
 	if !info.Mode().IsDir() {
-		err = fmt.Errorf("not a directory: %s", directory)
+		err = fmt.Errorf("%s is not a directory", directory)
 		return
 	}
 
 	// Read all entries.
 	return fh.Readdir(-1)
+}
+
+func PlanSymlinks(homeDirectory string, dotfilesDirectory string, plan map[string]string) (err error) {
+	entries, err := ListEntries(dotfilesDirectory)
+	if err != nil {
+		return err
+	}
+
+	for _, entry := range entries {
+		plan[entry.Name()] = filepath.Join(homeDirectory, entry.Name())
+	}
+
+	return
 }
 
 func RemoveBrokenSymlinks(directory string) (removedEntries []string, err error) {
