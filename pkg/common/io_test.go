@@ -12,14 +12,23 @@ import (
 )
 
 func TestCreateSymlinks(t *testing.T) {
-	CheckSymlink(t)
+	CheckSymlinkSupported(t)
+	defer UpdateDryRun(false)()
 
 	plan := make(map[string]string)
-	PlanSymlinks(Fixtures.HomeDirectory, Fixtures.DotfilesDirectory, plan)
+	err := PlanSymlinks(Fixtures.HomeDirectory, Fixtures.DotfilesDirectory, plan)
+	if err != nil {
+		assert.Fail(t, err.Error())
+	}
+
+	err = CreateSymlinks(Fixtures.HomeDirectory, plan)
+	if err != nil {
+		assert.Fail(t, err.Error())
+	}
 }
 
 func TestIsSymlink(t *testing.T) {
-	CheckSymlink(t)
+	CheckSymlinkSupported(t)
 
 	for _, symlink := range Fixtures.Symlinks {
 		entry, err := os.Lstat(symlink)
@@ -43,7 +52,7 @@ func TestIsSymlink(t *testing.T) {
 }
 
 func TestRemoveBrokenSymlinks(t *testing.T) {
-	CheckSymlink(t)
+	CheckSymlinkSupported(t)
 	defer UpdateDryRun(false)()
 
 	wanted := make([]string, 0)
@@ -90,7 +99,10 @@ func TestListEntries(t *testing.T) {
 
 func TestPlanSymlinks(t *testing.T) {
 	plan := make(map[string]string)
-	PlanSymlinks(Fixtures.HomeDirectory, Fixtures.DotfilesDirectory, plan)
+	err := PlanSymlinks(Fixtures.HomeDirectory, Fixtures.DotfilesDirectory, plan)
+	if err != nil {
+		assert.Fail(t, err.Error())
+	}
 
 	entries, err := ListEntries(Fixtures.DotfilesDirectory)
 	if err != nil {

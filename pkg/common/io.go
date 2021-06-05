@@ -8,7 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func CreateSymlinks(homeDirectory string, plan map[string]string) (err error) {
+func CreateSymlinks(homeDirectory string, plan map[string]string) error {
 	errs := make([]error, 0)
 	for basename, oldname := range plan {
 		newname := filepath.Join(homeDirectory, basename)
@@ -21,11 +21,11 @@ func CreateSymlinks(homeDirectory string, plan map[string]string) (err error) {
 		}
 	}
 
-	if len(errs) == 0 {
+	if len(errs) != 0 {
 		return fmt.Errorf("could not symlink some entries")
 	}
 
-	return
+	return nil
 }
 
 func IsBrokenSymlink(entry os.FileInfo) bool {

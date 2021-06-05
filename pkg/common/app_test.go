@@ -54,7 +54,7 @@ func TestMain(t *testing.M) {
 	os.Exit(code)
 }
 
-func CheckSymlink(t *testing.T) {
+func CheckSymlinkSupported(t *testing.T) {
 	if !IsSymlinkSupported {
 		t.Skip("skipping test because symlink not supported")
 	}
