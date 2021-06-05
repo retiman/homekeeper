@@ -4,11 +4,15 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestCreateSymlinks(t *testing.T) {
+}
 
 func TestIsSymlink(t *testing.T) {
 	if !IsSymlinkSupported || !IsLstatSupported {
@@ -84,4 +88,20 @@ func TestListEntries(t *testing.T) {
 	}
 
 	assert.Fail(t, fmt.Sprintf("didn't find any 'dotfiles' directory: %+v", Fixtures))
+}
+
+func TestPlanSymlinks(t *testing.T) {
+	plan := make(map[string]string)
+	PlanSymlinks(Fixtures.HomeDirectory, Fixtures.DotfilesDirectory, plan)
+
+	entries, err := ListEntries(Fixtures.DotfilesDirectory)
+	if err != nil {
+		assert.Fail(t, err.Error())
+	}
+
+	assert.Equal(t, len(plan), len(entries))
+	for basename, newname := range plan {
+		assert.True(t, strings.HasPrefix(newname, Fixtures.DotfilesDirectory))
+		assert.False(t, strings.Contains(basename, string(os.PathSeparator)))
+	}
 }

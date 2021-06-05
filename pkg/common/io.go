@@ -69,7 +69,7 @@ func PlanSymlinks(homeDirectory string, dotfilesDirectory string, plan map[strin
 	}
 
 	for _, entry := range entries {
-		plan[entry.Name()] = filepath.Join(homeDirectory, entry.Name())
+		plan[entry.Name()] = filepath.Join(dotfilesDirectory, entry.Name())
 	}
 
 	return
