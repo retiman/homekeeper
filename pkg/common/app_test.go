@@ -54,6 +54,20 @@ func TestMain(t *testing.M) {
 	os.Exit(code)
 }
 
+func CheckSymlink(t *testing.T) {
+	if !IsSymlinkSupported {
+		t.Skip("skipping test because symlink not supported")
+	}
+
+	if !IsLstatSupported {
+		t.Skip("skipping test because lstat not supported")
+	}
+
+	if !IsReadlinkSupported {
+		t.Skip("skipping test because readlink not supported")
+	}
+}
+
 func UpdateDryRun(value bool) func() {
 	if IsDryRun == value {
 		return func() {}

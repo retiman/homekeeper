@@ -12,12 +12,14 @@ import (
 )
 
 func TestCreateSymlinks(t *testing.T) {
+	CheckSymlink(t)
+
+	plan := make(map[string]string)
+	PlanSymlinks(Fixtures.HomeDirectory, Fixtures.DotfilesDirectory, plan)
 }
 
 func TestIsSymlink(t *testing.T) {
-	if !IsSymlinkSupported || !IsLstatSupported {
-		t.Skip("skipped because symlinks are not supported")
-	}
+	CheckSymlink(t)
 
 	for _, symlink := range Fixtures.Symlinks {
 		entry, err := os.Lstat(symlink)
@@ -41,11 +43,7 @@ func TestIsSymlink(t *testing.T) {
 }
 
 func TestRemoveBrokenSymlinks(t *testing.T) {
-	if !IsSymlinkSupported || !IsReadlinkSupported {
-		t.Skip("skipped because symlinks are not supported")
-		return
-	}
-
+	CheckSymlink(t)
 	defer UpdateDryRun(false)()
 
 	wanted := make([]string, 0)
