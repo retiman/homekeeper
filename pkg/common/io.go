@@ -1,21 +1,43 @@
 package common
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 )
 
+func CreateSymlink(oldname string, newname string, isOverwrite bool) (err error) {
+	_, err = os.Stat(newname)
+	if errors.Is(err, os.ErrExist) {
+		if !isOverwrite {
+			log.Warningf("will not overwrite existing file: %s", newname)
+			return nil
+		}
+
+		log.Warningf("overwriting existing file: %s", newname)
+		err = os.Remove(newname)
+		if err != nil {
+			return
+		}
+	}
+
+	log.Infof("symlinking %s -> %s", oldname, newname)
+	err = os.Symlink(oldname, newname)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 func CreateSymlinks(homeDirectory string, plan map[string]string) error {
 	errs := make([]error, 0)
 	for basename, oldname := range plan {
 		newname := filepath.Join(homeDirectory, basename)
-		err := os.Symlink(oldname, newname)
+		err := CreateSymlink(oldname, newname, true /* isOverwrite */)
 		if err != nil {
-			log.Warningf("could not symlink: %s -> %s", oldname, newname)
 			errs = append(errs, err)
-		} else {
-			log.Infof("created symlink: %s -> %s", oldname, newname)
 		}
 	}
 
