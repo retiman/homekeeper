@@ -1,18 +1,37 @@
 package common
 
 import (
+	"os"
+
 	logger "github.com/apsdehal/go-logger"
 )
 
-const (
-	DebugFormat = "[%{level}] %{module}:%{file}:%{line} %{message}"
-	InfoFormat  = "%{message}"
+var (
+	log = NewDefaultLogger()
 )
 
-func SetLogLevel(level logger.LogLevel) {
-	log.SetLogLevel(level)
+func NewDebugLogger() *logger.Logger {
+	log, err := logger.New("DEFAULT", 1 /* color */, os.Stderr)
+	if err != nil {
+		panic(err)
+	}
+
+	log.SetFormat("[%{level}] %{file}:%{line} %{message}")
+	log.SetLogLevel(logger.DebugLevel)
+	return log
 }
 
-func SetLogFormat(format string) {
-	log.SetFormat(format)
+func NewDefaultLogger() *logger.Logger {
+	log, err := logger.New("DEFAULT", 1 /* color */, os.Stderr)
+	if err != nil {
+		panic(err)
+	}
+
+	log.SetFormat("%{message}")
+	log.SetLogLevel(logger.InfoLevel)
+	return log
+}
+
+func SetDebugLogger() {
+	log = NewDebugLogger()
 }

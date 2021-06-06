@@ -6,8 +6,6 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
-
-	logger "github.com/apsdehal/go-logger"
 )
 
 var (
@@ -31,9 +29,7 @@ type TestFixtures struct {
 
 func init() {
 	IsDryRun = true
-
-	log.SetLogLevel(logger.DebugLevel)
-	log.SetFormat(DebugFormat)
+	log = NewDebugLogger()
 }
 
 func TestMain(t *testing.M) {

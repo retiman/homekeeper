@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	logger "github.com/apsdehal/go-logger"
 	"github.com/retiman/homekeeper/pkg/common"
 	"github.com/spf13/cobra"
 )
@@ -30,19 +29,8 @@ type CliApp struct {
 }
 
 var (
-	log *logger.Logger
+	log = common.NewDefaultLogger()
 )
-
-func init() {
-	var err error
-	log, err = logger.New("cmd", 1 /* coloring */, os.Stderr)
-	if err != nil {
-		panic(err)
-	}
-
-	log.SetLogLevel(logger.InfoLevel)
-	log.SetFormat(common.InfoFormat)
-}
 
 func New() *CliApp {
 	app := new(CliApp)
@@ -85,10 +73,8 @@ func (app *CliApp) Execute() {
 func (app *CliApp) createHandler(handler Handler) func(*cobra.Command, []string) {
 	return func(cmd *cobra.Command, args []string) {
 		if app.flags.IsDebug {
-			log.SetLogLevel(logger.DebugLevel)
-			log.SetFormat(common.DebugFormat)
-			common.SetLogLevel(logger.DebugLevel)
-			common.SetLogFormat(common.DebugFormat)
+			log = common.NewDebugLogger()
+			common.SetDebugLogger()
 		}
 
 		log.Debugf("invoked with flags: %+v", app.flags)
