@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/retiman/homekeeper/pkg/logging"
 )
 
 var (
@@ -28,8 +30,9 @@ type TestFixtures struct {
 }
 
 func init() {
+	logging.SetDebugLevel()
+
 	IsDryRun = true
-	log = NewDebugLogger()
 }
 
 func TestMain(t *testing.M) {
@@ -160,7 +163,9 @@ func CreateTestFiles(fixtures *TestFixtures) (files []string, err error) {
 	files = []string{
 		filepath.Join(fixtures.DotfilesDirectory, ".bash_profile"),
 		filepath.Join(fixtures.DotfilesDirectory, ".gitconfig"),
+		filepath.Join(fixtures.DotfilesDirectory, ".gitignore"),
 		filepath.Join(fixtures.DotfilesDirectory, ".vimrc"),
+		filepath.Join(fixtures.DotfilesDirectory, "README.md"),
 	}
 
 	for _, file := range files {

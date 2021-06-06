@@ -15,7 +15,7 @@ func TestCreateSymlinks(t *testing.T) {
 	defer UpdateDryRun(false)()
 
 	plan := make(map[string]string)
-	err := PlanSymlinks(Fixtures.HomeDirectory, Fixtures.DotfilesDirectory, plan)
+	err := PlanSymlinks(Fixtures.HomeDirectory, Fixtures.DotfilesDirectory, plan, make(map[string]bool))
 	if err != nil {
 		assert.Fail(t, err.Error())
 	}
@@ -97,8 +97,12 @@ func TestListEntries(t *testing.T) {
 }
 
 func TestPlanSymlinks(t *testing.T) {
+	excludes := make(map[string]bool)
+	excludes[".gitignore"] = true
+	excludes["README.md"] = true
+
 	plan := make(map[string]string)
-	err := PlanSymlinks(Fixtures.HomeDirectory, Fixtures.DotfilesDirectory, plan)
+	err := PlanSymlinks(Fixtures.HomeDirectory, Fixtures.DotfilesDirectory, plan, excludes)
 	if err != nil {
 		assert.Fail(t, err.Error())
 	}
@@ -108,9 +112,11 @@ func TestPlanSymlinks(t *testing.T) {
 		assert.Fail(t, err.Error())
 	}
 
-	assert.Equal(t, len(plan), len(entries))
-	for basename, newname := range plan {
-		assert.True(t, strings.HasPrefix(newname, Fixtures.DotfilesDirectory))
+	actual := len(plan)
+	expected := len(entries) - len(excludes)
+	assert.Equal(t, actual, expected)
+	for basename, target := range plan {
+		assert.True(t, strings.HasPrefix(target, Fixtures.DotfilesDirectory))
 		assert.False(t, strings.Contains(basename, string(os.PathSeparator)))
 	}
 }

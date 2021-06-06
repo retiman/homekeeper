@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/retiman/homekeeper/pkg/common"
+	"github.com/retiman/homekeeper/pkg/logging"
 	"github.com/spf13/cobra"
 )
 
@@ -13,14 +13,12 @@ type Calls struct {
 	IsVersionCalled bool
 }
 
-type CommandHandler func(*cobra.Command, []string)
-
 var (
 	calls *Calls
 )
 
 func init() {
-	log = common.NewDebugLogger()
+	logging.SetDebugLevel()
 }
 
 // Setup tests by resetting package state.  Note that writing a `TestMain` will not work as that setupTest/teardown will
@@ -28,12 +26,12 @@ func init() {
 func setupTest() {
 	flags = &Flags{}
 	calls = &Calls{}
-	initCommands()
+	initialize()
 }
 
 // Create a command handler that can trace calls to it for debugging.  Use this to replace the run handler in a test
 // so that running the command does not do something destructive.
-func newTracingHandler(isCalled *bool) CommandHandler {
+func newTracingHandler(isCalled *bool) func(*cobra.Command, []string) {
 	return func(_ *cobra.Command, _ []string) {
 		*isCalled = true
 	}

@@ -7,23 +7,23 @@ import (
 	"path/filepath"
 )
 
-func CreateSymlink(oldname string, newname string, isOverwrite bool) (err error) {
-	_, err = os.Stat(newname)
+func CreateSymlink(source string, target string, isOverwrite bool) (err error) {
+	_, err = os.Stat(target)
 	if errors.Is(err, os.ErrExist) {
 		if !isOverwrite {
-			log.Warningf("will not overwrite existing file: %s", newname)
+			log.Warningf("will not overwrite existing file: %s", target)
 			return nil
 		}
 
-		log.Warningf("overwriting existing file: %s", newname)
-		err = os.Remove(newname)
+		log.Warningf("overwriting existing file: %s", target)
+		err = os.Remove(target)
 		if err != nil {
 			return
 		}
 	}
 
-	log.Infof("symlinking %s -> %s", oldname, newname)
-	err = os.Symlink(oldname, newname)
+	log.Infof("symlinking %s -> %s", source, target)
+	err = os.Symlink(source, target)
 	if err != nil {
 		return
 	}
@@ -33,9 +33,9 @@ func CreateSymlink(oldname string, newname string, isOverwrite bool) (err error)
 
 func CreateSymlinks(homeDirectory string, plan map[string]string) error {
 	errs := make([]error, 0)
-	for basename, oldname := range plan {
-		newname := filepath.Join(homeDirectory, basename)
-		err := CreateSymlink(oldname, newname, true /* isOverwrite */)
+	for basename, source := range plan {
+		target := filepath.Join(homeDirectory, basename)
+		err := CreateSymlink(source, target, true /* isOverwrite */)
 		if err != nil {
 			errs = append(errs, err)
 		}
@@ -82,13 +82,23 @@ func ListEntries(directory string) (entries []os.FileInfo, err error) {
 	return fh.Readdir(-1)
 }
 
-func PlanSymlinks(homeDirectory string, dotfilesDirectory string, plan map[string]string) (err error) {
+// Makes a plan of symlinks based on an existing one.  With an empty plan, makes a plan of all dotfiles to the home
+// directory.  When there are multiple dotfiles directories, call this function multiple times, updating the plan each
+// time.
+//
+// Pass in a set of files to filter out (such as .git, .gitignore, README.md, etc) to exclude them from the plan.
+func PlanSymlinks(homeDirectory string, dotfilesDirectory string, plan map[string]string, excludes map[string]bool) (err error) {
 	entries, err := ListEntries(dotfilesDirectory)
 	if err != nil {
 		return err
 	}
 
 	for _, entry := range entries {
+		if excludes[entry.Name()] {
+			log.Debugf("excluding from symlinking: %s", entry.Name())
+			continue
+		}
+
 		plan[entry.Name()] = filepath.Join(dotfilesDirectory, entry.Name())
 	}
 
