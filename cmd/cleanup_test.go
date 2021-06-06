@@ -6,16 +6,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCleanupDefaults(t *testing.T) {
-	isCmdCalled := false
-	isRootCalled := false
-	app := New()
+func TestCleanupCommand(t *testing.T) {
+	setupTest()
+	cleanupCommand.Run = newTracingHandler(&calls.IsCleanupCalled)
+	rootCommand.Run = newTracingHandler(&calls.IsRootCalled)
+	rootCommand.SetArgs([]string{"cleanup"})
 
-	app.cleanupCommand.Run = NewTracingHandler(&isCmdCalled)
-	app.rootCommand.Run = NewTracingHandler(&isRootCalled)
-	app.rootCommand.SetArgs([]string{"cleanup"})
-	app.rootCommand.Execute()
+	rootCommand.Execute()
 
-	assert.True(t, isCmdCalled)
-	assert.False(t, isRootCalled)
+	assert.True(t, calls.IsCleanupCalled)
+	assert.False(t, calls.IsRootCalled)
+	assert.False(t, flags.IsDebug)
+	assert.False(t, flags.IsDryRun)
 }

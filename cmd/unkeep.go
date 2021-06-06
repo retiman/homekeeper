@@ -4,12 +4,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newUnkeepCommand() *cobra.Command {
+var (
+	unkeepCommand *cobra.Command
+)
+
+func createUnkeepCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:   "unkeep",
 		Short: "Replaces symlinks in your home directory with symlinked files.",
+		Run: createRunHandler(func() {
+			log.Infof("Command unkeep was called!")
+		}),
 	}
-}
-
-func unkeep(flags *Flags) {
 }

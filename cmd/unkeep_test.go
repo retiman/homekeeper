@@ -6,16 +6,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestUnkeep(t *testing.T) {
-	isCmdCalled := false
-	isRootCalled := false
-	app := New()
+func TestUnkeepCommand(t *testing.T) {
+	setupTest()
+	unkeepCommand.Run = newTracingHandler(&calls.IsUnkeepCalled)
+	rootCommand.Run = newTracingHandler(&calls.IsRootCalled)
+	rootCommand.SetArgs([]string{"unkeep"})
 
-	app.unkeepCommand.Run = NewTracingHandler(&isCmdCalled)
-	app.rootCommand.Run = NewTracingHandler(&isRootCalled)
-	app.rootCommand.SetArgs([]string{"unkeep"})
-	app.rootCommand.Execute()
+	rootCommand.Execute()
 
-	assert.True(t, isCmdCalled)
-	assert.False(t, isRootCalled)
+	assert.True(t, calls.IsUnkeepCalled)
+	assert.False(t, calls.IsRootCalled)
+	assert.False(t, flags.IsDebug)
+	assert.False(t, flags.IsDryRun)
 }

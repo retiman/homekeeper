@@ -6,15 +6,17 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var BuildVersion = "0.0.0"
+var (
+	buildVersion   = "0.0.0"
+	versionCommand *cobra.Command
+)
 
-func newVersionCommand() *cobra.Command {
+func createVersionCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:   "version",
 		Short: "Prints the version and then exists.",
+		Run: createRunHandler(func() {
+			fmt.Println(buildVersion)
+		}),
 	}
-}
-
-func version(flags *Flags) {
-	fmt.Println(BuildVersion)
 }

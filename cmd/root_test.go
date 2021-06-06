@@ -6,18 +6,17 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRoot(t *testing.T) {
-	isCmdCalled := false
-	app := New()
-
-	app.rootCommand.Run = NewTracingHandler(&isCmdCalled)
-	app.rootCommand.SetArgs([]string{
+func TestRootCommand(t *testing.T) {
+	setupTest()
+	rootCommand.Run = newTracingHandler(&calls.IsRootCalled)
+	rootCommand.SetArgs([]string{
 		"--debug",
 		"--dry-run",
 	})
-	app.rootCommand.Execute()
 
-	assert.True(t, isCmdCalled)
-	assert.True(t, app.flags.IsDebug)
-	assert.True(t, app.flags.IsDryRun)
+	rootCommand.Execute()
+
+	assert.True(t, calls.IsRootCalled)
+	assert.True(t, flags.IsDebug)
+	assert.True(t, flags.IsDryRun)
 }

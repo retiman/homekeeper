@@ -6,16 +6,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestVersion(t *testing.T) {
-	isCmdCalled := false
-	isRootCalled := false
-	app := New()
+func TestVersionCommand(t *testing.T) {
+	setupTest()
+	versionCommand.Run = newTracingHandler(&calls.IsVersionCalled)
+	rootCommand.Run = newTracingHandler(&calls.IsRootCalled)
+	rootCommand.SetArgs([]string{"version"})
 
-	app.versionCommand.Run = NewTracingHandler(&isCmdCalled)
-	app.rootCommand.Run = NewTracingHandler(&isRootCalled)
-	app.rootCommand.SetArgs([]string{"version"})
-	app.rootCommand.Execute()
+	rootCommand.Execute()
 
-	assert.True(t, isCmdCalled)
-	assert.False(t, isRootCalled)
+	assert.True(t, calls.IsVersionCalled)
+	assert.False(t, calls.IsRootCalled)
+	assert.False(t, flags.IsDebug)
+	assert.False(t, flags.IsDryRun)
 }

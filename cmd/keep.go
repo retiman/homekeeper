@@ -4,19 +4,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newKeepCommand(flags *Flags) *cobra.Command {
-	cmd := &cobra.Command{
+var (
+	keepCommand *cobra.Command
+)
+
+func createKeepCommand() *cobra.Command {
+	return &cobra.Command{
 		Use:   "keep",
 		Short: "Overwrites dotfiles in your home directory by symlinking them from somewhere else.",
+		Run: createRunHandler(func() {
+			log.Infof("Command keep was called!")
+		}),
 	}
-	cmd.Flags().BoolVar(
-		&flags.IsNoCleanup,
-		"no-cleanup",
-		false, /* default */
-		"Do not remove broken symlinks afterwards.",
-	)
-	return cmd
-}
-
-func keep(flags *Flags) {
 }
