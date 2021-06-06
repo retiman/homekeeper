@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-
-	log "github.com/sirupsen/logrus"
 )
 
 func CreateSymlinks(homeDirectory string, plan map[string]string) error {
@@ -14,7 +12,7 @@ func CreateSymlinks(homeDirectory string, plan map[string]string) error {
 		newname := filepath.Join(homeDirectory, basename)
 		err := os.Symlink(oldname, newname)
 		if err != nil {
-			log.Warnf("could not symlink: %s -> %s", oldname, newname)
+			log.Warningf("could not symlink: %s -> %s", oldname, newname)
 			errs = append(errs, err)
 		} else {
 			log.Infof("created symlink: %s -> %s", oldname, newname)
@@ -76,7 +74,7 @@ func PlanSymlinks(homeDirectory string, dotfilesDirectory string, plan map[strin
 }
 
 func RemoveBrokenSymlinks(directory string) (removedEntries []string, err error) {
-	log.Tracef("checking for broken symlinks in: %s", directory)
+	log.Debugf("checking for broken symlinks in: %s", directory)
 
 	removedEntries = make([]string, 0)
 	entries, err := ListEntries(directory)
@@ -84,12 +82,12 @@ func RemoveBrokenSymlinks(directory string) (removedEntries []string, err error)
 		path := filepath.Join(directory, entry.Name())
 
 		if !IsSymlink(entry) {
-			log.Tracef("skipping non-symlink entry: %s", path)
+			log.Debugf("skipping non-symlink entry: %s", path)
 			continue
 		}
 
 		if !IsBrokenSymlink(entry) {
-			log.Tracef("skipping non-broken symlink entry: %s", path)
+			log.Debugf("skipping non-broken symlink entry: %s", path)
 			continue
 		}
 

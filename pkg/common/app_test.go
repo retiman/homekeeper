@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	log "github.com/sirupsen/logrus"
+	logger "github.com/apsdehal/go-logger"
 )
 
 var (
@@ -32,14 +32,8 @@ type TestFixtures struct {
 func init() {
 	IsDryRun = true
 
-	log.SetFormatter(&log.TextFormatter{
-		DisableTimestamp: true,
-		PadLevelText:     true,
-		QuoteEmptyFields: true,
-		DisableQuote:     true,
-	})
-
-	log.SetLevel(log.TraceLevel)
+	log.SetLogLevel(logger.DebugLevel)
+	log.SetFormat(DebugFormat)
 }
 
 func TestMain(t *testing.M) {
@@ -73,11 +67,11 @@ func UpdateDryRun(value bool) func() {
 		return func() {}
 	}
 
-	log.Tracef("setting dry run value: %v", value)
+	log.Debugf("setting dry run value: %v", value)
 	previousValue := IsDryRun
 	IsDryRun = value
 	return func() {
-		log.Tracef("restoring dry run value: %v", previousValue)
+		log.Debugf("restoring dry run value: %v", previousValue)
 		IsDryRun = previousValue
 	}
 }
@@ -94,7 +88,7 @@ func GetRepositoryRoot() (repositoryRoot string, err error) {
 
 		_, err = os.Stat(filepath.Join(repositoryRoot, ".git"))
 		if err == nil {
-			log.Tracef("found repository root: %s", repositoryRoot)
+			log.Debugf("found repository root: %s", repositoryRoot)
 			return
 		}
 
@@ -128,7 +122,7 @@ func SetupFixtures() (fixtures *TestFixtures, err error) {
 	// you didn't intend to, but the GetRepositoryRoot() method should prevent you from doing that).
 	//
 	// This way we can test out different platforms as well.
-	log.Tracef("removing all files in directory: %s", fixtures.RootDirectory)
+	log.Debugf("removing all files in directory: %s", fixtures.RootDirectory)
 	err = os.RemoveAll(fixtures.RootDirectory)
 	if err != nil {
 		return
@@ -156,7 +150,7 @@ func CreateTestDirectories(fixtures *TestFixtures) (directories []string, err er
 	}
 
 	for _, directory := range directories {
-		log.Tracef("creating test directory: %s", directory)
+		log.Debugf("creating test directory: %s", directory)
 		err = os.MkdirAll(directory, os.ModePerm)
 		if err != nil {
 			return
@@ -174,7 +168,7 @@ func CreateTestFiles(fixtures *TestFixtures) (files []string, err error) {
 	}
 
 	for _, file := range files {
-		log.Tracef("creating test file: %s", file)
+		log.Debugf("creating test file: %s", file)
 		_, err = os.Create(file)
 		if err != nil {
 			return
@@ -189,11 +183,11 @@ func CreateTestSymlinks(fixtures *TestFixtures) (symlinks []string) {
 	newname := filepath.Join(fixtures.DotfilesDirectory, ".bashrc")
 	symlinks = []string{newname}
 
-	log.Tracef("symlinking %s -> %s", oldname, newname)
+	log.Debugf("symlinking %s -> %s", oldname, newname)
 	err := os.Symlink(oldname, newname)
 	if err != nil {
 		IsSymlinkSupported = false
-		log.Warnf("symlink is not supported on this system: %+v", err)
+		log.Warningf("symlink is not supported on this system: %+v", err)
 
 		// There's no point in checking for readlink or lstat if the symlink creation fails.  If it succeeds, we can check
 		// and see if either will succeed if the other fails.
@@ -205,7 +199,7 @@ func CreateTestSymlinks(fixtures *TestFixtures) (symlinks []string) {
 	_, err = os.Readlink(newname)
 	if err != nil {
 		IsReadlinkSupported = false
-		log.Warnf("readlink is not supported on this system: %v", err)
+		log.Warningf("readlink is not supported on this system: %v", err)
 		err = nil
 	} else {
 		IsReadlinkSupported = true
@@ -214,7 +208,7 @@ func CreateTestSymlinks(fixtures *TestFixtures) (symlinks []string) {
 	_, err = os.Lstat(newname)
 	if err != nil {
 		IsLstatSupported = false
-		log.Warnf("lstat is not supported on this system: %v", err)
+		log.Warningf("lstat is not supported on this system: %v", err)
 		err = nil
 	} else {
 		IsLstatSupported = true

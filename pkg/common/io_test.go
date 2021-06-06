@@ -7,7 +7,6 @@ import (
 	"strings"
 	"testing"
 
-	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -62,7 +61,7 @@ func TestRemoveBrokenSymlinks(t *testing.T) {
 			assert.Fail(t, err.Error())
 		}
 
-		log.Tracef("creating a broken symlink; removing: %s", oldname)
+		log.Debugf("creating a broken symlink; removing: %s", oldname)
 		os.Remove(oldname)
 		wanted = append(wanted, symlink)
 	}
