@@ -4,16 +4,31 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestIsSymlink(t *testing.T) {
-	if !IsSymlinkSupported || !IsLstatSupported {
-		t.Skip("skipped because symlinks are not supported")
+func TestCreateSymlinks(t *testing.T) {
+	CheckSymlinkSupported(t)
+	defer UpdateDryRun(false)()
+
+	plan := make(map[string]string)
+	err := PlanSymlinks(Fixtures.HomeDirectory, Fixtures.DotfilesDirectory, plan)
+	if err != nil {
+		assert.Fail(t, err.Error())
 	}
+
+	err = CreateSymlinks(Fixtures.HomeDirectory, plan)
+	if err != nil {
+		assert.Fail(t, err.Error())
+	}
+}
+
+func TestIsSymlink(t *testing.T) {
+	CheckSymlinkSupported(t)
 
 	for _, symlink := range Fixtures.Symlinks {
 		entry, err := os.Lstat(symlink)
@@ -37,11 +52,7 @@ func TestIsSymlink(t *testing.T) {
 }
 
 func TestRemoveBrokenSymlinks(t *testing.T) {
-	if !IsSymlinkSupported || !IsReadlinkSupported {
-		t.Skip("skipped because symlinks are not supported")
-		return
-	}
-
+	CheckSymlinkSupported(t)
 	defer UpdateDryRun(false)()
 
 	wanted := make([]string, 0)
@@ -84,4 +95,23 @@ func TestListEntries(t *testing.T) {
 	}
 
 	assert.Fail(t, fmt.Sprintf("didn't find any 'dotfiles' directory: %+v", Fixtures))
+}
+
+func TestPlanSymlinks(t *testing.T) {
+	plan := make(map[string]string)
+	err := PlanSymlinks(Fixtures.HomeDirectory, Fixtures.DotfilesDirectory, plan)
+	if err != nil {
+		assert.Fail(t, err.Error())
+	}
+
+	entries, err := ListEntries(Fixtures.DotfilesDirectory)
+	if err != nil {
+		assert.Fail(t, err.Error())
+	}
+
+	assert.Equal(t, len(plan), len(entries))
+	for basename, newname := range plan {
+		assert.True(t, strings.HasPrefix(newname, Fixtures.DotfilesDirectory))
+		assert.False(t, strings.Contains(basename, string(os.PathSeparator)))
+	}
 }

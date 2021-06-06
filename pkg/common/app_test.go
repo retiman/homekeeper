@@ -54,6 +54,20 @@ func TestMain(t *testing.M) {
 	os.Exit(code)
 }
 
+func CheckSymlinkSupported(t *testing.T) {
+	if !IsSymlinkSupported {
+		t.Skip("skipping test because symlink not supported")
+	}
+
+	if !IsLstatSupported {
+		t.Skip("skipping test because lstat not supported")
+	}
+
+	if !IsReadlinkSupported {
+		t.Skip("skipping test because readlink not supported")
+	}
+}
+
 func UpdateDryRun(value bool) func() {
 	if IsDryRun == value {
 		return func() {}
@@ -191,7 +205,7 @@ func CreateTestSymlinks(fixtures *TestFixtures) (symlinks []string) {
 	_, err = os.Readlink(newname)
 	if err != nil {
 		IsReadlinkSupported = false
-		log.Warnf("readlink is not supported on this system: %+v", err)
+		log.Warnf("readlink is not supported on this system: %v", err)
 		err = nil
 	} else {
 		IsReadlinkSupported = true
@@ -200,7 +214,7 @@ func CreateTestSymlinks(fixtures *TestFixtures) (symlinks []string) {
 	_, err = os.Lstat(newname)
 	if err != nil {
 		IsLstatSupported = false
-		log.Warnf("lstat is not supported on this system: %+v", err)
+		log.Warnf("lstat is not supported on this system: %v", err)
 		err = nil
 	} else {
 		IsLstatSupported = true
