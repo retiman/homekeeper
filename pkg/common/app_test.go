@@ -10,17 +10,7 @@ import (
 	"github.com/retiman/homekeeper/pkg/logging"
 )
 
-var (
-	// Even though Windows does support symlinks, by default, they are only available if the system administrator enables
-	// them.  The rationale is that most applications are not written to support them, and enabling them by default would
-	// present a security risk.
-	IsSymlinkSupported  bool
-	IsReadlinkSupported bool
-	IsLstatSupported    bool
-	Fixtures            *TestFixtures
-)
-
-type TestFixtures struct {
+type Fixtures struct {
 	RootDirectory     string
 	HomeDirectory     string
 	DotfilesDirectory string
@@ -29,53 +19,45 @@ type TestFixtures struct {
 	Symlinks          []string
 }
 
+var (
+	// Even though Windows does support symlinks, by default, they are only available if the system administrator enables
+	// them.  The rationale is that most applications are not written to support them, and enabling them by default would
+	// present a security risk.
+	isSymlinkSupported  bool
+	isReadlinkSupported bool
+	isLstatSupported    bool
+	fixtures            *Fixtures
+)
+
 func init() {
 	logging.SetDebugLevel()
 
 	IsDryRun = true
 }
 
-func TestMain(t *testing.M) {
-	var err error
-	Fixtures, err = SetupFixtures()
-	if err != nil {
-		log.Errorf("error during test setup: %v", err)
-		os.Exit(1)
-	}
-
-	code := t.Run()
-	os.Exit(code)
-}
-
-func CheckSymlinkSupported(t *testing.T) {
-	if !IsSymlinkSupported {
+// Checks if symlink, lstat, and readlink are supported.  On all three major platforms (Linux, MacOS, and Windows),
+// symlinks are supported.  However, by default, Windows does not have symlinks enabled.  It can only be enabled if
+// the administrator enables them.  When on a platform where symlinks are not supported, the tests that require them
+// should be skipped.
+func checkSymlinkSupported(t *testing.T) {
+	if !isSymlinkSupported {
 		t.Skip("skipping test because symlink not supported")
 	}
 
-	if !IsLstatSupported {
+	if !isLstatSupported {
 		t.Skip("skipping test because lstat not supported")
 	}
 
-	if !IsReadlinkSupported {
+	if !isReadlinkSupported {
 		t.Skip("skipping test because readlink not supported")
 	}
 }
 
-func UpdateDryRun(value bool) func() {
-	if IsDryRun == value {
-		return func() {}
-	}
-
-	log.Debugf("setting dry run value: %v", value)
-	previousValue := IsDryRun
-	IsDryRun = value
-	return func() {
-		log.Debugf("restoring dry run value: %v", previousValue)
-		IsDryRun = previousValue
-	}
-}
-
-func GetRepositoryRoot() (repositoryRoot string, err error) {
+// Gets the repository root of this project.  Temporary test files are stored in the "tmp" directory of the project
+// root.  Rather than rely on relative paths hard-coded in tests based on the test directory, we try to find the
+// repository root instead (this will stop programming errors like making a relative path to a directory that you
+// wouldn't want to delete).
+func getRepositoryRoot() (repositoryRoot string, err error) {
 	cwd, err := os.Getwd()
 	if err != nil {
 		return
@@ -102,11 +84,13 @@ func GetRepositoryRoot() (repositoryRoot string, err error) {
 	}
 }
 
-func SetupFixtures() (fixtures *TestFixtures, err error) {
-	fixtures = &TestFixtures{}
-	rootDirectory, err := GetRepositoryRoot()
+func setupFixtures() {
+	IsDryRun = false
+
+	fixtures = &Fixtures{}
+	rootDirectory, err := getRepositoryRoot()
 	if err != nil {
-		return
+		panic(err)
 	}
 
 	// It's okay to use this path as the root directory tests in golang; all tests run sequentially unless you explicitly
@@ -124,24 +108,23 @@ func SetupFixtures() (fixtures *TestFixtures, err error) {
 	log.Debugf("removing all files in directory: %s", fixtures.RootDirectory)
 	err = os.RemoveAll(fixtures.RootDirectory)
 	if err != nil {
-		return
+		panic(err)
 	}
 
-	fixtures.Directories, err = CreateTestDirectories(fixtures)
+	fixtures.Directories, err = createTestDirectories()
 	if err != nil {
-		return
+		panic(err)
 	}
 
-	fixtures.Files, err = CreateTestFiles(fixtures)
+	fixtures.Files, err = createTestFiles()
 	if err != nil {
-		return
+		panic(err)
 	}
 
-	fixtures.Symlinks = CreateTestSymlinks(fixtures)
-	return
+	fixtures.Symlinks = createTestSymlinks()
 }
 
-func CreateTestDirectories(fixtures *TestFixtures) (directories []string, err error) {
+func createTestDirectories() (directories []string, err error) {
 	directories = []string{
 		fixtures.DotfilesDirectory,
 		filepath.Join(fixtures.DotfilesDirectory, ".git"),
@@ -159,7 +142,7 @@ func CreateTestDirectories(fixtures *TestFixtures) (directories []string, err er
 	return
 }
 
-func CreateTestFiles(fixtures *TestFixtures) (files []string, err error) {
+func createTestFiles() (files []string, err error) {
 	files = []string{
 		filepath.Join(fixtures.DotfilesDirectory, ".bash_profile"),
 		filepath.Join(fixtures.DotfilesDirectory, ".gitconfig"),
@@ -179,40 +162,40 @@ func CreateTestFiles(fixtures *TestFixtures) (files []string, err error) {
 	return
 }
 
-func CreateTestSymlinks(fixtures *TestFixtures) (symlinks []string) {
-	oldname := filepath.Join(fixtures.DotfilesDirectory, ".bash_profile")
-	newname := filepath.Join(fixtures.DotfilesDirectory, ".bashrc")
-	symlinks = []string{newname}
+func createTestSymlinks() (symlinks []string) {
+	source := filepath.Join(fixtures.DotfilesDirectory, ".bash_profile")
+	target := filepath.Join(fixtures.DotfilesDirectory, ".bashrc")
+	symlinks = []string{target}
 
-	log.Debugf("symlinking %s -> %s", oldname, newname)
-	err := os.Symlink(oldname, newname)
+	log.Debugf("symlinking %s -> %s", source, target)
+	err := os.Symlink(source, target)
 	if err != nil {
-		IsSymlinkSupported = false
+		isSymlinkSupported = false
 		log.Warningf("symlink is not supported on this system: %+v", err)
 
 		// There's no point in checking for readlink or lstat if the symlink creation fails.  If it succeeds, we can check
 		// and see if either will succeed if the other fails.
 		return
 	} else {
-		IsSymlinkSupported = true
+		isSymlinkSupported = true
 	}
 
-	_, err = os.Readlink(newname)
+	_, err = os.Readlink(target)
 	if err != nil {
-		IsReadlinkSupported = false
+		isReadlinkSupported = false
 		log.Warningf("readlink is not supported on this system: %v", err)
 		err = nil
 	} else {
-		IsReadlinkSupported = true
+		isReadlinkSupported = true
 	}
 
-	_, err = os.Lstat(newname)
+	_, err = os.Lstat(target)
 	if err != nil {
-		IsLstatSupported = false
+		isLstatSupported = false
 		log.Warningf("lstat is not supported on this system: %v", err)
 		err = nil
 	} else {
-		IsLstatSupported = true
+		isLstatSupported = true
 	}
 
 	return

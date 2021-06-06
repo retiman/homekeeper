@@ -21,9 +21,9 @@ func init() {
 	logging.SetDebugLevel()
 }
 
-// Setup tests by resetting package state.  Note that writing a `TestMain` will not work as that setupTest/teardown will
+// Setup tests by resetting package state.  Note that writing a `TestMain` will not work as that setupFixtures/teardown will
 // only once per package, not per test.
-func setupTest() {
+func setupFixtures() {
 	flags = &Flags{}
 	calls = &Calls{}
 	initialize()

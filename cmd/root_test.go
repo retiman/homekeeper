@@ -7,7 +7,7 @@ import (
 )
 
 func TestRootCommand(t *testing.T) {
-	setupTest()
+	setupFixtures()
 	rootCommand.Run = newTracingHandler(&calls.IsRootCalled)
 	rootCommand.SetArgs([]string{
 		"--debug",
@@ -22,7 +22,7 @@ func TestRootCommand(t *testing.T) {
 }
 
 func TestCleanupCommand(t *testing.T) {
-	setupTest()
+	setupFixtures()
 	cleanupCommand.Run = newTracingHandler(&calls.IsCleanupCalled)
 	rootCommand.Run = newTracingHandler(&calls.IsRootCalled)
 	rootCommand.SetArgs([]string{"cleanup"})
@@ -36,7 +36,7 @@ func TestCleanupCommand(t *testing.T) {
 }
 
 func TestKeepCommand(t *testing.T) {
-	setupTest()
+	setupFixtures()
 	keepCommand.Run = newTracingHandler(&calls.IsKeepCalled)
 	rootCommand.Run = newTracingHandler(&calls.IsRootCalled)
 	rootCommand.SetArgs([]string{"keep"})
@@ -50,7 +50,7 @@ func TestKeepCommand(t *testing.T) {
 }
 
 func TestUnkeepCommand(t *testing.T) {
-	setupTest()
+	setupFixtures()
 	unkeepCommand.Run = newTracingHandler(&calls.IsUnkeepCalled)
 	rootCommand.Run = newTracingHandler(&calls.IsRootCalled)
 	rootCommand.SetArgs([]string{"unkeep"})
@@ -64,7 +64,7 @@ func TestUnkeepCommand(t *testing.T) {
 }
 
 func TestVersionCommand(t *testing.T) {
-	setupTest()
+	setupFixtures()
 	versionCommand.Run = newTracingHandler(&calls.IsVersionCalled)
 	rootCommand.Run = newTracingHandler(&calls.IsRootCalled)
 	rootCommand.SetArgs([]string{"version"})

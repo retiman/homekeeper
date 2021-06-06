@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-func CreateSymlink(source string, target string, isOverwrite bool) (err error) {
+func createSymlink(source string, target string, isOverwrite bool) (err error) {
 	_, err = os.Stat(target)
 	if errors.Is(err, os.ErrExist) {
 		if !isOverwrite {
@@ -31,11 +31,11 @@ func CreateSymlink(source string, target string, isOverwrite bool) (err error) {
 	return
 }
 
-func CreateSymlinks(homeDirectory string, plan map[string]string) error {
+func createSymlinks(homeDirectory string, plan map[string]string) error {
 	errs := make([]error, 0)
 	for basename, source := range plan {
 		target := filepath.Join(homeDirectory, basename)
-		err := CreateSymlink(source, target, true /* isOverwrite */)
+		err := createSymlink(source, target, true /* isOverwrite */)
 		if err != nil {
 			errs = append(errs, err)
 		}
@@ -48,7 +48,7 @@ func CreateSymlinks(homeDirectory string, plan map[string]string) error {
 	return nil
 }
 
-func IsBrokenSymlink(entry os.FileInfo) bool {
+func isBrokenSymlink(entry os.FileInfo) bool {
 	_, err := os.Readlink(entry.Name())
 	if err != nil {
 		return true
@@ -57,11 +57,11 @@ func IsBrokenSymlink(entry os.FileInfo) bool {
 	return false
 }
 
-func IsSymlink(entry os.FileInfo) bool {
+func isSymlink(entry os.FileInfo) bool {
 	return entry.Mode()&os.ModeSymlink != 0
 }
 
-func ListEntries(directory string) (entries []os.FileInfo, err error) {
+func listEntries(directory string) (entries []os.FileInfo, err error) {
 	fh, err := os.Open(directory)
 	if err != nil {
 		return
@@ -87,8 +87,8 @@ func ListEntries(directory string) (entries []os.FileInfo, err error) {
 // time.
 //
 // Pass in a set of files to filter out (such as .git, .gitignore, README.md, etc) to exclude them from the plan.
-func PlanSymlinks(homeDirectory string, dotfilesDirectory string, plan map[string]string, excludes map[string]bool) (err error) {
-	entries, err := ListEntries(dotfilesDirectory)
+func planSymlinks(homeDirectory string, dotfilesDirectory string, plan map[string]string, excludes map[string]bool) (err error) {
+	entries, err := listEntries(dotfilesDirectory)
 	if err != nil {
 		return err
 	}
@@ -105,20 +105,20 @@ func PlanSymlinks(homeDirectory string, dotfilesDirectory string, plan map[strin
 	return
 }
 
-func RemoveBrokenSymlinks(directory string) (removedEntries []string, err error) {
+func removeBrokenSymlinks(directory string) (removedEntries []string, err error) {
 	log.Debugf("checking for broken symlinks in: %s", directory)
 
 	removedEntries = make([]string, 0)
-	entries, err := ListEntries(directory)
+	entries, err := listEntries(directory)
 	for _, entry := range entries {
 		path := filepath.Join(directory, entry.Name())
 
-		if !IsSymlink(entry) {
+		if !isSymlink(entry) {
 			log.Debugf("skipping non-symlink entry: %s", path)
 			continue
 		}
 
-		if !IsBrokenSymlink(entry) {
+		if !isBrokenSymlink(entry) {
 			log.Debugf("skipping non-broken symlink entry: %s", path)
 			continue
 		}

@@ -11,72 +11,75 @@ import (
 )
 
 func TestCreateSymlinks(t *testing.T) {
-	CheckSymlinkSupported(t)
-	defer UpdateDryRun(false)()
+	setupFixtures()
+	checkSymlinkSupported(t)
 
 	plan := make(map[string]string)
-	err := PlanSymlinks(Fixtures.HomeDirectory, Fixtures.DotfilesDirectory, plan, make(map[string]bool))
+	err := planSymlinks(fixtures.HomeDirectory, fixtures.DotfilesDirectory, plan, make(map[string]bool))
 	if err != nil {
 		assert.Fail(t, err.Error())
 	}
 
-	err = CreateSymlinks(Fixtures.HomeDirectory, plan)
+	err = createSymlinks(fixtures.HomeDirectory, plan)
 	if err != nil {
 		assert.Fail(t, err.Error())
 	}
 }
 
 func TestIsSymlink(t *testing.T) {
-	CheckSymlinkSupported(t)
+	setupFixtures()
+	checkSymlinkSupported(t)
 
-	for _, symlink := range Fixtures.Symlinks {
+	for _, symlink := range fixtures.Symlinks {
 		entry, err := os.Lstat(symlink)
 		if err != nil {
 			assert.Fail(t, err.Error())
 			return
 		}
 
-		assert.True(t, IsSymlink(entry))
+		assert.True(t, isSymlink(entry))
 	}
 
-	for _, file := range Fixtures.Files {
+	for _, file := range fixtures.Files {
 		entry, err := os.Stat(file)
 		if err != nil {
 			assert.Fail(t, err.Error())
 			return
 		}
 
-		assert.False(t, IsSymlink(entry))
+		assert.False(t, isSymlink(entry))
 	}
 }
 
 func TestRemoveBrokenSymlinks(t *testing.T) {
-	CheckSymlinkSupported(t)
-	defer UpdateDryRun(false)()
+	setupFixtures()
+	checkSymlinkSupported(t)
 
-	wanted := make([]string, 0)
-	for _, symlink := range Fixtures.Symlinks {
-		oldname, err := os.Readlink(symlink)
+	expected := make([]string, 0)
+	for _, target := range fixtures.Symlinks {
+		source, err := os.Readlink(target)
 		if err != nil {
 			assert.Fail(t, err.Error())
 		}
 
-		log.Debugf("creating a broken symlink; removing: %s", oldname)
-		os.Remove(oldname)
-		wanted = append(wanted, symlink)
+		log.Debugf("creating a broken symlink; removing: %s", source)
+		os.Remove(source)
+		expected = append(expected, target)
 	}
 
-	got, err := RemoveBrokenSymlinks(Fixtures.DotfilesDirectory)
+	actual, err := removeBrokenSymlinks(fixtures.DotfilesDirectory)
 	if err != nil {
 		assert.Fail(t, err.Error())
 		return
 	}
 
-	assert.ElementsMatch(t, got, wanted)
+	assert.ElementsMatch(t, actual, expected)
 }
 
 func TestListEntries(t *testing.T) {
-	entries, err := ListEntries(Fixtures.HomeDirectory)
+	setupFixtures()
+
+	entries, err := listEntries(fixtures.HomeDirectory)
 	if err != nil {
 		assert.Fail(t, err.Error())
 		return
@@ -93,21 +96,23 @@ func TestListEntries(t *testing.T) {
 		}
 	}
 
-	assert.Fail(t, fmt.Sprintf("didn't find any 'dotfiles' directory: %+v", Fixtures))
+	assert.Fail(t, fmt.Sprintf("didn't find any 'dotfiles' directory: %+v", fixtures))
 }
 
 func TestPlanSymlinks(t *testing.T) {
+	setupFixtures()
+
 	excludes := make(map[string]bool)
 	excludes[".gitignore"] = true
 	excludes["README.md"] = true
 
 	plan := make(map[string]string)
-	err := PlanSymlinks(Fixtures.HomeDirectory, Fixtures.DotfilesDirectory, plan, excludes)
+	err := planSymlinks(fixtures.HomeDirectory, fixtures.DotfilesDirectory, plan, excludes)
 	if err != nil {
 		assert.Fail(t, err.Error())
 	}
 
-	entries, err := ListEntries(Fixtures.DotfilesDirectory)
+	entries, err := listEntries(fixtures.DotfilesDirectory)
 	if err != nil {
 		assert.Fail(t, err.Error())
 	}
@@ -116,7 +121,7 @@ func TestPlanSymlinks(t *testing.T) {
 	expected := len(entries) - len(excludes)
 	assert.Equal(t, actual, expected)
 	for basename, target := range plan {
-		assert.True(t, strings.HasPrefix(target, Fixtures.DotfilesDirectory))
+		assert.True(t, strings.HasPrefix(target, fixtures.DotfilesDirectory))
 		assert.False(t, strings.Contains(basename, string(os.PathSeparator)))
 	}
 }
