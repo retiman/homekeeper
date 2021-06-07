@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/retiman/homekeeper/pkg/logging"
+	"github.com/retiman/homekeeper/pkg/log"
 	"github.com/spf13/cobra"
 )
 
@@ -18,7 +18,7 @@ var (
 )
 
 func init() {
-	logging.SetDebugLevel()
+	log.SetDebugLevel()
 }
 
 // Setup tests by resetting package state.  Note that writing a `TestMain` will not work as that setupFixtures/teardown will

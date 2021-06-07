@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/retiman/homekeeper/pkg/logging"
+	"github.com/retiman/homekeeper/pkg/log"
 )
 
 type Fixtures struct {
@@ -30,7 +30,7 @@ var (
 )
 
 func init() {
-	logging.SetDebugLevel()
+	log.SetDebugLevel()
 
 	IsDryRun = true
 }
@@ -171,7 +171,7 @@ func createTestSymlinks() (symlinks []string) {
 	err := os.Symlink(source, target)
 	if err != nil {
 		isSymlinkSupported = false
-		log.Warningf("symlink is not supported on this system: %+v", err)
+		log.Warnf("symlink is not supported on this system: %+v", err)
 
 		// There's no point in checking for readlink or lstat if the symlink creation fails.  If it succeeds, we can check
 		// and see if either will succeed if the other fails.
@@ -183,7 +183,7 @@ func createTestSymlinks() (symlinks []string) {
 	_, err = os.Readlink(target)
 	if err != nil {
 		isReadlinkSupported = false
-		log.Warningf("readlink is not supported on this system: %v", err)
+		log.Warnf("readlink is not supported on this system: %v", err)
 		err = nil
 	} else {
 		isReadlinkSupported = true
@@ -192,7 +192,7 @@ func createTestSymlinks() (symlinks []string) {
 	_, err = os.Lstat(target)
 	if err != nil {
 		isLstatSupported = false
-		log.Warningf("lstat is not supported on this system: %v", err)
+		log.Warnf("lstat is not supported on this system: %v", err)
 		err = nil
 	} else {
 		isLstatSupported = true

@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/retiman/homekeeper/pkg/logging"
+	"github.com/retiman/homekeeper/pkg/log"
 	"github.com/spf13/cobra"
 )
 
@@ -15,7 +15,6 @@ var (
 )
 
 var (
-	log   = logging.Log
 	flags = &Flags{}
 )
 
@@ -101,7 +100,7 @@ func initialize() {
 func createRunHandler(handler func()) func(*cobra.Command, []string) {
 	return func(cmd *cobra.Command, args []string) {
 		if flags.IsDebug {
-			logging.SetDebugLevel()
+			log.SetDebugLevel()
 		}
 
 		log.Debugf("invoked with flags: %+v", flags)

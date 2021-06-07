@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/retiman/homekeeper/pkg/log"
 	"github.com/stretchr/testify/assert"
 )
 

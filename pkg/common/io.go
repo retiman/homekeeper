@@ -5,17 +5,19 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/retiman/homekeeper/pkg/log"
 )
 
 func createSymlink(source string, target string, isOverwrite bool) (err error) {
 	_, err = os.Stat(target)
 	if errors.Is(err, os.ErrExist) {
 		if !isOverwrite {
-			log.Warningf("will not overwrite existing file: %s", target)
+			log.Warnf("will not overwrite existing file: %s", target)
 			return nil
 		}
 
-		log.Warningf("overwriting existing file: %s", target)
+		log.Warnf("overwriting existing file: %s", target)
 		err = os.Remove(target)
 		if err != nil {
 			return
