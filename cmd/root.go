@@ -100,7 +100,7 @@ func initialize() {
 func createRunHandler(handler func()) func(*cobra.Command, []string) {
 	return func(cmd *cobra.Command, args []string) {
 		if flags.IsDebug {
-			log.SetDebugLevel()
+			log.Level = log.DEBUG
 		}
 
 		log.Debugf("invoked with flags: %+v", flags)

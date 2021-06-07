@@ -18,7 +18,7 @@ var (
 )
 
 func init() {
-	log.SetDebugLevel()
+	log.Level = log.DEBUG
 }
 
 // Setup tests by resetting package state.  Note that writing a `TestMain` will not work as that setupFixtures/teardown will

@@ -30,7 +30,7 @@ var (
 )
 
 func init() {
-	log.SetDebugLevel()
+	log.Level = log.DEBUG
 
 	IsDryRun = true
 }
