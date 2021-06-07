@@ -1,6 +1,6 @@
 directories:
-  - /home/johndoe/dotfiles
-  - /home/johndoe/dotfiles2
+- /home/johndoe/dotfiles
+- /home/johndoe/dotfiles2
 ignores:
-  - .git
-  - README.md
+- .git
+- README.md
