@@ -15,7 +15,7 @@ func createSymlink(ctx *Context, oldname string, newname string) (err error) {
 	_, err = os.Stat(oldname)
 	if errors.Is(err, os.ErrExist) {
 		if ctx.IsNoOverwrite {
-			Writeln(ctx, "Skipping to avoid overwrite: %s", newname)
+			Writeln(ctx, "Skipping because file would be overwritten: %s", newname)
 			err = nil
 			return
 		}
@@ -31,7 +31,7 @@ func createSymlink(ctx *Context, oldname string, newname string) (err error) {
 
 	err = os.Symlink(oldname, newname)
 	if err != nil {
-		Writeln(ctx, "Skipping due to error: %s", newname)
+		Writeln(ctx, "Skipping because file couldn't be symlinked: %s", newname)
 		log.Errorf("Could not create symlink: %+v", err)
 		return
 	}
@@ -226,29 +226,29 @@ func restoreSymlinks(ctx *Context) (err error) {
 }
 
 func restoreSymlink(ctx *Context, oldname string, newname string) (err error) {
-	log.Debugf("Removing existing file/directory: %s", newname)
+	log.Debugf("Removing existing file: %s", newname)
 	if !ctx.IsDryRun {
 		err = os.RemoveAll(newname)
 		if err != nil {
-			Writeln(ctx, "Could not remove file/directory: %s", newname)
-			log.Errorf("Could not remove file/directory: %+v", err)
+			Writeln(ctx, "Skipping because file couldn't be removed: %s", newname)
+			log.Errorf("Could not remove file: %+v", err)
 			return
 		}
 	} else {
-		Writeln(ctx, "Would have removed file/directory: %s", newname)
+		Writeln(ctx, "Would have removed file: %s", newname)
 	}
 
 	if !ctx.IsDryRun {
 		err = copy.Copy(oldname, newname)
 		if err != nil {
-			Writeln(ctx, "Could not restore file/directory from %s to %s", oldname, newname)
+			Writeln(ctx, "Skipping because file couldn't be copied:", oldname)
 			log.Errorf("Could not copy file/directory: %+v", err)
 			return
 		}
 
-		Writeln(ctx, "Restored file/directory from: %s", oldname)
+		Writeln(ctx, "Restored file: %s <- %s", newname, oldname)
 	} else {
-		Writeln(ctx, "Would have restored file/directory from %s to %s", oldname, newname)
+		Writeln(ctx, "Would have restored file: %s <- %s", newname, oldname)
 	}
 
 	return

@@ -44,7 +44,24 @@ func TestKeep(t *testing.T) {
 }
 
 func TestUnkeep(t *testing.T) {
+	ctx := setupFixtures()
+	checkSymlinkSupported(t)
+	writeConfig(ctx, filepath.Join(ctx.HomeDirectory, ".homekeeper.yml"), ctx.Config)
+
+	err := Keep(ctx)
+	if err != nil {
+		assert.Fail(t, err.Error())
+	}
+
+	err = Unkeep(ctx)
+	if err != nil {
+		assert.Fail(t, err.Error())
+	}
 }
 
 func TestCleanup(t *testing.T) {
+	ctx := setupFixtures()
+	checkSymlinkSupported(t)
+	writeConfig(ctx, filepath.Join(ctx.HomeDirectory, ".homekeeper.yml"), ctx.Config)
+
 }

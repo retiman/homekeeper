@@ -8,7 +8,6 @@ import (
 func Keep(ctx *Context) (err error) {
 	if ctx.IsDebug {
 		log = NewLogger("common", os.Stderr)
-		log.Debug("ok...")
 	}
 
 	log.Debug("Starting 'keep' operation.")
