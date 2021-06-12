@@ -14,13 +14,14 @@ import (
 func createSymlink(ctx *Context, oldname string, newname string) (err error) {
 	_, err = os.Stat(oldname)
 	if errors.Is(err, os.ErrExist) {
-		if !ctx.IsOverwrite {
+		if ctx.IsNoOverwrite {
 			Writeln(ctx, "Skipping to avoid overwrite: %s", newname)
-			return nil
+			err = nil
+			return
 		}
 
 		log.Warningf("Removing existing file: %s", newname)
-		err = os.Remove(newname)
+		err = os.RemoveAll(newname)
 		if err != nil {
 			Writeln(ctx, "Skipping because file couldn't be removed: %s", newname)
 			log.Errorf("Could not remove file: %+v", err)
@@ -35,7 +36,7 @@ func createSymlink(ctx *Context, oldname string, newname string) (err error) {
 		return
 	}
 
-	Writeln(ctx, "Symlinked file: %s", newname)
+	Writeln(ctx, "Symlinked file: %s -> %s", oldname, newname)
 	return
 }
 
@@ -206,20 +207,29 @@ func restoreSymlinks(ctx *Context) (err error) {
 
 func restoreSymlink(ctx *Context, oldname string, newname string) (err error) {
 	log.Debugf("Removing existing file/directory: %s", newname)
-	err = os.RemoveAll(newname)
-	if err != nil {
-		Writeln(ctx, "Could not remove file/directory: %s", newname)
-		log.Errorf("Could not remove file/directory: %+v", err)
-		return
+	if !ctx.IsDryRun {
+		err = os.RemoveAll(newname)
+		if err != nil {
+			Writeln(ctx, "Could not remove file/directory: %s", newname)
+			log.Errorf("Could not remove file/directory: %+v", err)
+			return
+		}
+	} else {
+		Writeln(ctx, "Would have removed file/directory: %s", newname)
 	}
 
-	err = copy.Copy(oldname, newname)
-	if err != nil {
-		Writeln(ctx, "Could not restore file/directory from %s to %s", oldname, newname)
-		log.Errorf("Could not copy file/directory: %+v", err)
-		return
+	if !ctx.IsDryRun {
+		err = copy.Copy(oldname, newname)
+		if err != nil {
+			Writeln(ctx, "Could not restore file/directory from %s to %s", oldname, newname)
+			log.Errorf("Could not copy file/directory: %+v", err)
+			return
+		}
+
+		Writeln(ctx, "Restored file/directory from: %s", oldname)
+	} else {
+		Writeln(ctx, "Would have restored file/directory from %s to %s", oldname, newname)
 	}
 
-	Writeln(ctx, "Restored file/directory from: %s", oldname)
 	return
 }

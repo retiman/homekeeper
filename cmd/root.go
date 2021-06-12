@@ -37,11 +37,23 @@ func initialize() {
 
 	keepCommand = &cobra.Command{
 		Use:   "keep",
-		Short: "Overwrites dotfiles in your home directory by symlinking them from somewhere else.",
+		Short: "Symlinks dotfiles to your home directory from another location.",
 		RunE: func(_ *cobra.Command, _ []string) error {
 			return common.Keep(flags)
 		},
 	}
+	keepCommand.Flags().BoolVar(
+		&flags.IsNoCleanup,
+		"no-cleanup",
+		false,
+		"Do not remove broken symlinks afterwards.",
+	)
+	keepCommand.Flags().BoolVar(
+		&flags.IsNoOverwrite,
+		"no-overwrite",
+		false,
+		"Do not overwrite existing files/directories.",
+	)
 
 	unkeepCommand = &cobra.Command{
 		Use:   "unkeep",

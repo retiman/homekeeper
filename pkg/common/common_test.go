@@ -96,7 +96,6 @@ func setupFixtures() *Context {
 	// you didn't intend to, but the GetRepositoryRoot() method should prevent you from doing that).
 	//
 	// This way we can test out different platforms as well.
-	log.Debugf("Removing all files from test directory: %s", fixtures.RootDirectory)
 	err := os.RemoveAll(fixtures.RootDirectory)
 	if err != nil {
 		panic(err)
@@ -108,10 +107,20 @@ func setupFixtures() *Context {
 
 	excludes := make(map[string]bool)
 	excludes[".git"] = true
+	config := &Config{
+		Directories: []string{fixtures.DotfilesDirectory},
+		Ignores: []string{
+			".git",
+		},
+	}
 	return &Context{
+		Config:        config,
+		ConfigFile:    filepath.Join(fixtures.HomeDirectory, ".homekeeper.yml"),
 		HomeDirectory: fixtures.HomeDirectory,
+		IsDebug:       true,
 		IsDryRun:      false,
-		IsOverwrite:   true,
+		IsNoCleanup:   false,
+		IsNoOverwrite: false,
 		IsQuiet:       false,
 		Excludes:      excludes,
 	}
@@ -125,7 +134,6 @@ func createTestDirectories() (directories []string) {
 	}
 
 	for _, directory := range directories {
-		log.Debugf("Creating test directory: %s", directory)
 		err := os.MkdirAll(directory, 0755)
 		if err != nil {
 			panic(err)
@@ -145,7 +153,6 @@ func createTestFiles() (files []string) {
 	}
 
 	for _, file := range files {
-		log.Debugf("Creating test file: %s", file)
 		fh, err := os.Create(file)
 		if err != nil {
 			panic(err)
@@ -165,7 +172,6 @@ func createTestSymlinks() (symlinks []string) {
 	target := filepath.Join(fixtures.DotfilesDirectory, ".bashrc")
 	symlinks = []string{target}
 
-	log.Debugf("Attempting to symlinking %s -> %s", source, target)
 	err := os.Symlink(source, target)
 	if err != nil {
 		log.Warningf("Symlink is not supported on this system: %+v", err)

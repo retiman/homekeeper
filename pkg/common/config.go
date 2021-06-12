@@ -35,6 +35,7 @@ func readConfig(ctx *Context, file string) (config *Config, err error) {
 }
 
 func writeConfig(ctx *Context, file string, config *Config) (err error) {
+	log.Debugf("Writing config: %+v", config)
 	bytes, err := yaml.Marshal(config)
 	if err != nil {
 		Writeln(ctx, "Couldn't write config file: %s", file)
