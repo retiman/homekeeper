@@ -29,8 +29,8 @@ func EnableLogging() {
 	log = NewLogger("common", os.Stderr)
 }
 
-func WriteOutputf(format string, a ...interface{}) {
-	if IsQuiet {
+func WriteOutput(ctx *Context, format string, a ...interface{}) {
+	if ctx.IsQuiet {
 		return
 	}
 

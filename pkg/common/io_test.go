@@ -11,16 +11,16 @@ import (
 )
 
 func TestCreateSymlinks(t *testing.T) {
-	setupFixtures()
+	ctx := setupFixtures()
 	checkSymlinkSupported(t)
 
 	plan := make(map[string]string)
-	err := planSymlinks(fixtures.HomeDirectory, fixtures.DotfilesDirectory, plan, make(map[string]bool))
+	err := planSymlinks(ctx, fixtures.DotfilesDirectory, plan)
 	if err != nil {
 		assert.Fail(t, err.Error())
 	}
 
-	err = createSymlinks(fixtures.HomeDirectory, plan)
+	err = createSymlinks(ctx, plan)
 	if err != nil {
 		assert.Fail(t, err.Error())
 	}
@@ -52,7 +52,7 @@ func TestIsSymlink(t *testing.T) {
 }
 
 func TestRemoveBrokenSymlinks(t *testing.T) {
-	setupFixtures()
+	ctx := setupFixtures()
 	checkSymlinkSupported(t)
 
 	expected := make([]string, 0)
@@ -67,7 +67,7 @@ func TestRemoveBrokenSymlinks(t *testing.T) {
 		expected = append(expected, target)
 	}
 
-	actual, err := removeBrokenSymlinks(fixtures.DotfilesDirectory)
+	actual, err := removeBrokenSymlinks(ctx, fixtures.DotfilesDirectory)
 	if err != nil {
 		assert.Fail(t, err.Error())
 		return
@@ -100,14 +100,13 @@ func TestListEntries(t *testing.T) {
 }
 
 func TestPlanSymlinks(t *testing.T) {
-	setupFixtures()
-
-	excludes := make(map[string]bool)
-	excludes[".gitignore"] = true
-	excludes["README.md"] = true
+	ctx := setupFixtures()
+	ctx.Excludes = make(map[string]bool)
+	ctx.Excludes[".gitignore"] = true
+	ctx.Excludes["README.md"] = true
 
 	plan := make(map[string]string)
-	err := planSymlinks(fixtures.HomeDirectory, fixtures.DotfilesDirectory, plan, excludes)
+	err := planSymlinks(ctx, fixtures.DotfilesDirectory, plan)
 	if err != nil {
 		assert.Fail(t, err.Error())
 	}
@@ -118,7 +117,7 @@ func TestPlanSymlinks(t *testing.T) {
 	}
 
 	actual := len(plan)
-	expected := len(entries) - len(excludes)
+	expected := len(entries) - len(ctx.Excludes)
 	assert.Equal(t, actual, expected)
 	for basename, target := range plan {
 		assert.True(t, strings.HasPrefix(target, fixtures.DotfilesDirectory))

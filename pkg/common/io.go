@@ -7,11 +7,11 @@ import (
 	"path/filepath"
 )
 
-func createSymlink(source string, target string, isOverwrite bool) (err error) {
+func createSymlink(ctx *Context, source string, target string) (err error) {
 	_, err = os.Stat(target)
 	if errors.Is(err, os.ErrExist) {
-		if !isOverwrite {
-			WriteOutputf("Skipping to avoid overwrite: %s", target)
+		if !ctx.IsOverwrite {
+			WriteOutput(ctx, "Skipping to avoid overwrite: %s", target)
 			return nil
 		}
 
@@ -31,11 +31,11 @@ func createSymlink(source string, target string, isOverwrite bool) (err error) {
 	return
 }
 
-func createSymlinks(homeDirectory string, plan map[string]string) error {
+func createSymlinks(ctx *Context, plan map[string]string) error {
 	errs := make([]error, 0)
 	for basename, source := range plan {
-		target := filepath.Join(homeDirectory, basename)
-		err := createSymlink(source, target, true /* isOverwrite */)
+		target := filepath.Join(ctx.HomeDirectory, basename)
+		err := createSymlink(ctx, source, target)
 		if err != nil {
 			errs = append(errs, err)
 		}
@@ -83,15 +83,15 @@ func listEntries(directory string) (entries []os.FileInfo, err error) {
 // time.
 //
 // Pass in a set of files to filter out (such as .git, .gitignore, README.md, etc) to exclude them from the plan.
-func planSymlinks(homeDirectory string, dotfilesDirectory string, plan map[string]string, excludes map[string]bool) (err error) {
+func planSymlinks(ctx *Context, dotfilesDirectory string, plan map[string]string) (err error) {
 	entries, err := listEntries(dotfilesDirectory)
 	if err != nil {
 		return err
 	}
 
 	for _, entry := range entries {
-		if excludes[entry.Name()] {
-			WriteOutputf("Ignoring file: %s", filepath.Join(dotfilesDirectory, entry.Name()))
+		if ctx.Excludes[entry.Name()] {
+			WriteOutput(ctx, "Ignoring file: %s", filepath.Join(dotfilesDirectory, entry.Name()))
 			continue
 		}
 
@@ -101,7 +101,7 @@ func planSymlinks(homeDirectory string, dotfilesDirectory string, plan map[strin
 	return
 }
 
-func removeBrokenSymlinks(directory string) (removedEntries []string, err error) {
+func removeBrokenSymlinks(ctx *Context, directory string) (removedEntries []string, err error) {
 	log.Debugf("Checking for broken symlinks in: %s", directory)
 
 	removedEntries = make([]string, 0)
@@ -119,16 +119,15 @@ func removeBrokenSymlinks(directory string) (removedEntries []string, err error)
 			continue
 		}
 
-		if IsDryRun {
-			WriteOutputf("Would remove broken symlink: %s", path)
+		if ctx.IsDryRun {
+			WriteOutput(ctx, "Would remove broken symlink: %s", path)
 			continue
 		}
 
-		WriteOutputf("Removing broken symlink: %s", path)
+		WriteOutput(ctx, "Removing broken symlink: %s", path)
 		err = os.Remove(path)
 		if err != nil {
-			log.Errorf("could not remove broken symlink %s: %v", path, err)
-			WriteOutputf("Could not remove broken symlink: %s", path)
+			WriteOutput(ctx, "Could not remove broken symlink: %s", path)
 			continue
 		}
 

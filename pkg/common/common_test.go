@@ -30,7 +30,6 @@ var (
 
 func init() {
 	log = NewLogger("common", os.Stderr)
-	IsDryRun = true
 }
 
 // Checks if symlink, lstat, and readlink are supported.  On all three major platforms (Linux, MacOS, and Windows),
@@ -81,8 +80,7 @@ func getRepositoryRoot() (repositoryRoot string) {
 	}
 }
 
-func setupFixtures() {
-	IsDryRun = false
+func setupFixtures() *Context {
 	fixtures = &Fixtures{}
 	rootDirectory := getRepositoryRoot()
 
@@ -107,6 +105,16 @@ func setupFixtures() {
 	fixtures.Directories = createTestDirectories()
 	fixtures.Files = createTestFiles()
 	fixtures.Symlinks = createTestSymlinks()
+
+	excludes := make(map[string]bool)
+	excludes[".git"] = true
+	return &Context{
+		HomeDirectory: fixtures.HomeDirectory,
+		IsDryRun:      false,
+		IsOverwrite:   true,
+		IsQuiet:       false,
+		Excludes:      excludes,
+	}
 }
 
 func createTestDirectories() (directories []string) {

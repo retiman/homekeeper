@@ -34,8 +34,9 @@ func setupFixtures() {
 
 // Create a command handler that can trace calls to it for Debugfging.  Use this to replace the run handler in a test
 // so that running the command does not do something destructive.
-func newTracingHandler(isCalled *bool) func(*cobra.Command, []string) {
-	return func(_ *cobra.Command, _ []string) {
+func newTracingHandler(isCalled *bool) func(*cobra.Command, []string) error {
+	return func(_ *cobra.Command, _ []string) (err error) {
 		*isCalled = true
+		return
 	}
 }
