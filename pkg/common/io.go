@@ -64,7 +64,6 @@ func isBrokenSymlink(file string) bool {
 
 	_, err = os.Stat(target)
 	if err == nil {
-		log.Warningf("Couldn't get file info for symlink (assuming not broken): %s", file)
 		return false
 	}
 
