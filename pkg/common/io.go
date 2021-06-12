@@ -11,18 +11,18 @@ func createSymlink(source string, target string, isOverwrite bool) (err error) {
 	_, err = os.Stat(target)
 	if errors.Is(err, os.ErrExist) {
 		if !isOverwrite {
-			log.Warningf("will not overwrite existing file: %s", target)
+			WriteOutputf("Skipping to avoid overwrite: %s", target)
 			return nil
 		}
 
-		log.Warningf("overwriting existing file: %s", target)
+		log.Warningf("Removing existing file: %s", target)
 		err = os.Remove(target)
 		if err != nil {
 			return
 		}
 	}
 
-	log.Infof("symlinking %s -> %s", source, target)
+	log.Infof("Symlinking file: %s", target)
 	err = os.Symlink(source, target)
 	if err != nil {
 		return
@@ -50,11 +50,7 @@ func createSymlinks(homeDirectory string, plan map[string]string) error {
 
 func isBrokenSymlink(entry os.FileInfo) bool {
 	_, err := os.Readlink(entry.Name())
-	if err != nil {
-		return true
-	}
-
-	return false
+	return err != nil
 }
 
 func isSymlink(entry os.FileInfo) bool {
@@ -95,7 +91,7 @@ func planSymlinks(homeDirectory string, dotfilesDirectory string, plan map[strin
 
 	for _, entry := range entries {
 		if excludes[entry.Name()] {
-			log.Debugf("excluding from symlinking: %s", entry.Name())
+			WriteOutputf("Ignoring file: %s", filepath.Join(dotfilesDirectory, entry.Name()))
 			continue
 		}
 
@@ -106,7 +102,7 @@ func planSymlinks(homeDirectory string, dotfilesDirectory string, plan map[strin
 }
 
 func removeBrokenSymlinks(directory string) (removedEntries []string, err error) {
-	log.Debugf("checking for broken symlinks in: %s", directory)
+	log.Debugf("Checking for broken symlinks in: %s", directory)
 
 	removedEntries = make([]string, 0)
 	entries, err := listEntries(directory)
@@ -114,24 +110,25 @@ func removeBrokenSymlinks(directory string) (removedEntries []string, err error)
 		path := filepath.Join(directory, entry.Name())
 
 		if !isSymlink(entry) {
-			log.Debugf("skipping non-symlink entry: %s", path)
+			log.Debugf("Skipping non-symlink entry: %s", path)
 			continue
 		}
 
 		if !isBrokenSymlink(entry) {
-			log.Debugf("skipping non-broken symlink entry: %s", path)
+			log.Debugf("Skipping non-broken symlink entry: %s", path)
 			continue
 		}
 
 		if IsDryRun {
-			log.Infof("not removing broken symlink on dry run: %s", path)
+			WriteOutputf("Would remove broken symlink: %s", path)
 			continue
 		}
 
-		log.Infof("removing broken symlink: %s", path)
+		WriteOutputf("Removing broken symlink: %s", path)
 		err = os.Remove(path)
 		if err != nil {
 			log.Errorf("could not remove broken symlink %s: %v", path, err)
+			WriteOutputf("Could not remove broken symlink: %s", path)
 			continue
 		}
 

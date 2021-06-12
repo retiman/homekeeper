@@ -12,35 +12,36 @@ type Config struct {
 }
 
 func readConfig(file string) (config *Config, err error) {
-	log.Debugf("reading config file: %s", file)
 	content, err := ioutil.ReadFile(file)
 	if err != nil {
+		log.Errorf("Couldn't read config file: %s", file)
 		return
 	}
 
 	config = &Config{}
 	err = yaml.Unmarshal(content, config)
 	if err != nil {
+		log.Errorf("Couldn't parse config file at %s: %v", file, err)
 		return
 	}
 
-	log.Debugf("read configuration: %+v", config)
+	log.Debugf("Read configuration: %+v", config)
 	return
 }
 
 func writeConfig(file string, config *Config) (err error) {
-	log.Debugf("writing config file %+v: %s", config, file)
 	bytes, err := yaml.Marshal(config)
 	if err != nil {
-		log.Errorf("Errorf writing config: %+v", config)
+		log.Errorf("Couldn't marshal configuration: %+v", config)
 		return
 	}
 
 	err = ioutil.WriteFile(file, bytes, 0644)
 	if err != nil {
-		log.Errorf("Errorf writing config file: %s", file)
+		log.Errorf("Couldn't write config file: %s", file)
 		return
 	}
 
+	log.Debugf("Wrote config file: %s", file)
 	return
 }

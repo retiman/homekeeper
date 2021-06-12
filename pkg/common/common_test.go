@@ -29,8 +29,7 @@ var (
 )
 
 func init() {
-	SetDebugLevel(log)
-
+	log = NewLogger("common", os.Stderr)
 	IsDryRun = true
 }
 
@@ -40,15 +39,15 @@ func init() {
 // should be skipped.
 func checkSymlinkSupported(t *testing.T) {
 	if !isSymlinkSupported {
-		t.Skip("skipping test because symlink not supported")
+		t.Skip("Skipping test because symlink not supported")
 	}
 
 	if !isLstatSupported {
-		t.Skip("skipping test because lstat not supported")
+		t.Skip("Skipping test because lstat not supported")
 	}
 
 	if !isReadlinkSupported {
-		t.Skip("skipping test because readlink not supported")
+		t.Skip("Skipping test because readlink not supported")
 	}
 }
 
@@ -68,7 +67,7 @@ func getRepositoryRoot() (repositoryRoot string) {
 
 		_, err = os.Stat(filepath.Join(repositoryRoot, ".git"))
 		if err == nil {
-			log.Debugf("found repository root: %s", repositoryRoot)
+			log.Debugf("Found repository root: %s", repositoryRoot)
 			return
 		}
 
@@ -77,7 +76,7 @@ func getRepositoryRoot() (repositoryRoot string) {
 		}
 
 		if err != nil {
-			panic(fmt.Errorf("couldn't find repository root from %s: %v", cwd, err))
+			panic(fmt.Errorf("Couldn't find repository root from %s: %v", cwd, err))
 		}
 	}
 }
@@ -99,7 +98,7 @@ func setupFixtures() {
 	// you didn't intend to, but the GetRepositoryRoot() method should prevent you from doing that).
 	//
 	// This way we can test out different platforms as well.
-	log.Debugf("removing all files in directory: %s", fixtures.RootDirectory)
+	log.Debugf("Removing all files from test directory: %s", fixtures.RootDirectory)
 	err := os.RemoveAll(fixtures.RootDirectory)
 	if err != nil {
 		panic(err)
@@ -118,7 +117,7 @@ func createTestDirectories() (directories []string) {
 	}
 
 	for _, directory := range directories {
-		log.Debugf("creating test directory: %s", directory)
+		log.Debugf("Creating test directory: %s", directory)
 		err := os.MkdirAll(directory, 0755)
 		if err != nil {
 			panic(err)
@@ -138,7 +137,7 @@ func createTestFiles() (files []string) {
 	}
 
 	for _, file := range files {
-		log.Debugf("creating test file: %s", file)
+		log.Debugf("Creating test file: %s", file)
 		fh, err := os.Create(file)
 		if err != nil {
 			panic(err)
@@ -150,15 +149,18 @@ func createTestFiles() (files []string) {
 }
 
 func createTestSymlinks() (symlinks []string) {
+	isSymlinkSupported = false
+	isReadlinkSupported = false
+	isLstatSupported = false
+
 	source := filepath.Join(fixtures.DotfilesDirectory, ".bash_profile")
 	target := filepath.Join(fixtures.DotfilesDirectory, ".bashrc")
 	symlinks = []string{target}
 
-	log.Debugf("symlinking %s -> %s", source, target)
+	log.Debugf("Attempting to symlinking %s -> %s", source, target)
 	err := os.Symlink(source, target)
 	if err != nil {
-		isSymlinkSupported = false
-		log.Warningf("symlink is not supported on this system: %+v", err)
+		log.Warningf("Symlink is not supported on this system: %+v", err)
 
 		// There's no point in checking for readlink or lstat if the symlink creation fails.  If it succeeds, we can check
 		// and see if either will succeed if the other fails.
@@ -169,16 +171,14 @@ func createTestSymlinks() (symlinks []string) {
 
 	_, err = os.Readlink(target)
 	if err != nil {
-		isReadlinkSupported = false
-		log.Warningf("readlink is not supported on this system: %v", err)
+		log.Warningf("Readlink is not supported on this system: %v", err)
 	} else {
 		isReadlinkSupported = true
 	}
 
 	_, err = os.Lstat(target)
 	if err != nil {
-		isLstatSupported = false
-		log.Warningf("lstat is not supported on this system: %v", err)
+		log.Warningf("Lstat is not supported on this system: %v", err)
 	} else {
 		isLstatSupported = true
 	}

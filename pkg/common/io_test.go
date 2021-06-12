@@ -62,7 +62,7 @@ func TestRemoveBrokenSymlinks(t *testing.T) {
 			assert.Fail(t, err.Error())
 		}
 
-		log.Debugf("creating a broken symlink; removing: %s", source)
+		log.Debugf("Creating a broken symlink; removing: %s", source)
 		os.Remove(source)
 		expected = append(expected, target)
 	}
@@ -96,7 +96,7 @@ func TestListEntries(t *testing.T) {
 		}
 	}
 
-	assert.Fail(t, fmt.Sprintf("didn't find any 'dotfiles' directory: %+v", fixtures))
+	assert.Fail(t, fmt.Sprintf("Didn't find any 'dotfiles' directory: %+v", fixtures))
 }
 
 func TestPlanSymlinks(t *testing.T) {

@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"os"
+
 	"github.com/retiman/homekeeper/pkg/common"
 	"github.com/spf13/cobra"
 )
@@ -18,7 +20,7 @@ var (
 )
 
 func init() {
-	common.SetDebugLevel(log)
+	log = common.NewLogger("cmd", os.Stderr)
 }
 
 // Setup tests by resetting package state.  Note that writing a `TestMain` will not work as that setupFixtures/teardown will

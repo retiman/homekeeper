@@ -65,12 +65,17 @@ func initialize() {
 		false,
 		"Enables dry run mode (no changes will be made).",
 	)
-	rootCommand.PersistentFlags().BoolVarP(
+	rootCommand.PersistentFlags().BoolVar(
 		&flags.IsDebug,
-		"Debugf",
-		"v",
+		"debug",
 		false,
-		"Enables Debugf output.",
+		"Enables debug output in addition to normal output.",
+	)
+	rootCommand.PersistentFlags().BoolVar(
+		&flags.IsQuiet,
+		"quiet",
+		false,
+		"Enables quiet mode (will not output anything)",
 	)
 
 	rootCommand.AddCommand(cleanupCommand)
@@ -84,11 +89,25 @@ func initialize() {
 // particular run handled and set the Debugfging level based on parsed flags.
 func createRunHandler(handler func()) func(*cobra.Command, []string) {
 	return func(cmd *cobra.Command, args []string) {
-		if flags.IsDebug {
-			common.SetDebugLevel(log)
+		if flags.IsQuiet {
+			// Quiet implies no debugging output.
+			flags.IsDebug = false
+
+			// Unless an abstraction like a common.App struct is created, we'll have to toggle the flag in the common package
+			// as well.
+			common.IsQuiet = true
 		}
 
-		log.Debugf("invoked with flags: %+v", flags)
+		if flags.IsDebug {
+			// There isn't a way to enable/disable logging with go-logger except to change where the output goes.
+			log = common.NewLogger("cmd", os.Stderr)
+
+			// Unless an abstraction like a common.App struct is created, we'll have to toggle the flag in the common package
+			// as well.
+			common.EnableLogging()
+		}
+
+		log.Debugf("Invoked with flags: %+v", flags)
 		handler()
 	}
 }

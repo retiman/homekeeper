@@ -1,37 +1,38 @@
 package common
 
 import (
+	"fmt"
+	"io"
 	"os"
 
 	logger "github.com/apsdehal/go-logger"
 )
 
-func NewLogger(pkg string) *logger.Logger {
-	newlog, err := logger.New(pkg, 0 /* color */, os.Stderr)
+var (
+	log *logger.Logger
+)
+
+func NewLogger(pkg string, out io.Writer) *logger.Logger {
+	newlog, err := logger.New(pkg, 0 /* color */, out)
 	if err != nil {
 		panic(err)
 	}
 
-	setInfoLevel(newlog)
+	newlog.SetLogLevel(logger.DebugLevel)
+	newlog.SetFormat("[%{lvl}] [%{file}:%{line}] %{message}")
 	return newlog
 }
 
-func SetDebugLevel(arg *logger.Logger) {
-	setDebugLevel(arg)
-	setDebugLevel(log)
+func EnableLogging() {
+	// This needs to be an exported function.  Otherwise the cmd package will not be able to enable/disable logging
+	// (unless we export "log" as "Log").
+	log = NewLogger("common", os.Stderr)
 }
 
-func SetInfoLevel(arg *logger.Logger) {
-	setInfoLevel(arg)
-	setInfoLevel(log)
-}
+func WriteOutputf(format string, a ...interface{}) {
+	if IsQuiet {
+		return
+	}
 
-func setDebugLevel(arg *logger.Logger) {
-	arg.SetLogLevel(logger.DebugLevel)
-	arg.SetFormat("[%{lvl}] [%{file}:%{line}] %{message}")
-}
-
-func setInfoLevel(arg *logger.Logger) {
-	arg.SetLogLevel(logger.InfoLevel)
-	arg.SetFormat("%{message}")
+	fmt.Printf(format, a...)
 }
