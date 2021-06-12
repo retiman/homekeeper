@@ -18,7 +18,7 @@ func TestRootCommand(t *testing.T) {
 	rootCommand.Execute()
 
 	assert.True(t, calls.IsRootCalled)
-	assert.True(t, flags.IsDebug)
+	assert.False(t, flags.IsDebug)
 	assert.True(t, flags.IsQuiet)
 	assert.True(t, flags.IsDryRun)
 }

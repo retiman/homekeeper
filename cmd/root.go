@@ -8,17 +8,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type Flags struct {
-	IsDebug  bool
-	IsQuiet  bool
-	IsDryRun bool
-}
-
 type CommandHandler func(*cobra.Command, []string) error
 type Handler func(*common.Context) error
 
 var (
-	flags = &Flags{}
+	flags = &common.Context{}
 )
 
 var (
@@ -36,33 +30,40 @@ func initialize() {
 	cleanupCommand = &cobra.Command{
 		Use:   "cleanup",
 		Short: "Removes broken symlinks in your home directory.",
-		RunE:  createRunHandler(common.Cleanup),
+		RunE: func(_ *cobra.Command, _ []string) error {
+			return common.Cleanup(flags)
+		},
 	}
 
 	keepCommand = &cobra.Command{
 		Use:   "keep",
 		Short: "Overwrites dotfiles in your home directory by symlinking them from somewhere else.",
-		RunE:  createRunHandler(common.Keep),
+		RunE: func(_ *cobra.Command, _ []string) error {
+			return common.Keep(flags)
+		},
 	}
 
 	unkeepCommand = &cobra.Command{
 		Use:   "unkeep",
 		Short: "Replaces symlinks in your home directory with symlinked files.",
-		RunE:  createRunHandler(common.Unkeep),
+		RunE: func(_ *cobra.Command, _ []string) error {
+			return common.Unkeep(flags)
+		},
 	}
 
 	versionCommand = &cobra.Command{
 		Use:   "version",
 		Short: "Prints the version and then exists.",
-		RunE: func(_ *cobra.Command, _ []string) (err error) {
+		RunE: func(_ *cobra.Command, _ []string) error {
 			fmt.Println(buildVersion)
-			return
+			return nil
 		},
 	}
 
 	rootCommand = &cobra.Command{
-		Use:   "homekeeper",
-		Short: "Homekeeper symlinks dotfiles to your home directory.",
+		Use:              "homekeeper",
+		Short:            "Homekeeper symlinks dotfiles to your home directory.",
+		PersistentPreRun: prePersistentRun,
 	}
 	rootCommand.PersistentFlags().BoolVar(
 		&flags.IsDryRun,
@@ -89,32 +90,18 @@ func initialize() {
 	rootCommand.AddCommand(versionCommand)
 }
 
-// We'd like to set the logging level and format based on user input.  Because we'd like to do this after the args have
-// been parsed but before a run handler has executed for any particular command, we have to wrap the call to any
-// particular run handled and set the Debugfging level based on parsed flags.
-func createRunHandler(handler Handler) CommandHandler {
-	return func(cmd *cobra.Command, args []string) error {
-		ctx := &common.Context{}
-
-		if flags.IsQuiet {
-			ctx.IsQuiet = true
-		}
-
-		if flags.IsDryRun {
-			ctx.IsDryRun = true
-		}
-
-		if flags.IsDebug {
-			// There isn't a way to enable/disable logging with go-logger except to change where the output goes.
-			log = common.NewLogger("cmd", os.Stderr)
-
-			// This must be done in order to access the package private "log" in the common package.
-			common.EnableLogging()
-		}
-
-		log.Debugf("Invoked with flags: %+v", flags)
-		return handler(ctx)
+func prePersistentRun(_ *cobra.Command, _ []string) {
+	if flags.IsQuiet {
+		// Quiet implies no debugging output either.
+		flags.IsDebug = false
 	}
+
+	if flags.IsDebug {
+		// There isn't a way to enable/disable logging with go-logger except to change where the output goes.
+		log = common.NewLogger("cmd", os.Stderr)
+	}
+
+	log.Debugf("Invoked with flags: %+v", flags)
 }
 
 // Executes the root command.  Note that the sub command should not be executed; the first arg that Cobra Command passes

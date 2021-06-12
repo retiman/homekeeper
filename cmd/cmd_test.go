@@ -26,7 +26,6 @@ func init() {
 // Setup tests by resetting package state.  Note that writing a `TestMain` will not work as that setupFixtures/teardown will
 // only once per package, not per test.
 func setupFixtures() {
-	flags = &Flags{}
 	calls = &Calls{}
 
 	initialize()

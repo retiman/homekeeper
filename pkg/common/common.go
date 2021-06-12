@@ -2,11 +2,13 @@ package common
 
 import (
 	"io"
+	"os"
 )
 
 type Context struct {
 	Config        *Config
 	ConfigFile    string
+	IsDebug       bool
 	IsDryRun      bool
 	IsOverwrite   bool
 	IsQuiet       bool
@@ -23,6 +25,10 @@ func init() {
 }
 
 func Keep(ctx *Context) (err error) {
+	if ctx.IsDebug {
+		log = NewLogger("common", os.Stderr)
+	}
+
 	ctx.Config, err = readConfig(ctx.HomeDirectory)
 	if err != nil {
 		panic(err)
@@ -43,9 +49,17 @@ func Keep(ctx *Context) (err error) {
 }
 
 func Unkeep(ctx *Context) (err error) {
+	if ctx.IsDebug {
+		log = NewLogger("common", os.Stderr)
+	}
+
 	return
 }
 
 func Cleanup(ctx *Context) (err error) {
+	if ctx.IsDebug {
+		log = NewLogger("common", os.Stderr)
+	}
+
 	return
 }
