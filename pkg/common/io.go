@@ -56,9 +56,30 @@ func createSymlinks(ctx *Context, plan map[string]string) (err error) {
 	return
 }
 
-func isBrokenSymlink(entry os.FileInfo) bool {
-	_, err := os.Readlink(entry.Name())
-	return err != nil
+func isBrokenSymlink(file string) bool {
+	target, err := os.Readlink(file)
+	if err != nil {
+		return true
+	}
+
+	_, err = os.Stat(target)
+	if err == nil {
+		log.Warningf("Couldn't get file info for symlink (assuming not broken): %s", file)
+		return false
+	}
+
+	if errors.Is(err, os.ErrNotExist) {
+		return true
+	}
+
+	if errors.Is(err, os.ErrExist) {
+		return false
+	}
+
+	// Schrodinger's symlink.  It wasn't reported as existing or not existing, but we'll assume it doesn't so it doesn't
+	// become inadvertently removed.
+	log.Warningf("Couldn't determine if file/directory exists (assuming not broken): %s", target)
+	return false
 }
 
 func isSymlink(entry os.FileInfo) bool {
@@ -123,7 +144,7 @@ func removeBrokenSymlinks(ctx *Context, directory string) (removedEntries []stri
 			continue
 		}
 
-		if !isBrokenSymlink(entry) {
+		if !isBrokenSymlink(path) {
 			log.Debugf("Skipping non-broken symlink entry: %s", path)
 			continue
 		}

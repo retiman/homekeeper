@@ -60,10 +60,16 @@ func TestRemoveBrokenSymlinks(t *testing.T) {
 		source, err := os.Readlink(target)
 		if err != nil {
 			assert.Fail(t, err.Error())
+			continue
 		}
 
 		log.Debugf("Creating a broken symlink; removing: %s", source)
-		os.Remove(source)
+		err = os.RemoveAll(source)
+		if err != nil {
+			assert.Fail(t, err.Error())
+			continue
+		}
+
 		expected = append(expected, target)
 	}
 

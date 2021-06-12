@@ -3,8 +3,6 @@ package common
 import (
 	"os"
 	"path/filepath"
-	"runtime"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -20,28 +18,28 @@ func TestKeep(t *testing.T) {
 		assert.Fail(t, err.Error())
 	}
 
-	entries, err := listEntries(fixtures.DotfilesDirectory)
-	if err != nil {
-		assert.Fail(t, err.Error())
-	}
-	for _, entry := range entries {
-		newname := filepath.Join(fixtures.HomeDirectory, entry.Name())
-		assert.True(t, isSymlink(entry), "Not a symlink: %+v", newname)
-
-		prefix := fixtures.DotfilesDirectory
-		oldname, err := os.Readlink(newname)
+	for _, directory := range ctx.Config.Directories {
+		log.Debugf("Checking for dotfiles symlinked from: %s", directory)
+		entries, err := listEntries(fixtures.DotfilesDirectory)
 		if err != nil {
 			assert.Fail(t, err.Error())
 		}
 
-		// Windows filenames are not case sensitive, and filepath.HasPrefix doesn't properly consider lowercasing.  Dirty
-		// hack to make things work on windows.
-		if runtime.GOOS == "windows" {
-			prefix = strings.ToLower(prefix)
-			oldname = strings.ToLower(prefix)
-		}
+		for _, entry := range entries {
+			if ctx.Excludes[entry.Name()] == true {
+				log.Debugf("Not checking excluded entry: %s", entry.Name())
+				continue
+			}
 
-		assert.True(t, strings.HasPrefix(oldname, prefix))
+			log.Debugf("Checking that file/directory was symlinked: %s", entry.Name())
+			entry, err = os.Lstat(filepath.Join(ctx.HomeDirectory, entry.Name()))
+			if err != nil {
+				assert.Fail(t, err.Error())
+				continue
+			}
+
+			assert.True(t, isSymlink(entry), "Not a symlink: %+v", entry.Name())
+		}
 	}
 }
 
