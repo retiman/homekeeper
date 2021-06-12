@@ -1,10 +1,9 @@
 package common
 
 import (
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 
-	"github.com/retiman/homekeeper/pkg/log"
+	"gopkg.in/yaml.v2"
 )
 
 type Config struct {
@@ -33,13 +32,13 @@ func writeConfig(file string, config *Config) (err error) {
 	log.Debugf("writing config file %+v: %s", config, file)
 	bytes, err := yaml.Marshal(config)
 	if err != nil {
-		log.Errorf("error writing config: %+v", config)
+		log.Errorf("Errorf writing config: %+v", config)
 		return
 	}
 
 	err = ioutil.WriteFile(file, bytes, 0644)
 	if err != nil {
-		log.Errorf("error writing config file: %s", file)
+		log.Errorf("Errorf writing config file: %s", file)
 		return
 	}
 

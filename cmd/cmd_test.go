@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/retiman/homekeeper/pkg/log"
+	"github.com/retiman/homekeeper/pkg/common"
 	"github.com/spf13/cobra"
 )
 
@@ -18,7 +18,7 @@ var (
 )
 
 func init() {
-	log.Level = log.DEBUG
+	common.SetDebugLevel(log)
 }
 
 // Setup tests by resetting package state.  Note that writing a `TestMain` will not work as that setupFixtures/teardown will
@@ -26,10 +26,11 @@ func init() {
 func setupFixtures() {
 	flags = &Flags{}
 	calls = &Calls{}
+
 	initialize()
 }
 
-// Create a command handler that can trace calls to it for debugging.  Use this to replace the run handler in a test
+// Create a command handler that can trace calls to it for Debugfging.  Use this to replace the run handler in a test
 // so that running the command does not do something destructive.
 func newTracingHandler(isCalled *bool) func(*cobra.Command, []string) {
 	return func(_ *cobra.Command, _ []string) {

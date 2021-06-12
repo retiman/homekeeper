@@ -10,7 +10,7 @@ func TestRootCommand(t *testing.T) {
 	setupFixtures()
 	rootCommand.Run = newTracingHandler(&calls.IsRootCalled)
 	rootCommand.SetArgs([]string{
-		"--debug",
+		"--Debugf",
 		"--dry-run",
 	})
 

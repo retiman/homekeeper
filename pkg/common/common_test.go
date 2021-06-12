@@ -3,11 +3,10 @@ package common
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
-
-	"github.com/retiman/homekeeper/pkg/log"
 )
 
 type Fixtures struct {
@@ -30,7 +29,7 @@ var (
 )
 
 func init() {
-	log.Level = log.DEBUG
+	SetDebugLevel(log)
 
 	IsDryRun = true
 }
@@ -57,10 +56,10 @@ func checkSymlinkSupported(t *testing.T) {
 // root.  Rather than rely on relative paths hard-coded in tests based on the test directory, we try to find the
 // repository root instead (this will stop programming errors like making a relative path to a directory that you
 // wouldn't want to delete).
-func getRepositoryRoot() (repositoryRoot string, err error) {
+func getRepositoryRoot() (repositoryRoot string) {
 	cwd, err := os.Getwd()
 	if err != nil {
-		return
+		panic(err)
 	}
 
 	repositoryRoot = cwd
@@ -78,20 +77,15 @@ func getRepositoryRoot() (repositoryRoot string, err error) {
 		}
 
 		if err != nil {
-			err = fmt.Errorf("couldn't find repository root from %s: %v", cwd, err)
-			return
+			panic(fmt.Errorf("couldn't find repository root from %s: %v", cwd, err))
 		}
 	}
 }
 
 func setupFixtures() {
 	IsDryRun = false
-
 	fixtures = &Fixtures{}
-	rootDirectory, err := getRepositoryRoot()
-	if err != nil {
-		panic(err)
-	}
+	rootDirectory := getRepositoryRoot()
 
 	// It's okay to use this path as the root directory tests in golang; all tests run sequentially unless you explicitly
 	// mark them for parallel execution.
@@ -106,25 +100,17 @@ func setupFixtures() {
 	//
 	// This way we can test out different platforms as well.
 	log.Debugf("removing all files in directory: %s", fixtures.RootDirectory)
-	err = os.RemoveAll(fixtures.RootDirectory)
+	err := os.RemoveAll(fixtures.RootDirectory)
 	if err != nil {
 		panic(err)
 	}
 
-	fixtures.Directories, err = createTestDirectories()
-	if err != nil {
-		panic(err)
-	}
-
-	fixtures.Files, err = createTestFiles()
-	if err != nil {
-		panic(err)
-	}
-
+	fixtures.Directories = createTestDirectories()
+	fixtures.Files = createTestFiles()
 	fixtures.Symlinks = createTestSymlinks()
 }
 
-func createTestDirectories() (directories []string, err error) {
+func createTestDirectories() (directories []string) {
 	directories = []string{
 		fixtures.DotfilesDirectory,
 		filepath.Join(fixtures.DotfilesDirectory, ".git"),
@@ -133,16 +119,16 @@ func createTestDirectories() (directories []string, err error) {
 
 	for _, directory := range directories {
 		log.Debugf("creating test directory: %s", directory)
-		err = os.MkdirAll(directory, os.ModePerm)
+		err := os.MkdirAll(directory, 0755)
 		if err != nil {
-			return
+			panic(err)
 		}
 	}
 
 	return
 }
 
-func createTestFiles() (files []string, err error) {
+func createTestFiles() (files []string) {
 	files = []string{
 		filepath.Join(fixtures.DotfilesDirectory, ".bash_profile"),
 		filepath.Join(fixtures.DotfilesDirectory, ".gitconfig"),
@@ -153,10 +139,11 @@ func createTestFiles() (files []string, err error) {
 
 	for _, file := range files {
 		log.Debugf("creating test file: %s", file)
-		_, err = os.Create(file)
+		fh, err := os.Create(file)
 		if err != nil {
-			return
+			panic(err)
 		}
+		defer fh.Close()
 	}
 
 	return
@@ -171,7 +158,7 @@ func createTestSymlinks() (symlinks []string) {
 	err := os.Symlink(source, target)
 	if err != nil {
 		isSymlinkSupported = false
-		log.Warnf("symlink is not supported on this system: %+v", err)
+		log.Warningf("symlink is not supported on this system: %+v", err)
 
 		// There's no point in checking for readlink or lstat if the symlink creation fails.  If it succeeds, we can check
 		// and see if either will succeed if the other fails.
@@ -183,8 +170,7 @@ func createTestSymlinks() (symlinks []string) {
 	_, err = os.Readlink(target)
 	if err != nil {
 		isReadlinkSupported = false
-		log.Warnf("readlink is not supported on this system: %v", err)
-		err = nil
+		log.Warningf("readlink is not supported on this system: %v", err)
 	} else {
 		isReadlinkSupported = true
 	}
@@ -192,11 +178,19 @@ func createTestSymlinks() (symlinks []string) {
 	_, err = os.Lstat(target)
 	if err != nil {
 		isLstatSupported = false
-		log.Warnf("lstat is not supported on this system: %v", err)
-		err = nil
+		log.Warningf("lstat is not supported on this system: %v", err)
 	} else {
 		isLstatSupported = true
 	}
 
 	return
+}
+
+func readFileAsString(file string) string {
+	content, err := ioutil.ReadFile(file)
+	if err != nil {
+		panic(err)
+	}
+
+	return string(content)
 }

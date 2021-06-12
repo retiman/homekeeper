@@ -1,7 +1,7 @@
 package common
 
 import (
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"testing"
 
@@ -9,52 +9,42 @@ import (
 )
 
 func TestReadConfig(t *testing.T) {
-	expected := &Config{
-		Directories: []string{
-			"/home/johndoe/dotfiles",
-			"/home/johndoe/dotfiles2",
-		},
-		Ignores: []string{
-			".git",
-			"README.md",
-		},
-	}
-
 	actual, err := readConfig(filepath.Join("testdata", "homekeeper.yml"))
 	if err != nil {
 		assert.Fail(t, err.Error())
 	}
 
+	expected := &Config{
+		Directories: []string{
+			"/home/johndoe/d1",
+			"/home/johndoe/d2",
+			"/home/johndoe/d3",
+		},
+		Ignores: []string{
+			"file1",
+			"file2",
+			"file3",
+		},
+	}
 	assert.EqualValues(t, actual, expected)
 }
 
 func TestWriteConfig(t *testing.T) {
+	outputDirectory := filepath.Join(getRepositoryRoot(), "tmp")
+	err := os.MkdirAll(outputDirectory, 0755)
+	if err != nil {
+		assert.Fail(t, err.Error())
+	}
+
+	outputFile := filepath.Join(getRepositoryRoot(), "tmp", "homekeeper.yml")
 	config := &Config{
-		Directories: []string{
-			"/home/johndoe/dotfiles",
-			"/home/johndoe/dotfiles2",
-		},
-		Ignores: []string{
-			".git",
-			"README.md",
-		},
-	}
-	rootDirectory, err := getRepositoryRoot()
-	if err != nil {
-		assert.Fail(t, err.Error())
-	}
-	output := filepath.Join(rootDirectory, "tmp", "homekeeper.yml")
-
-	writeConfig(output, config)
-
-	expected, err := ioutil.ReadFile(filepath.Join("testdata", "homekeeper.yml"))
-	if err != nil {
-		assert.Fail(t, err.Error())
-	}
-	actual, err := ioutil.ReadFile(filepath.Join(output))
-	if err != nil {
-		assert.Fail(t, err.Error())
+		Directories: []string{},
+		Ignores:     []string{},
 	}
 
+	writeConfig(outputFile, config)
+	actual := readFileAsString(outputFile)
+
+	expected := readFileAsString(filepath.Join("testdata", "empty.yml"))
 	assert.Equal(t, string(actual), string(expected))
 }

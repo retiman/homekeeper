@@ -3,19 +3,9 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"strings"
 
-	"github.com/retiman/homekeeper/pkg/log"
+	"github.com/retiman/homekeeper/pkg/common"
 	"github.com/spf13/cobra"
-)
-
-var (
-	// This build version will be set by reading the VERSION file in the repository root at build time (see the Makefile).
-	buildVersion = "0.0.0"
-)
-
-var (
-	flags = &Flags{}
 )
 
 var (
@@ -25,11 +15,6 @@ var (
 	unkeepCommand  *cobra.Command
 	versionCommand *cobra.Command
 )
-
-func init() {
-	buildVersion = strings.TrimSpace(buildVersion)
-	initialize()
-}
 
 // In golang, the init() function is special; it's automatically executed on a per-file basis, and each file can contain
 // an init() function.  Because we might want to re-initialize the command line interface during a test, we have to make
@@ -82,10 +67,10 @@ func initialize() {
 	)
 	rootCommand.PersistentFlags().BoolVarP(
 		&flags.IsDebug,
-		"debug",
+		"Debugf",
 		"v",
 		false,
-		"Enables debug output.",
+		"Enables Debugf output.",
 	)
 
 	rootCommand.AddCommand(cleanupCommand)
@@ -96,11 +81,11 @@ func initialize() {
 
 // We'd like to set the logging level and format based on user input.  Because we'd like to do this after the args have
 // been parsed but before a run handler has executed for any particular command, we have to wrap the call to any
-// particular run handled and set the debugging level based on parsed flags.
+// particular run handled and set the Debugfging level based on parsed flags.
 func createRunHandler(handler func()) func(*cobra.Command, []string) {
 	return func(cmd *cobra.Command, args []string) {
 		if flags.IsDebug {
-			log.Level = log.DEBUG
+			common.SetDebugLevel(log)
 		}
 
 		log.Debugf("invoked with flags: %+v", flags)
