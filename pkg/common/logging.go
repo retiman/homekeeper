@@ -12,7 +12,7 @@ var (
 )
 
 func NewLogger(pkg string, out io.Writer) *logger.Logger {
-	newlog, err := logger.New(pkg, 0 /* color */, out)
+	newlog, err := logger.New(pkg, 1 /* color */, out)
 	if err != nil {
 		panic(err)
 	}
