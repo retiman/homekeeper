@@ -31,7 +31,7 @@ func Keep(ctx *Context) (err error) {
 
 	ctx.Config, err = readConfig(ctx.HomeDirectory)
 	if err != nil {
-		panic(err)
+		return
 	}
 
 	ctx.Excludes = make(map[string]bool)
@@ -53,6 +53,7 @@ func Unkeep(ctx *Context) (err error) {
 		log = NewLogger("common", os.Stderr)
 	}
 
+	err = restoreSymlinks(ctx)
 	return
 }
 
@@ -61,5 +62,6 @@ func Cleanup(ctx *Context) (err error) {
 		log = NewLogger("common", os.Stderr)
 	}
 
+	_, err = removeBrokenSymlinks(ctx, ctx.HomeDirectory)
 	return
 }

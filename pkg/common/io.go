@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func createSymlink(ctx *Context, source string, target string) (err error) {
@@ -84,6 +85,7 @@ func listEntries(directory string) (entries []os.FileInfo, err error) {
 //
 // Pass in a set of files to filter out (such as .git, .gitignore, README.md, etc) to exclude them from the plan.
 func planSymlinks(ctx *Context, dotfilesDirectory string, plan map[string]string) (err error) {
+	log.Debugf("Planning symlinks from directory: %s", dotfilesDirectory)
 	entries, err := listEntries(dotfilesDirectory)
 	if err != nil {
 		return err
@@ -134,5 +136,46 @@ func removeBrokenSymlinks(ctx *Context, directory string) (removedEntries []stri
 		removedEntries = append(removedEntries, path)
 	}
 
+	return
+}
+
+func restoreSymlinks(ctx *Context) (err error) {
+	entries, err := listEntries(ctx.HomeDirectory)
+	if err != nil {
+		return
+	}
+
+	for _, entry := range entries {
+		if !isSymlink(entry) {
+			continue
+		}
+
+		symlink := filepath.Join(ctx.HomeDirectory, entry.Name())
+		target, err := os.Readlink(symlink)
+		if err != nil {
+			continue
+		}
+
+		for _, prefix := range ctx.Config.Directories {
+			if !strings.HasPrefix(target, prefix) {
+				continue
+			}
+
+			oldname := target
+			newname := symlink
+			err = restoreSymlink(ctx, oldname, newname)
+			if err != nil {
+				continue
+			}
+		}
+	}
+
+	return
+}
+
+func restoreSymlink(ctx *Context, oldname string, symlink string) (err error) {
+	os.RemoveAll(symlink)
+
+	log.Errorf("Not implemented yet")
 	return
 }
