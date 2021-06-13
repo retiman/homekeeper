@@ -29,7 +29,9 @@ func Keep(ctx *Context) (err error) {
 		log = NewLogger("common", os.Stderr)
 	}
 
-	ctx.Config, err = readConfig(ctx.HomeDirectory)
+	log.Debug("Starting 'keep' operation.")
+
+	ctx.Config, err = readConfig(ctx, ctx.HomeDirectory)
 	if err != nil {
 		return
 	}
@@ -45,6 +47,8 @@ func Keep(ctx *Context) (err error) {
 	}
 
 	err = createSymlinks(ctx, plan)
+
+	log.Debug("Ending 'keep' operation.")
 	return
 }
 
@@ -53,7 +57,16 @@ func Unkeep(ctx *Context) (err error) {
 		log = NewLogger("common", os.Stderr)
 	}
 
+	log.Debug("Starting 'unkeep' operation.")
+
+	ctx.Excludes = make(map[string]bool)
+	for _, exclude := range ctx.Config.Ignores {
+		ctx.Excludes[exclude] = true
+	}
+
 	err = restoreSymlinks(ctx)
+
+	log.Debug("Ending 'unkeep' operation.")
 	return
 }
 
@@ -62,6 +75,10 @@ func Cleanup(ctx *Context) (err error) {
 		log = NewLogger("common", os.Stderr)
 	}
 
+	log.Debug("Starting 'cleanup' operation.")
+
 	_, err = removeBrokenSymlinks(ctx, ctx.HomeDirectory)
+
+	log.Debug("Ending 'cleanup' operation.")
 	return
 }

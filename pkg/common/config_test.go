@@ -9,7 +9,9 @@ import (
 )
 
 func TestReadConfig(t *testing.T) {
-	actual, err := readConfig(filepath.Join("testdata", "homekeeper.yml"))
+	ctx := setupFixtures()
+
+	actual, err := readConfig(ctx, filepath.Join("testdata", "homekeeper.yml"))
 	if err != nil {
 		assert.Fail(t, err.Error())
 	}
@@ -30,6 +32,7 @@ func TestReadConfig(t *testing.T) {
 }
 
 func TestWriteConfig(t *testing.T) {
+	ctx := setupFixtures()
 	outputDirectory := filepath.Join(getRepositoryRoot(), "tmp")
 	err := os.MkdirAll(outputDirectory, 0755)
 	if err != nil {
@@ -42,7 +45,7 @@ func TestWriteConfig(t *testing.T) {
 		Ignores:     []string{},
 	}
 
-	writeConfig(outputFile, config)
+	writeConfig(ctx, outputFile, config)
 	actual := readFileAsString(outputFile)
 
 	expected := readFileAsString(filepath.Join("testdata", "empty.yml"))

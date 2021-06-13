@@ -11,37 +11,44 @@ type Config struct {
 	Ignores     []string `yaml:"ignores"`
 }
 
-func readConfig(file string) (config *Config, err error) {
+func readConfig(ctx *Context, file string) (config *Config, err error) {
+	log.Debugf("Reading config file: %s", file)
+
 	content, err := ioutil.ReadFile(file)
 	if err != nil {
-		log.Errorf("Couldn't read config file: %s", file)
+		WriteOutput(ctx, "Couldn't read config file: %s", file)
+		log.Errorf("Couldn't read config file: %+v", err)
 		return
 	}
 
 	config = &Config{}
 	err = yaml.Unmarshal(content, config)
 	if err != nil {
-		log.Errorf("Couldn't parse config file at %s: %v", file, err)
+		WriteOutput(ctx, "Couldn't parse config file: %s", file)
+		log.Errorf("Couldn't parse config file: %+v", err)
 		return
 	}
 
-	log.Debugf("Read configuration: %+v", config)
+	WriteOutput(ctx, "Read config file: %s", file)
+	log.Debugf("Read config: %+v", config)
 	return
 }
 
-func writeConfig(file string, config *Config) (err error) {
+func writeConfig(ctx *Context, file string, config *Config) (err error) {
 	bytes, err := yaml.Marshal(config)
 	if err != nil {
+		WriteOutput(ctx, "Couldn't write config file: %s", file)
 		log.Errorf("Couldn't marshal configuration: %+v", config)
 		return
 	}
 
 	err = ioutil.WriteFile(file, bytes, 0644)
 	if err != nil {
-		log.Errorf("Couldn't write config file: %s", file)
+		WriteOutput(ctx, "Couldn't write config file: %s", file)
+		log.Errorf("Couldn't write config file: %+v", err)
 		return
 	}
 
-	log.Debugf("Wrote config file: %s", file)
+	WriteOutput(ctx, "Wrote config file: %s", file)
 	return
 }

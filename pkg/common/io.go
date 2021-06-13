@@ -5,48 +5,54 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
+
+	"github.com/otiai10/copy"
 )
 
-func createSymlink(ctx *Context, source string, target string) (err error) {
-	_, err = os.Stat(target)
+func createSymlink(ctx *Context, oldname string, newname string) (err error) {
+	_, err = os.Stat(oldname)
 	if errors.Is(err, os.ErrExist) {
 		if !ctx.IsOverwrite {
-			WriteOutput(ctx, "Skipping to avoid overwrite: %s", target)
+			WriteOutput(ctx, "Skipping to avoid overwrite: %s", newname)
 			return nil
 		}
 
-		log.Warningf("Removing existing file: %s", target)
-		err = os.Remove(target)
+		log.Warningf("Removing existing file: %s", newname)
+		err = os.Remove(newname)
 		if err != nil {
+			WriteOutput(ctx, "Skipping because file couldn't be removed: %s", newname)
+			log.Errorf("Could not remove file: %+v", err)
 			return
 		}
 	}
 
-	log.Infof("Symlinking file: %s", target)
-	err = os.Symlink(source, target)
+	err = os.Symlink(oldname, newname)
 	if err != nil {
+		WriteOutput(ctx, "Skipping due to error: %s", newname)
+		log.Errorf("Could not create symlink: %+v", err)
 		return
 	}
 
+	WriteOutput(ctx, "Symlinked file: %s", newname)
 	return
 }
 
-func createSymlinks(ctx *Context, plan map[string]string) error {
-	errs := make([]error, 0)
-	for basename, source := range plan {
-		target := filepath.Join(ctx.HomeDirectory, basename)
-		err := createSymlink(ctx, source, target)
+func createSymlinks(ctx *Context, plan map[string]string) (err error) {
+	for basename, oldname := range plan {
+		newname := filepath.Join(ctx.HomeDirectory, basename)
+		err := createSymlink(ctx, oldname, newname)
 		if err != nil {
-			errs = append(errs, err)
+			continue
 		}
 	}
 
-	if len(errs) != 0 {
-		return fmt.Errorf("could not symlink some entries")
+	if err != nil {
+		err = fmt.Errorf("could not symlink some entries")
 	}
 
-	return nil
+	return
 }
 
 func isBrokenSymlink(entry os.FileInfo) bool {
@@ -65,13 +71,13 @@ func listEntries(directory string) (entries []os.FileInfo, err error) {
 	}
 	defer fh.Close()
 
-	Infof, err := fh.Stat()
+	info, err := fh.Stat()
 	if err != nil {
 		return
 	}
 
-	if !Infof.Mode().IsDir() {
-		err = fmt.Errorf("%s is not a directory", directory)
+	if !info.Mode().IsDir() {
+		err = fmt.Errorf("not a directory")
 		return
 	}
 
@@ -88,7 +94,7 @@ func planSymlinks(ctx *Context, dotfilesDirectory string, plan map[string]string
 	log.Debugf("Planning symlinks from directory: %s", dotfilesDirectory)
 	entries, err := listEntries(dotfilesDirectory)
 	if err != nil {
-		return err
+		return
 	}
 
 	for _, entry := range entries {
@@ -140,6 +146,7 @@ func removeBrokenSymlinks(ctx *Context, directory string) (removedEntries []stri
 }
 
 func restoreSymlinks(ctx *Context) (err error) {
+	log.Debugf("Restoring symlinks in home directory: %s", ctx.HomeDirectory)
 	entries, err := listEntries(ctx.HomeDirectory)
 	if err != nil {
 		return
@@ -147,17 +154,37 @@ func restoreSymlinks(ctx *Context) (err error) {
 
 	for _, entry := range entries {
 		if !isSymlink(entry) {
+			log.Debugf("Skipping non-symlink entry: %s", entry.Name())
 			continue
 		}
 
 		symlink := filepath.Join(ctx.HomeDirectory, entry.Name())
 		target, err := os.Readlink(symlink)
 		if err != nil {
+			log.Warningf("Skipping because could not readlink: %s", entry.Name())
 			continue
 		}
 
 		for _, prefix := range ctx.Config.Directories {
+			target, err = filepath.Abs(target)
+			if err != nil {
+				log.Warningf("Skipping because could not determine absolute path: %s", target)
+				continue
+			}
+
+			// On Windows, filesystem paths are not case sensitive, so we lowercase them before comparison first.
+			if runtime.GOOS == "windows" {
+				log.Infof("Lowercasing filename on windows: %s", prefix)
+				prefix = strings.ToLower(prefix)
+
+				log.Infof("Lowercasing filename on windows: %s", target)
+				target = strings.ToLower(target)
+			}
+
+			// The filepath.HasPrefix() method is deprecated and should not be used as it does not properly detect situations
+			// where case matters.
 			if !strings.HasPrefix(target, prefix) {
+				log.Debugf("Skipping because readlink target is not in a dotfiles directory: %s", target)
 				continue
 			}
 
@@ -170,12 +197,29 @@ func restoreSymlinks(ctx *Context) (err error) {
 		}
 	}
 
+	if err != nil {
+		log.Errorf("Some symlinks could not be restored.")
+	}
+
 	return
 }
 
-func restoreSymlink(ctx *Context, oldname string, symlink string) (err error) {
-	os.RemoveAll(symlink)
+func restoreSymlink(ctx *Context, oldname string, newname string) (err error) {
+	log.Debugf("Removing existing file/directory: %s", newname)
+	err = os.RemoveAll(newname)
+	if err != nil {
+		WriteOutput(ctx, "Could not remove file/directory: %s", newname)
+		log.Errorf("Could not remove file/directory: %+v", err)
+		return
+	}
 
-	log.Errorf("Not implemented yet")
+	err = copy.Copy(oldname, newname)
+	if err != nil {
+		WriteOutput(ctx, "Could not restore file/directory from %s to %s", oldname, newname)
+		log.Errorf("Could not copy file/directory: %+v", err)
+		return
+	}
+
+	WriteOutput(ctx, "Restored file/directory from: %s", oldname)
 	return
 }
