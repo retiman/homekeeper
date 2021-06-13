@@ -22,10 +22,10 @@ func NewLogger(pkg string, out io.Writer) *logger.Logger {
 	return newlog
 }
 
-func WriteOutput(ctx *Context, format string, a ...interface{}) {
+func Writeln(ctx *Context, format string, a ...interface{}) {
 	if ctx.IsQuiet {
 		return
 	}
 
-	fmt.Printf(format, a...)
+	fmt.Printf(format+"\n", a...)
 }

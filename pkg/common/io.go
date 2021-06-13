@@ -15,14 +15,14 @@ func createSymlink(ctx *Context, oldname string, newname string) (err error) {
 	_, err = os.Stat(oldname)
 	if errors.Is(err, os.ErrExist) {
 		if !ctx.IsOverwrite {
-			WriteOutput(ctx, "Skipping to avoid overwrite: %s", newname)
+			Writeln(ctx, "Skipping to avoid overwrite: %s", newname)
 			return nil
 		}
 
 		log.Warningf("Removing existing file: %s", newname)
 		err = os.Remove(newname)
 		if err != nil {
-			WriteOutput(ctx, "Skipping because file couldn't be removed: %s", newname)
+			Writeln(ctx, "Skipping because file couldn't be removed: %s", newname)
 			log.Errorf("Could not remove file: %+v", err)
 			return
 		}
@@ -30,12 +30,12 @@ func createSymlink(ctx *Context, oldname string, newname string) (err error) {
 
 	err = os.Symlink(oldname, newname)
 	if err != nil {
-		WriteOutput(ctx, "Skipping due to error: %s", newname)
+		Writeln(ctx, "Skipping due to error: %s", newname)
 		log.Errorf("Could not create symlink: %+v", err)
 		return
 	}
 
-	WriteOutput(ctx, "Symlinked file: %s", newname)
+	Writeln(ctx, "Symlinked file: %s", newname)
 	return
 }
 
@@ -99,7 +99,7 @@ func planSymlinks(ctx *Context, dotfilesDirectory string, plan map[string]string
 
 	for _, entry := range entries {
 		if ctx.Excludes[entry.Name()] {
-			WriteOutput(ctx, "Ignoring file: %s", filepath.Join(dotfilesDirectory, entry.Name()))
+			Writeln(ctx, "Ignoring file: %s", filepath.Join(dotfilesDirectory, entry.Name()))
 			continue
 		}
 
@@ -128,14 +128,14 @@ func removeBrokenSymlinks(ctx *Context, directory string) (removedEntries []stri
 		}
 
 		if ctx.IsDryRun {
-			WriteOutput(ctx, "Would remove broken symlink: %s", path)
+			Writeln(ctx, "Would remove broken symlink: %s", path)
 			continue
 		}
 
-		WriteOutput(ctx, "Removing broken symlink: %s", path)
+		Writeln(ctx, "Removing broken symlink: %s", path)
 		err = os.Remove(path)
 		if err != nil {
-			WriteOutput(ctx, "Could not remove broken symlink: %s", path)
+			Writeln(ctx, "Could not remove broken symlink: %s", path)
 			continue
 		}
 
@@ -208,18 +208,18 @@ func restoreSymlink(ctx *Context, oldname string, newname string) (err error) {
 	log.Debugf("Removing existing file/directory: %s", newname)
 	err = os.RemoveAll(newname)
 	if err != nil {
-		WriteOutput(ctx, "Could not remove file/directory: %s", newname)
+		Writeln(ctx, "Could not remove file/directory: %s", newname)
 		log.Errorf("Could not remove file/directory: %+v", err)
 		return
 	}
 
 	err = copy.Copy(oldname, newname)
 	if err != nil {
-		WriteOutput(ctx, "Could not restore file/directory from %s to %s", oldname, newname)
+		Writeln(ctx, "Could not restore file/directory from %s to %s", oldname, newname)
 		log.Errorf("Could not copy file/directory: %+v", err)
 		return
 	}
 
-	WriteOutput(ctx, "Restored file/directory from: %s", oldname)
+	Writeln(ctx, "Restored file/directory from: %s", oldname)
 	return
 }
