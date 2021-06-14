@@ -68,7 +68,8 @@ func initialize() {
 		Use:   "version",
 		Short: "Prints the version and then exists.",
 		RunE: func(_ *cobra.Command, _ []string) error {
-			fmt.Println(buildVersion)
+			fmt.Printf("Version %s\n", Build)
+			fmt.Printf("Build %s\n", Build)
 			return nil
 		},
 	}

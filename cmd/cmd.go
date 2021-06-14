@@ -10,8 +10,9 @@ import (
 
 var (
 	// This build version will be set by reading the VERSION file in the repository root at build time (see the Makefile).
-	buildVersion string
-	log          *logger.Logger
+	Build   string
+	Version string
+	log     *logger.Logger
 )
 
 // In golang, init() functions are run in lexical file name order.  Renaming files can cause the init functions to
@@ -19,7 +20,8 @@ var (
 // first).  Therefore, the convention in this project is to only have init() functions in the go files with the same
 // name as the package.
 func init() {
-	buildVersion = strings.TrimSpace(buildVersion)
+	Build = strings.TrimSpace(Build)
+	Version = strings.TrimSpace(Version)
 	log = common.NewLogger("cmd", ioutil.Discard)
 
 	initialize()
