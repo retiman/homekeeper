@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/retiman/homekeeper/pkg/common"
 	"github.com/spf13/cobra"
@@ -112,6 +113,14 @@ func prePersistentRun(_ *cobra.Command, _ []string) {
 		// There isn't a way to enable/disable logging with go-logger except to change where the output goes.
 		log = common.NewLogger("cmd", os.Stderr)
 	}
+
+	context.HomeDirectory = os.Getenv("HOME")
+	if context.HomeDirectory == "" {
+		common.Writeln(context, "Couldn't determine home directory!")
+		os.Exit(1)
+	}
+
+	context.ConfigFile = filepath.Join(context.HomeDirectory, ".homekeeper.yml")
 
 	log.Debugf("Invoked with flags: %+v", context)
 }
