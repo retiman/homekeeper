@@ -18,9 +18,9 @@ func TestRootCommand(t *testing.T) {
 	rootCommand.Execute()
 
 	assert.True(t, calls.IsRootCalled)
-	assert.False(t, flags.IsDebug)
-	assert.True(t, flags.IsQuiet)
-	assert.True(t, flags.IsDryRun)
+	assert.False(t, context.IsDebug)
+	assert.True(t, context.IsQuiet)
+	assert.True(t, context.IsDryRun)
 }
 
 func TestCleanupCommand(t *testing.T) {
@@ -33,8 +33,8 @@ func TestCleanupCommand(t *testing.T) {
 
 	assert.True(t, calls.IsCleanupCalled)
 	assert.False(t, calls.IsRootCalled)
-	assert.False(t, flags.IsDebug)
-	assert.False(t, flags.IsDryRun)
+	assert.False(t, context.IsDebug)
+	assert.False(t, context.IsDryRun)
 }
 
 func TestKeepCommand(t *testing.T) {
@@ -47,8 +47,8 @@ func TestKeepCommand(t *testing.T) {
 
 	assert.True(t, calls.IsKeepCalled)
 	assert.False(t, calls.IsRootCalled)
-	assert.False(t, flags.IsDebug)
-	assert.False(t, flags.IsDryRun)
+	assert.False(t, context.IsDebug)
+	assert.False(t, context.IsDryRun)
 }
 
 func TestUnkeepCommand(t *testing.T) {
@@ -61,8 +61,8 @@ func TestUnkeepCommand(t *testing.T) {
 
 	assert.True(t, calls.IsUnkeepCalled)
 	assert.False(t, calls.IsRootCalled)
-	assert.False(t, flags.IsDebug)
-	assert.False(t, flags.IsDryRun)
+	assert.False(t, context.IsDebug)
+	assert.False(t, context.IsDryRun)
 }
 
 func TestVersionCommand(t *testing.T) {
@@ -75,6 +75,6 @@ func TestVersionCommand(t *testing.T) {
 
 	assert.True(t, calls.IsVersionCalled)
 	assert.False(t, calls.IsRootCalled)
-	assert.False(t, flags.IsDebug)
-	assert.False(t, flags.IsDryRun)
+	assert.False(t, context.IsDebug)
+	assert.False(t, context.IsDryRun)
 }

@@ -12,7 +12,7 @@ type CommandHandler func(*cobra.Command, []string) error
 type Handler func(*common.Context) error
 
 var (
-	flags = &common.Context{}
+	context = &common.Context{}
 )
 
 var (
@@ -31,7 +31,7 @@ func initialize() {
 		Use:   "cleanup",
 		Short: "Removes broken symlinks in your home directory.",
 		RunE: func(_ *cobra.Command, _ []string) error {
-			return common.Cleanup(flags)
+			return common.Cleanup(context)
 		},
 	}
 
@@ -39,17 +39,17 @@ func initialize() {
 		Use:   "keep",
 		Short: "Symlinks dotfiles to your home directory from another location.",
 		RunE: func(_ *cobra.Command, _ []string) error {
-			return common.Keep(flags)
+			return common.Keep(context)
 		},
 	}
 	keepCommand.Flags().BoolVar(
-		&flags.IsNoCleanup,
+		&context.IsNoCleanup,
 		"no-cleanup",
 		false,
 		"Do not remove broken symlinks afterwards.",
 	)
 	keepCommand.Flags().BoolVar(
-		&flags.IsNoOverwrite,
+		&context.IsNoOverwrite,
 		"no-overwrite",
 		false,
 		"Do not overwrite existing files/directories.",
@@ -59,7 +59,7 @@ func initialize() {
 		Use:   "unkeep",
 		Short: "Replaces symlinks in your home directory with symlinked files.",
 		RunE: func(_ *cobra.Command, _ []string) error {
-			return common.Unkeep(flags)
+			return common.Unkeep(context)
 		},
 	}
 
@@ -78,19 +78,19 @@ func initialize() {
 		PersistentPreRun: prePersistentRun,
 	}
 	rootCommand.PersistentFlags().BoolVar(
-		&flags.IsDryRun,
+		&context.IsDryRun,
 		"dry-run",
 		false,
 		"Enables dry run mode (no changes will be made).",
 	)
 	rootCommand.PersistentFlags().BoolVar(
-		&flags.IsDebug,
+		&context.IsDebug,
 		"debug",
 		false,
 		"Enables debug output in addition to normal output.",
 	)
 	rootCommand.PersistentFlags().BoolVar(
-		&flags.IsQuiet,
+		&context.IsQuiet,
 		"quiet",
 		false,
 		"Enables quiet mode (will not output anything)",
@@ -103,17 +103,17 @@ func initialize() {
 }
 
 func prePersistentRun(_ *cobra.Command, _ []string) {
-	if flags.IsQuiet {
+	if context.IsQuiet {
 		// Quiet implies no debugging output either.
-		flags.IsDebug = false
+		context.IsDebug = false
 	}
 
-	if flags.IsDebug {
+	if context.IsDebug {
 		// There isn't a way to enable/disable logging with go-logger except to change where the output goes.
 		log = common.NewLogger("cmd", os.Stderr)
 	}
 
-	log.Debugf("Invoked with flags: %+v", flags)
+	log.Debugf("Invoked with flags: %+v", context)
 }
 
 // Executes the root command.  Note that the sub command should not be executed; the first arg that Cobra Command passes
