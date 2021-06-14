@@ -114,12 +114,13 @@ func prePersistentRun(_ *cobra.Command, _ []string) {
 		log = common.NewLogger("cmd", os.Stderr)
 	}
 
-	context.HomeDirectory = os.Getenv("HOME")
-	if context.HomeDirectory == "" {
+	homeDirectory, err := os.UserHomeDir()
+	if err != nil {
 		common.Writeln(context, "Couldn't determine home directory!")
 		os.Exit(1)
 	}
 
+	context.HomeDirectory = homeDirectory
 	context.ConfigFile = filepath.Join(context.HomeDirectory, ".homekeeper.yml")
 
 	log.Debugf("Invoked with flags: %+v", context)
