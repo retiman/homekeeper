@@ -75,8 +75,17 @@ func TestKeepAndUnkeep(t *testing.T) {
 		assert.Fail(t, err.Error())
 	}
 
+	symlinks := make(map[string]bool)
+	for _, symlink := range fixtures.Symlinks {
+		symlinks[filepath.Base(symlink)] = true
+	}
+
 	for _, entry := range entries {
-		assert.False(t, isSymlink(entry))
+		if symlinks[entry.Name()] {
+			continue
+		}
+
+		assert.False(t, isSymlink(entry), "Entry is symlink: %s", entry.Name())
 	}
 
 	for _, directory := range ctx.Config.Directories {
