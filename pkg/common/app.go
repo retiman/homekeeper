@@ -5,6 +5,14 @@ import (
 	"path/filepath"
 )
 
+func Init(ctx *Context) (err error) {
+	if ctx.IsDebug {
+		log = NewLogger("common", os.Stderr)
+	}
+
+	return
+}
+
 func Keep(ctx *Context) (err error) {
 	if ctx.IsDebug {
 		log = NewLogger("common", os.Stderr)

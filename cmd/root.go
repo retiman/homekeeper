@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -18,6 +19,7 @@ var (
 
 var (
 	rootCommand    *cobra.Command
+	initCommand    *cobra.Command
 	cleanupCommand *cobra.Command
 	keepCommand    *cobra.Command
 	unkeepCommand  *cobra.Command
@@ -28,6 +30,21 @@ var (
 // an init() function.  Because we might want to re-initialize the command line interface during a test, we have to make
 // this a separate function.
 func initialize() {
+	initCommand = &cobra.Command{
+		Use:   "init",
+		Short: "Sets your dotfiles directory, possibly from a git clone.",
+		Args: func(_ *cobra.Command, args []string) error {
+			if len(args) > 1 {
+				return errors.New("expecting 0 or 1 arguments")
+			}
+
+			return nil
+		},
+		RunE: func(_ *cobra.Command, _ []string) error {
+			return common.Init(context)
+		},
+	}
+
 	cleanupCommand = &cobra.Command{
 		Use:   "cleanup",
 		Short: "Removes broken symlinks in your home directory.",
@@ -98,13 +115,14 @@ func initialize() {
 		"Enables quiet mode (will not output anything)",
 	)
 
+	rootCommand.AddCommand(initCommand)
 	rootCommand.AddCommand(cleanupCommand)
 	rootCommand.AddCommand(keepCommand)
 	rootCommand.AddCommand(unkeepCommand)
 	rootCommand.AddCommand(versionCommand)
 }
 
-func prePersistentRun(_ *cobra.Command, _ []string) {
+func prePersistentRun(_ *cobra.Command, args []string) {
 	if context.IsQuiet {
 		// Quiet implies no debugging output either.
 		context.IsDebug = false
@@ -124,7 +142,11 @@ func prePersistentRun(_ *cobra.Command, _ []string) {
 	context.HomeDirectory = homeDirectory
 	context.ConfigFile = filepath.Join(context.HomeDirectory, ".homekeeper.yml")
 
-	log.Debugf("Invoked with flags: %+v", context)
+	if len(args) == 1 {
+		context.DotfilesLocation = args[0]
+	}
+
+	log.Debugf("Invoked with context: %+v", context)
 }
 
 // Executes the root command.  Note that the sub command should not be executed; the first arg that Cobra Command passes
