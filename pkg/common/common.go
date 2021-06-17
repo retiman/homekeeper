@@ -9,6 +9,7 @@ type Context struct {
 	ConfigFile       string
 	IsDebug          bool
 	IsDryRun         bool
+	IsGit            bool
 	IsNoCleanup      bool
 	IsNoOverwrite    bool
 	IsQuiet          bool

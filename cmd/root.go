@@ -44,6 +44,12 @@ func initialize() {
 			return common.Init(context)
 		},
 	}
+	initCommand.Flags().BoolVar(
+		&context.IsGit,
+		"git",
+		false,
+		"Assumes repository argument and will attempt to git clone first.",
+	)
 
 	cleanupCommand = &cobra.Command{
 		Use:   "cleanup",

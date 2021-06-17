@@ -3,6 +3,9 @@ package common
 import (
 	"os"
 	"path/filepath"
+	"strings"
+
+	git "github.com/go-git/go-git/v5"
 )
 
 func Init(ctx *Context) (err error) {
@@ -10,6 +13,37 @@ func Init(ctx *Context) (err error) {
 		log = NewLogger("common", os.Stderr)
 	}
 
+	if strings.HasSuffix(ctx.DotfilesLocation, ".git") && strings.Contains(ctx.DotfilesLocation, ":") {
+		log.Debugf("Assuming dotfiles location is a git repository: %s", ctx.DotfilesLocation)
+		ctx.IsGit = true
+	}
+
+	cwd, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+
+	if ctx.IsGit {
+		log.Debugf("Attempting to git clone the repository: %s", ctx.DotfilesLocation)
+		_, err = git.PlainClone(cwd, false /* isBare */, &git.CloneOptions{
+			URL:      ctx.DotfilesLocation,
+			Progress: os.Stderr,
+		})
+		if err != nil {
+			return err
+		}
+
+		parts := strings.Split(ctx.DotfilesLocation, "/")
+		last := parts[len(parts)-1]
+		repo := strings.TrimSuffix(last, ".git")
+		log.Debugf("Cloned repository into directory: %s", repo)
+
+		ctx.Config.Directories = []string{filepath.Join(cwd, repo)}
+	} else {
+		ctx.Config.Directories = []string{cwd}
+	}
+
+	ctx.Config.Ignores = []string{".git"}
 	return
 }
 
