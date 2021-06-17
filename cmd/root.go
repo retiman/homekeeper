@@ -24,9 +24,9 @@ var (
 )
 
 // In golang, the init() function is special; it's automatically executed on a per-file basis, and each file can contain
-// an init() function.  Because we might want to re-initialize the command line interface during a test, we have to make
+// an init() function.  Because we might want to re-setup the command line interface during a test, we have to make
 // this a separate function.
-func initialize() {
+func setup() {
 	initCommand = &cobra.Command{
 		Use:   "init",
 		Short: "Sets your dotfiles directory, possibly from a git clone.",

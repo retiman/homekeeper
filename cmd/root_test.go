@@ -23,6 +23,14 @@ func TestRootCommand(t *testing.T) {
 	assert.True(t, context.IsDryRun)
 }
 
+func TestInitCommand(t *testing.T) {
+	setupFixtures()
+	initCommand.RunE = newTracingHandler(&calls.IsInitCalled)
+	rootCommand.RunE = newTracingHandler(&calls.IsRootCalled)
+	rootCommand.SetArgs([]string{"cleanup"})
+
+}
+
 func TestCleanupCommand(t *testing.T) {
 	setupFixtures()
 	cleanupCommand.RunE = newTracingHandler(&calls.IsCleanupCalled)
