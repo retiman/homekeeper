@@ -27,8 +27,18 @@ func TestInitCommand(t *testing.T) {
 	setupFixtures()
 	initCommand.RunE = newTracingHandler(&calls.IsInitCalled)
 	rootCommand.RunE = newTracingHandler(&calls.IsRootCalled)
-	rootCommand.SetArgs([]string{"cleanup"})
+	rootCommand.SetArgs([]string{
+		"init",
+		"--git",
+		"git@github.com:retiman/homekeeper.git",
+	})
 
+	rootCommand.Execute()
+
+	assert.True(t, calls.IsInitCalled)
+	assert.False(t, calls.IsRootCalled)
+	assert.True(t, context.IsGit)
+	assert.Equal(t, context.DotfilesLocation, "git@github.com:retiman/homekeeper.git")
 }
 
 func TestCleanupCommand(t *testing.T) {
@@ -49,14 +59,21 @@ func TestKeepCommand(t *testing.T) {
 	setupFixtures()
 	keepCommand.RunE = newTracingHandler(&calls.IsKeepCalled)
 	rootCommand.RunE = newTracingHandler(&calls.IsRootCalled)
-	rootCommand.SetArgs([]string{"keep"})
+	rootCommand.SetArgs([]string{
+		"keep",
+		"--dry-run",
+		"--no-cleanup",
+		"--no-overwrite",
+	})
 
 	rootCommand.Execute()
 
 	assert.True(t, calls.IsKeepCalled)
 	assert.False(t, calls.IsRootCalled)
 	assert.False(t, context.IsDebug)
-	assert.False(t, context.IsDryRun)
+	assert.True(t, context.IsDryRun)
+	assert.True(t, context.IsNoCleanup)
+	assert.True(t, context.IsNoOverwrite)
 }
 
 func TestUnkeepCommand(t *testing.T) {
