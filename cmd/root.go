@@ -10,9 +10,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type CommandHandler func(*cobra.Command, []string) error
-type Handler func(*common.Context) error
-
 var (
 	context = &common.Context{}
 )
