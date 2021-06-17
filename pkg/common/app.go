@@ -30,6 +30,10 @@ func Init(ctx *Context) (err error) {
 		dotfilesDirectory = filepath.Join(cwd, repo)
 	}
 
+	if ctx.Config == nil {
+		ctx.Config = &Config{}
+	}
+
 	ctx.Config.Directories = []string{dotfilesDirectory}
 	ctx.Config.Ignores = []string{".git"}
 
