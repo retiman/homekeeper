@@ -1,10 +1,10 @@
 package common
 
 import (
-	_ "os"
+	"os"
 	"strings"
 
-	_ "github.com/go-git/go-git/v5"
+	git "github.com/go-git/go-git/v5"
 )
 
 func isGit(ctx *Context) bool {
@@ -25,16 +25,16 @@ func getRepositoryName(url string) string {
 	return strings.TrimSuffix(last, ".git")
 }
 
-func clone(ctx *Context) (repoName string, err error) {
-	//log.Debugf("Attempting to git clone repository: %s", ctx.DotfilesLocation)
-	//_, err = git.PlainClone(cwd, false /* isBare */, &git.CloneOptions{
-	//	URL: ctx.DotfilesLocation,
-	//	Progress: os.Stderr,
-	//})
-	//if err != nil {
-	//	return
-	//}
+func gitClone(ctx *Context, cwd string) (repoName string, err error) {
+	log.Debugf("Attempting to git clone repository: %s", ctx.DotfilesLocation)
+	_, err = git.PlainClone(cwd, false /* isBare */, &git.CloneOptions{
+		URL:      ctx.DotfilesLocation,
+		Progress: os.Stderr,
+	})
+	if err != nil {
+		return
+	}
 
-	//return getRepositoryName(ctx.DotfilesLocation)
+	repoName = getRepositoryName(ctx.DotfilesLocation)
 	return
 }
