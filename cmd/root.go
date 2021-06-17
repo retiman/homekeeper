@@ -30,12 +30,12 @@ func initialize() {
 	initCommand = &cobra.Command{
 		Use:   "init",
 		Short: "Sets your dotfiles directory, possibly from a git clone.",
-		Args: func(_ *cobra.Command, args []string) error {
+		Args: func(_ *cobra.Command, args []string) (err error) {
 			if len(args) > 1 {
 				return errors.New("expecting 0 or 1 arguments")
 			}
 
-			return nil
+			return
 		},
 		RunE: func(_ *cobra.Command, _ []string) error {
 			return common.Init(context)
@@ -87,10 +87,10 @@ func initialize() {
 	versionCommand = &cobra.Command{
 		Use:   "version",
 		Short: "Prints the version and then exists.",
-		RunE: func(_ *cobra.Command, _ []string) error {
+		RunE: func(_ *cobra.Command, _ []string) (_ error) {
 			fmt.Printf("Version %s\n", Build)
 			fmt.Printf("Build %s\n", Build)
-			return nil
+			return
 		},
 	}
 
