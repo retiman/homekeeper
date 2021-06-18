@@ -30,6 +30,7 @@ func TestInitCommand(t *testing.T) {
 	rootCommand.SetArgs([]string{
 		"init",
 		"--git",
+		"--no-keep",
 		"git@github.com:retiman/homekeeper.git",
 	})
 

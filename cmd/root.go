@@ -47,6 +47,12 @@ func setup() {
 		false,
 		"Assumes repository argument and will attempt to git clone first.",
 	)
+	initCommand.Flags().BoolVar(
+		&context.IsNoKeep,
+		"no-keep",
+		false,
+		"Does not run 'keep' after init.",
+	)
 
 	cleanupCommand = &cobra.Command{
 		Use:   "cleanup",

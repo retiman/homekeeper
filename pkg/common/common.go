@@ -11,6 +11,7 @@ type Context struct {
 	IsDryRun         bool
 	IsGit            bool
 	IsNoCleanup      bool
+	IsNoKeep         bool
 	IsNoOverwrite    bool
 	IsQuiet          bool
 	HomeDirectory    string

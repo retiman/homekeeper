@@ -45,6 +45,12 @@ func Init(ctx *Context) (err error) {
 	err = writeConfig(ctx, file, ctx.Config)
 
 	log.Debugf("Ending 'init' operation.")
+
+	if ctx.IsNoKeep {
+		return
+	}
+
+	Keep(ctx)
 	return
 }
 
