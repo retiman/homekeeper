@@ -124,7 +124,10 @@ func planSymlinks(ctx *Context, dotfilesDirectory string, plan map[string]string
 			continue
 		}
 
-		plan[entry.Name()] = filepath.Join(dotfilesDirectory, entry.Name())
+		file := filepath.Join(dotfilesDirectory, entry.Name())
+		plan[entry.Name()] = file
+
+		log.Debugf("Planned symlink: %s", file)
 	}
 
 	return
