@@ -33,8 +33,8 @@ jobs:
           Remove-Item -Recurse -Force ./tmp
           mkdir ./tmp
           cd ./tmp
-          ../homekeeper init https://github.com/retiman/dotfiles.git
-          ../homekeeper keep
+          ../homekeeper init --debug https://github.com/retiman/dotfiles.git
+          ../homekeeper keep --debug
       - name: Test (Ubuntu & MacOS)
         if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
         shell: bash
@@ -43,5 +43,5 @@ jobs:
           rm -rf ./tmp
           mkdir ./tmp
           cd ./tmp
-          ../homekeeper init https://github.com/retiman/dotfiles.git
-          ../homekeeper keep
+          ../homekeeper init --debug https://github.com/retiman/dotfiles.git
+          ../homekeeper keep --debug
