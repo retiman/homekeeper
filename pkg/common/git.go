@@ -2,6 +2,7 @@ package common
 
 import (
 	"os"
+	"path/filepath"
 	"strings"
 
 	git "github.com/go-git/go-git/v5"
@@ -25,9 +26,12 @@ func getRepositoryName(url string) string {
 	return strings.TrimSuffix(last, ".git")
 }
 
-func gitClone(ctx *Context, cwd string) (repoName string, err error) {
-	log.Debugf("Attempting to git clone repository: %s", ctx.DotfilesLocation)
-	_, err = git.PlainClone(cwd, false /* isBare */, &git.CloneOptions{
+func gitClone(ctx *Context, directory string) (repoName string, err error) {
+	repoName = getRepositoryName(ctx.DotfilesLocation)
+	repoDirectory := filepath.Join(directory, repoName)
+
+	log.Debugf("Attempting to git clone repository %s into: %s", ctx.DotfilesLocation, repoDirectory)
+	_, err = git.PlainClone(repoDirectory, false /* isBare */, &git.CloneOptions{
 		URL:      ctx.DotfilesLocation,
 		Progress: os.Stderr,
 	})
@@ -35,6 +39,5 @@ func gitClone(ctx *Context, cwd string) (repoName string, err error) {
 		return
 	}
 
-	repoName = getRepositoryName(ctx.DotfilesLocation)
 	return
 }
