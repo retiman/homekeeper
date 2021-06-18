@@ -35,4 +35,5 @@ jobs:
           ls ${{ runner.temp }}/dotfiles > $GITHUB_WORKSPACE/output.txt
       - name: Debug
         uses: actions/upload-artifact@v2
-        path: output.txt
+        with:
+          path: output.txt
