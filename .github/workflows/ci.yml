@@ -29,11 +29,11 @@ jobs:
         if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
         shell: bash
         run: |
-          cd ${{ runner.temp }}
-          $GITHUB_WORKSPACE/homekeeper init --debug --git https://github.com/retiman/dotfiles.git
+          cp ./homekeeper ${{ runner.temp }}
+          cd ${{ runner.temp }} && ./homekeeper init --debug --git https://github.com/retiman/dotfiles.git
       - name: Test (Windows)
         if: ${{ runner.os == 'Windows' }}
         shell: pwsh
         run: |
-          cd ${{ runner.temp }}
-          $Env:GITHUB_WORKSPACE\homekeeper.exe init --debug --git https://github.com/retiman/dotfiles.git
+          Copy-Item -Path .\homekeeper.exe -Destination ${{ runner.temp }}
+          cd ${{ runner.temp }} && .\homekeeper.exe init --debug --git https://github.com/retiman/dotfiles.git
