@@ -25,28 +25,12 @@ jobs:
         run: make build
       - name: Test
         run: make test
-      - name: Test (Windows)
-        if: ${{ runner.os == 'Windows' }}
-        shell: pwsh
-        continue-on-error: true
-        run: |
-          Remove-Item -Recurse -Force ./tmp
-          mkdir ./tmp
-          cd ./tmp
-          ../homekeeper init --debug https://github.com/retiman/dotfiles.git
-          ../homekeeper keep --debug
       - name: Test (Ubuntu & MacOS)
         if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
-        shell: bash
         continue-on-error: true
+        shell: bash
         run: |
-          rm -rf ./tmp
-          mkdir ./tmp
-          cd ./tmp
-          ../homekeeper init --debug https://github.com/retiman/dotfiles.git
-          ls ./tmp/dotfiles > output.txt
-          ../homekeeper keep --debug
-      - name: Debug
-        uses: actions/upload-artifact@v2
-        with:
-          path: output.txt
+          cp ./homekeeper ${{ runner.temp }}
+          cd ${{ runner.temp }}
+          ./homekeeper init --debug --git https://github.com/retiman/dotfiles.git
+          ./homekeeper keep --debug
