@@ -31,6 +31,5 @@ jobs:
         shell: bash
         run: |
           cp ./homekeeper ${{ runner.temp }}
-          cd ${{ runner.temp }}
-          ./homekeeper init --debug --git https://github.com/retiman/dotfiles.git
-          ./homekeeper keep --debug
+          cd ${{ runner.temp }} && ./homekeeper init --debug --git https://github.com/retiman/dotfiles.git
+          cd ${{ runner.temp }} && ./homekeeper keep --debug
