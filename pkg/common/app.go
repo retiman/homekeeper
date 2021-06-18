@@ -10,6 +10,8 @@ func Init(ctx *Context) (err error) {
 		log = NewLogger("common", os.Stderr)
 	}
 
+	log.Debugf("Starting 'init' operation.")
+
 	if isGit(ctx) {
 		log.Debugf("Assuming argument is a git repository: %s", ctx.DotfilesLocation)
 		ctx.IsGit = true
@@ -19,6 +21,7 @@ func Init(ctx *Context) (err error) {
 	if err != nil {
 		return err
 	}
+	log.Debugf("Init in directory: %s", cwd)
 
 	dotfilesDirectory := cwd
 	if ctx.IsGit {
@@ -29,6 +32,7 @@ func Init(ctx *Context) (err error) {
 
 		dotfilesDirectory = filepath.Join(cwd, repo)
 	}
+	log.Debugf("Assuming dotfiles directory is: %s", dotfilesDirectory)
 
 	if ctx.Config == nil {
 		ctx.Config = &Config{}
@@ -39,6 +43,8 @@ func Init(ctx *Context) (err error) {
 
 	file := filepath.Join(ctx.HomeDirectory, ".homekeeper.yml")
 	err = writeConfig(ctx, file, ctx.Config)
+
+	log.Debugf("Ending 'init' operation.")
 	return
 }
 
