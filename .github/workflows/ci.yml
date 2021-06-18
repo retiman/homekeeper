@@ -48,4 +48,5 @@ jobs:
           ../homekeeper keep --debug
       - name: Debug
         uses: actions/upload-artifact@v2
-        path: output.txt
+        with:
+          path: output.txt
