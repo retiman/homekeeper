@@ -37,5 +37,5 @@ jobs:
         shell: pwsh
         run: |
           cd ${{ runner.temp }}
-          $Env:GITHUB_WORKSPACE\homekeeper init --debug --git https://github.com/retiman/dotfiles.git
-          $Env:GITHUB_WORKSPACE\homekeeper keep --debug
+          $Env:GITHUB_WORKSPACE\homekeeper.exe init --debug --git https://github.com/retiman/dotfiles.git
+          $Env:GITHUB_WORKSPACE\homekeeper.exe keep --debug
