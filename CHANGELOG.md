@@ -1,5 +1,10 @@
 # Changelog
 
+## 6.0.0 - 2021-06-15
+
+- Rewrite in Golang.
+- Configuration format is now in YAML and not backwards compatible.
+
 ## 5.1.0 - 2020-07-15
 
 - Added Python 3.7 support.
