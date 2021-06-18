@@ -27,13 +27,15 @@ jobs:
         run: make test
       - name: Test (Ubuntu & MacOS)
         if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
-        continue-on-error: true
         shell: bash
         run: |
           cd ${{ runner.temp }}
           $GITHUB_WORKSPACE/homekeeper init --debug --git https://github.com/retiman/dotfiles.git
           $GITHUB_WORKSPACE/homekeeper keep --debug
-      - name: Debug
-        uses: actions/upload-artifact@v2
-        with:
-          path: output.txt
+      - name: Test (Windows)
+        if: ${{ runner.os == 'Windows' }}
+        shell: pwsh
+        run: |
+          cd ${{ runner.temp }}
+          $Env:GITHUB_WORKSPACE\homekeeper init --debug --git https://github.com/retiman/dotfiles.git
+          $Env:GITHUB_WORKSPACE\homekeeper keep --debug
