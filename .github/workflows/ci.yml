@@ -30,6 +30,5 @@ jobs:
         continue-on-error: true
         shell: bash
         run: |
-          cp ./homekeeper ${{ runner.temp }}
-          cd ${{ runner.temp }} && ${{ runner.temp }}/homekeeper init --debug --git https://github.com/retiman/dotfiles.git
-          ${{ runner.temp }}/homekeeper keep --debug
+          cd ${{ runner.temp }} && $GITHUB_WORKSPACE/homekeeper init --debug --git https://github.com/retiman/dotfiles.git
+          $GITHUB_WORKSPACE/homekeeper keep --debug
