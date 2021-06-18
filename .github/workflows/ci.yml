@@ -37,3 +37,15 @@ jobs:
         run: |
           Copy-Item -Path .\homekeeper.exe -Destination ${{ runner.temp }}
           cd ${{ runner.temp }} && .\homekeeper.exe init --debug --git https://github.com/retiman/dotfiles.git
+      - name: Upload (Ubuntu & MacOS)
+        if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
+        uses: actions/upload-artifact@v2
+        with:
+          retention-days: 1
+          path: homekeeper
+      - name: Upload (Windows)
+        if: ${{ runner.os == 'Windows' }}
+        uses: actions/upload-artifact@v2
+        with:
+          retention-days: 1
+          path: homekeeper.exe
