@@ -1,11 +1,11 @@
 MODULE = github.com/retiman/homekeeper
 BUILD = $(shell git rev-parse --short HEAD)
 VERSION = $(file < VERSION)
-.PHONY = all dist format test
+.PHONY = all build format test
 
-all: dist format test
+all: build format test
 
-dist: format
+build: format
 	@go build -ldflags="-X '$(MODULE)/cmd.Build=$(BUILD)' -X '$(MODULE)/cmd.Version=$(VERSION)'" .
 
 format:

@@ -24,5 +24,5 @@ func init() {
 	Version = strings.TrimSpace(Version)
 	log = common.NewLogger("cmd", ioutil.Discard)
 
-	initialize()
+	setup()
 }

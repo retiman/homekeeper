@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -9,15 +10,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type CommandHandler func(*cobra.Command, []string) error
-type Handler func(*common.Context) error
-
 var (
 	context = &common.Context{}
 )
 
 var (
 	rootCommand    *cobra.Command
+	initCommand    *cobra.Command
 	cleanupCommand *cobra.Command
 	keepCommand    *cobra.Command
 	unkeepCommand  *cobra.Command
@@ -25,9 +24,30 @@ var (
 )
 
 // In golang, the init() function is special; it's automatically executed on a per-file basis, and each file can contain
-// an init() function.  Because we might want to re-initialize the command line interface during a test, we have to make
+// an init() function.  Because we might want to re-setup the command line interface during a test, we have to make
 // this a separate function.
-func initialize() {
+func setup() {
+	initCommand = &cobra.Command{
+		Use:   "init",
+		Short: "Sets your dotfiles directory, possibly from a git clone.",
+		Args: func(_ *cobra.Command, args []string) (err error) {
+			if len(args) > 1 {
+				return errors.New("expecting 0 or 1 arguments")
+			}
+
+			return
+		},
+		RunE: func(_ *cobra.Command, _ []string) error {
+			return common.Init(context)
+		},
+	}
+	initCommand.Flags().BoolVar(
+		&context.IsGit,
+		"git",
+		false,
+		"Assumes repository argument and will attempt to git clone first.",
+	)
+
 	cleanupCommand = &cobra.Command{
 		Use:   "cleanup",
 		Short: "Removes broken symlinks in your home directory.",
@@ -67,10 +87,10 @@ func initialize() {
 	versionCommand = &cobra.Command{
 		Use:   "version",
 		Short: "Prints the version and then exists.",
-		RunE: func(_ *cobra.Command, _ []string) error {
+		RunE: func(_ *cobra.Command, _ []string) (_ error) {
 			fmt.Printf("Version %s\n", Build)
 			fmt.Printf("Build %s\n", Build)
-			return nil
+			return
 		},
 	}
 
@@ -98,13 +118,14 @@ func initialize() {
 		"Enables quiet mode (will not output anything)",
 	)
 
+	rootCommand.AddCommand(initCommand)
 	rootCommand.AddCommand(cleanupCommand)
 	rootCommand.AddCommand(keepCommand)
 	rootCommand.AddCommand(unkeepCommand)
 	rootCommand.AddCommand(versionCommand)
 }
 
-func prePersistentRun(_ *cobra.Command, _ []string) {
+func prePersistentRun(_ *cobra.Command, args []string) {
 	if context.IsQuiet {
 		// Quiet implies no debugging output either.
 		context.IsDebug = false
@@ -124,7 +145,11 @@ func prePersistentRun(_ *cobra.Command, _ []string) {
 	context.HomeDirectory = homeDirectory
 	context.ConfigFile = filepath.Join(context.HomeDirectory, ".homekeeper.yml")
 
-	log.Debugf("Invoked with flags: %+v", context)
+	if len(args) == 1 {
+		context.DotfilesLocation = args[0]
+	}
+
+	log.Debugf("Invoked with context: %+v", context)
 }
 
 // Executes the root command.  Note that the sub command should not be executed; the first arg that Cobra Command passes

@@ -9,6 +9,7 @@ import (
 
 type Calls struct {
 	IsRootCalled    bool
+	IsInitCalled    bool
 	IsCleanupCalled bool
 	IsKeepCalled    bool
 	IsUnkeepCalled  bool
@@ -28,7 +29,7 @@ func init() {
 func setupFixtures() {
 	calls = &Calls{}
 
-	initialize()
+	setup()
 }
 
 // Create a command handler that can trace calls to it for Debugfging.  Use this to replace the run handler in a test

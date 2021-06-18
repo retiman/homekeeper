@@ -5,6 +5,43 @@ import (
 	"path/filepath"
 )
 
+func Init(ctx *Context) (err error) {
+	if ctx.IsDebug {
+		log = NewLogger("common", os.Stderr)
+	}
+
+	if isGit(ctx) {
+		log.Debugf("Assuming argument is a git repository: %s", ctx.DotfilesLocation)
+		ctx.IsGit = true
+	}
+
+	cwd, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+
+	dotfilesDirectory := cwd
+	if ctx.IsGit {
+		repo, err := gitClone(ctx, cwd)
+		if err != nil {
+			return err
+		}
+
+		dotfilesDirectory = filepath.Join(cwd, repo)
+	}
+
+	if ctx.Config == nil {
+		ctx.Config = &Config{}
+	}
+
+	ctx.Config.Directories = []string{dotfilesDirectory}
+	ctx.Config.Ignores = []string{".git"}
+
+	file := filepath.Join(ctx.HomeDirectory, ".homekeeper.yml")
+	err = writeConfig(ctx, file, ctx.Config)
+	return
+}
+
 func Keep(ctx *Context) (err error) {
 	if ctx.IsDebug {
 		log = NewLogger("common", os.Stderr)

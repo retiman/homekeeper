@@ -5,15 +5,17 @@ import (
 )
 
 type Context struct {
-	Config        *Config
-	ConfigFile    string
-	IsDebug       bool
-	IsDryRun      bool
-	IsNoCleanup   bool
-	IsNoOverwrite bool
-	IsQuiet       bool
-	HomeDirectory string
-	Excludes      map[string]bool
+	Config           *Config
+	ConfigFile       string
+	IsDebug          bool
+	IsDryRun         bool
+	IsGit            bool
+	IsNoCleanup      bool
+	IsNoOverwrite    bool
+	IsQuiet          bool
+	HomeDirectory    string
+	DotfilesLocation string
+	Excludes         map[string]bool
 }
 
 // In golang, init() functions are run in lexical file name order.  Renaming files can cause the init functions to
