@@ -32,3 +32,7 @@ jobs:
         run: |
           cd ${{ runner.temp }} && $GITHUB_WORKSPACE/homekeeper init --debug --git https://github.com/retiman/dotfiles.git
           $GITHUB_WORKSPACE/homekeeper keep --debug
+          ls ${{ runner.temp }}/dotfiles > $GITHUB_WORKSPACE/output.txt
+      - name: Debug
+        uses: actions/upload-artifact@v2
+        path: output.txt
