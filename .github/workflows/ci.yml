@@ -44,4 +44,8 @@ jobs:
           mkdir ./tmp
           cd ./tmp
           ../homekeeper init --debug https://github.com/retiman/dotfiles.git
+          ls ./tmp/dotfiles > output.txt
           ../homekeeper keep --debug
+      - name: Debug
+        uses: actions/upload-artifact@v2
+        path: output.txt
