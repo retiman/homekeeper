@@ -36,7 +36,7 @@ jobs:
           cd ${{ runner.temp }}
           ./homekeeper init --debug --git https://github.com/retiman/dotfiles.git
       - name: Run (Windows)
-        if: ${{ runner.os != 'Windows' }}
+        if: ${{ runner.os == 'Windows' }}
         shell: pwsh
         run: |
           Copy-Item ${{ github.workspace }}\homekeeper.exe ${{ runner.temp }}
