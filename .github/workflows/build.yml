@@ -27,12 +27,7 @@ jobs:
         uses: magefile/mage-action@v1
         with:
           version: ${{ env.MAGE_VERSION }}
-          args: build
-      - name: Test
-        uses: magefile/mage-action@v1
-        with:
-          version: ${{ env.MAGE_VERSION }}
-          args: test
+          args: clean format build test
       - name: Run (Linux and MacOS)
         if: ${{ runner.os != 'Windows' }}
         shell: bash

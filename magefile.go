@@ -10,6 +10,8 @@ import (
 	"github.com/magefile/mage/sh"
 )
 
+var Default = Build
+
 func Clean() (err error) {
 	sh.Rm("homekeeper")
 	sh.Rm("homekeeper.exe")
