@@ -8,12 +8,10 @@ on:
 
 env:
   GO_VERSION: 1.16.5
-  MAGE_VERSION: 1.9.0
+  MAGE_VERSION: v1.11.0
 
 jobs:
   build:
-    env:
-      MAGE_VERSION: 1.9.0
     runs-on: ${{ matrix.platform }}
     strategy:
       matrix:
