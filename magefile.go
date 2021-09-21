@@ -18,19 +18,18 @@ func Clean() (err error) {
 }
 
 func Format() (err error) {
-	err = sh.Run("gofmt", "-w", "-s", "cmd")
-	if err != nil {
-		return
+	args := []string{
+		"cmd",
+		"pkg",
+		"magefile.go",
+		"main.go",
 	}
 
-	err = sh.Run("gofmt", "-w", "-s", "pkg")
-	if err != nil {
-		return
-	}
-
-	err = sh.Run("gofmt", "-w", "-s", "magefile.go")
-	if err != nil {
-		return
+	for _, arg := range args {
+		err = sh.Run("gofmt", "-w", "-s", arg)
+		if err != nil {
+			return
+		}
 	}
 
 	return
@@ -51,14 +50,16 @@ func Build() (err error) {
 }
 
 func Test() (err error) {
-	err = sh.RunV("go", "test", "./cmd/...")
-	if err != nil {
-		return
+	args := []string{
+		"./cmd/...",
+		"./pkg/...",
 	}
 
-	err = sh.RunV("go", "test", "./pkg/...")
-	if err != nil {
-		return
+	for _, arg := range args {
+		err = sh.RunV("go", "test", arg)
+		if err != nil {
+			return
+		}
 	}
 
 	return
