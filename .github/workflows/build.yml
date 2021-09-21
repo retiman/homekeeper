@@ -33,13 +33,17 @@ jobs:
         with:
           version: ${{ env.MAGE_VERSION }}
           args: test
-      - name: Run
+      - name: Run (Linux and MacOS)
+        if: ${{ runner.os != 'Windows' }}
         shell: bash
         run: |
-          if [[ ${{ runner.os }} = 'Windows' ]]; then
-            export HOMEKEEPER=homekeeper.exe
-          else
-            export HOMEKEEPER=homekeeper
-          fi
-          cp ${{ github.workspace }}/$HOMEKEEPER ${{ runner.temp }}
-          cd ${{ runner.temp }} && ./$HOMEKEEPER init --debug --git https://github.com/retiman/dotfiles.git
+          cp ${{ github.workspace }}/homekeeper ${{ runner.temp }}
+          cd ${{ runner.temp }}
+          ./homekeeper init --debug --git https://github.com/retiman/dotfiles.git
+      - name: Run (Windows)
+        if: ${{ runner.os != 'Windows' }}
+        shell: pwsh
+        run: |
+          Copy-Item ${{ github.workspace }}\homekeeper.exe ${{ runner.temp }}
+          Set-Location ${{ runner.temp }}
+          .\homekeeper.exe init --debug --git https://github.com/retiman/dotfiles.git
