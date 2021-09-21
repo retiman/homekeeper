@@ -23,37 +23,23 @@ jobs:
         uses: actions/setup-go@v1
         with:
           go-version: ${{ env.GO_VERSION }}
-      - name: Mage Build
+      - name: Build
         uses: magefile/mage-action@v1
         with:
           version: ${{ env.MAGE_VERSION }}
           args: build
-      - name: Mage Test
+      - name: Test
         uses: magefile/mage-action@v1
         with:
           version: ${{ env.MAGE_VERSION }}
           args: test
-      - name: Test (Ubuntu & MacOS)
-        if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
+      - name: Run
         shell: bash
         run: |
-          cp ./homekeeper ${{ runner.temp }}
-          cd ${{ runner.temp }} && ./homekeeper init --debug --git https://github.com/retiman/dotfiles.git
-      - name: Test (Windows)
-        if: ${{ runner.os == 'Windows' }}
-        shell: pwsh
-        run: |
-          Copy-Item -Path .\homekeeper.exe -Destination ${{ runner.temp }}
-          cd ${{ runner.temp }} && .\homekeeper.exe init --debug --git https://github.com/retiman/dotfiles.git
-      - name: Upload (Ubuntu & MacOS)
-        if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
-        uses: actions/upload-artifact@v2
-        with:
-          retention-days: 1
-          path: homekeeper
-      - name: Upload (Windows)
-        if: ${{ runner.os == 'Windows' }}
-        uses: actions/upload-artifact@v2
-        with:
-          retention-days: 1
-          path: homekeeper.exe
+          if [[ ${{ runner.os }} = 'Windows' ]]; then
+            export HOMEKEEPER=homekeeper.exe
+          else
+            export HOMEKEEPER=homekeeper
+          fi
+          cp ${{ github.workspace }}/$HOMEKEEPER ${{ runner.temp }}
+          cd ${{ runner.temp }} && ./$HOMEKEEPER init --debug --git https://github.com/retiman/dotfiles.git
