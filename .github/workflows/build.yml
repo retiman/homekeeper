@@ -6,8 +6,14 @@ on:
   push:
     branches: [ main ]
 
+env:
+  GO_VERSION: 1.16.5
+  MAGE_VERSION: 1.9.0
+
 jobs:
   build:
+    env:
+      MAGE_VERSION: 1.9.0
     runs-on: ${{ matrix.platform }}
     strategy:
       matrix:
@@ -15,16 +21,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Setup
+      - name: Setup Go
         uses: actions/setup-go@v1
         with:
-          go-version: 1.16.5
-      - name: Format
-        run: make format
-      - name: Build
-        run: make build
-      - name: Test
-        run: make test
+          go-version: ${{ env.GO_VERSION }}
+      - name: Mage Build
+        uses: magefile/mage@v1
+        with:
+          version: ${{ env.MAGE_VERSION }}
+          args: build
+      - name: Mage Test
+        uses: magefile/mage@v1
+        with:
+          version: ${{ env.MAGE_VERSION }}
+          args: test
       - name: Test (Ubuntu & MacOS)
         if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
         shell: bash
@@ -37,15 +47,3 @@ jobs:
         run: |
           Copy-Item -Path .\homekeeper.exe -Destination ${{ runner.temp }}
           cd ${{ runner.temp }} && .\homekeeper.exe init --debug --git https://github.com/retiman/dotfiles.git
-      - name: Upload (Ubuntu & MacOS)
-        if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
-        uses: actions/upload-artifact@v2
-        with:
-          retention-days: 1
-          path: homekeeper
-      - name: Upload (Windows)
-        if: ${{ runner.os == 'Windows' }}
-        uses: actions/upload-artifact@v2
-        with:
-          retention-days: 1
-          path: homekeeper.exe
