@@ -22,12 +22,11 @@ jobs:
         uses: actions/setup-go@v1
         with:
           go-version: ${{ env.GO_VERSION }}
-      - name: Install Dependencies
-        run: make deps
-      # There is a golangci-lint action, but using it would make linting locally different from linting on the CI
-      # system.  In addition, using the golangci-lint action times out on GHC Windows agents.
       - name: Lint
-        run: make lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: v1.42.1
+          args: --timeout 5m
       - name: Build
         run: make build
       - name: Test
