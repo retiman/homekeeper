@@ -22,13 +22,10 @@ jobs:
         uses: actions/setup-go@v1
         with:
           go-version: ${{ env.GO_VERSION }}
-      - name: Lint
-        uses: golangci/golangci-lint-action@v2
-        with:
-          version: v1.42.1
       - name: Build
         run: |
           make clean
+          make lint
           make build
           make test
       - name: Run (Linux and MacOS)
