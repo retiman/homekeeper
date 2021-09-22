@@ -12,8 +12,8 @@ clean:
 	-$(RM) ./homekeeper
 	-$(RM) ./homekeeper.exe
 
-.PHONY: download
-download:
+.PHONY: deps
+deps:
 	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.42.1
 	@go mod tidy
 
