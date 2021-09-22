@@ -50,8 +50,7 @@ func Init(ctx *Context) (err error) {
 		return
 	}
 
-	Keep(ctx)
-	return
+	return Keep(ctx)
 }
 
 func Keep(ctx *Context) (err error) {
@@ -74,7 +73,11 @@ func Keep(ctx *Context) (err error) {
 
 	plan := make(map[string]string)
 	for _, dotfilesDirectory := range ctx.Config.Directories {
-		planSymlinks(ctx, dotfilesDirectory, plan)
+		err = planSymlinks(ctx, dotfilesDirectory, plan)
+		if err != nil {
+			log.Warningf("Error planning symlinks from directory: %s", dotfilesDirectory)
+			continue
+		}
 	}
 	if len(plan) == 0 {
 		Writeln(ctx, "Nothing to symlink.")

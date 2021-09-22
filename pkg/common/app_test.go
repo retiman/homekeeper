@@ -14,9 +14,12 @@ import (
 func TestKeepAndUnkeep(t *testing.T) {
 	ctx := setupFixtures()
 	checkSymlinkSupported(t)
-	writeConfig(ctx, filepath.Join(ctx.HomeDirectory, ".homekeeper.yml"), ctx.Config)
+	err := writeConfig(ctx, filepath.Join(ctx.HomeDirectory, ".homekeeper.yml"), ctx.Config)
+	if err != nil {
+		assert.Fail(t, err.Error())
+	}
 
-	err := Keep(ctx)
+	err = Keep(ctx)
 	if err != nil {
 		assert.Fail(t, err.Error())
 	}
@@ -114,9 +117,12 @@ func TestKeepAndUnkeep(t *testing.T) {
 func TestCleanup(t *testing.T) {
 	ctx := setupFixtures()
 	checkSymlinkSupported(t)
-	writeConfig(ctx, filepath.Join(ctx.HomeDirectory, ".homekeeper.yml"), ctx.Config)
+	err := writeConfig(ctx, filepath.Join(ctx.HomeDirectory, ".homekeeper.yml"), ctx.Config)
+	if err != nil {
+		assert.Fail(t, err.Error())
+	}
 
-	err := Keep(ctx)
+	err = Keep(ctx)
 	if err != nil {
 		assert.Fail(t, err.Error())
 	}

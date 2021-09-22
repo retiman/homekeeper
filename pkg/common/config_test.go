@@ -45,7 +45,10 @@ func TestWriteConfig(t *testing.T) {
 		Ignores:     []string{},
 	}
 
-	writeConfig(ctx, outputFile, config)
+	err = writeConfig(ctx, outputFile, config)
+	if err != nil {
+		assert.Fail(t, err.Error())
+	}
 	actual := readFileAsString(outputFile)
 
 	expected := readFileAsString(filepath.Join("testdata", "empty.yml"))

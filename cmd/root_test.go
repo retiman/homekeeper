@@ -15,7 +15,10 @@ func TestRootCommand(t *testing.T) {
 		"--dry-run",
 	})
 
-	rootCommand.Execute()
+	err := rootCommand.Execute()
+	if err != nil {
+		assert.Fail(t, err.Error())
+	}
 
 	assert.True(t, calls.IsRootCalled)
 	assert.False(t, context.IsDebug)
@@ -34,7 +37,10 @@ func TestInitCommand(t *testing.T) {
 		"git@github.com:retiman/homekeeper.git",
 	})
 
-	rootCommand.Execute()
+	err := rootCommand.Execute()
+	if err != nil {
+		assert.Fail(t, err.Error())
+	}
 
 	assert.True(t, calls.IsInitCalled)
 	assert.False(t, calls.IsRootCalled)
@@ -48,7 +54,10 @@ func TestCleanupCommand(t *testing.T) {
 	rootCommand.RunE = newTracingHandler(&calls.IsRootCalled)
 	rootCommand.SetArgs([]string{"cleanup"})
 
-	rootCommand.Execute()
+	err := rootCommand.Execute()
+	if err != nil {
+		assert.Fail(t, err.Error())
+	}
 
 	assert.True(t, calls.IsCleanupCalled)
 	assert.False(t, calls.IsRootCalled)
@@ -67,7 +76,10 @@ func TestKeepCommand(t *testing.T) {
 		"--no-overwrite",
 	})
 
-	rootCommand.Execute()
+	err := rootCommand.Execute()
+	if err != nil {
+		assert.Fail(t, err.Error())
+	}
 
 	assert.True(t, calls.IsKeepCalled)
 	assert.False(t, calls.IsRootCalled)
@@ -83,7 +95,10 @@ func TestUnkeepCommand(t *testing.T) {
 	rootCommand.RunE = newTracingHandler(&calls.IsRootCalled)
 	rootCommand.SetArgs([]string{"unkeep"})
 
-	rootCommand.Execute()
+	err := rootCommand.Execute()
+	if err != nil {
+		assert.Fail(t, err.Error())
+	}
 
 	assert.True(t, calls.IsUnkeepCalled)
 	assert.False(t, calls.IsRootCalled)
@@ -97,7 +112,10 @@ func TestVersionCommand(t *testing.T) {
 	rootCommand.RunE = newTracingHandler(&calls.IsRootCalled)
 	rootCommand.SetArgs([]string{"version"})
 
-	rootCommand.Execute()
+	err := rootCommand.Execute()
+	if err != nil {
+		assert.Fail(t, err.Error())
+	}
 
 	assert.True(t, calls.IsVersionCalled)
 	assert.False(t, calls.IsRootCalled)
