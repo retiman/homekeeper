@@ -8,7 +8,6 @@ on:
 
 env:
   GO_VERSION: 1.16.5
-  MAGE_VERSION: v1.11.0
 
 jobs:
   build:
@@ -19,15 +18,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Setup Go
+      - name: Setup
         uses: actions/setup-go@v1
         with:
           go-version: ${{ env.GO_VERSION }}
-      - name: Build
-        uses: magefile/mage-action@v1
+      - name: Lint
+        uses: golangci/golangci-lint-action@v2
         with:
-          version: ${{ env.MAGE_VERSION }}
-          args: clean format build test
+          version: v1.4.2
+      - name: Build
+        run: |
+          make clean
+          make build
+          make test
       - name: Run (Linux and MacOS)
         if: ${{ runner.os != 'Windows' }}
         shell: bash

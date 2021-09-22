@@ -12,6 +12,11 @@ clean:
 	-$(RM) ./homekeeper
 	-$(RM) ./homekeeper.exe
 
+.PHONY: download
+download:
+	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.42.1
+	@go mod tidy
+
 .PHONY: format
 format:
 	@gofmt -w -s cmd
