@@ -19,7 +19,7 @@ jobs:
       - name: Testing
         shell: pwsh
         run: |
-          Write-Host "'${Env.GITHUB_API_URL}'"
+          Write-Host "'${Env:GITHUB_API_URL}'"
       - name: Checkout
         uses: actions/checkout@v2
       - name: Setup
