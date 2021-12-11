@@ -16,6 +16,10 @@ jobs:
       matrix:
         platform: [ubuntu-latest, macos-latest, windows-latest]
     steps:
+      - name: Testing
+        shell: pwsh
+        run: |
+          Write-Host "'${Env.GITHUB_API_URL}'"
       - name: Checkout
         uses: actions/checkout@v2
       - name: Setup
