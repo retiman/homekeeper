@@ -8,7 +8,7 @@ all: clean build format test
 
 .PHONY: clean
 clean:
-	-$(RM) ./tmp
+	-$(RM) -r ./tmp
 	-$(RM) ./homekeeper
 	-$(RM) ./homekeeper.exe
 
