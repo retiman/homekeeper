@@ -11,7 +11,7 @@ clean:
 	-$(RM) ./homekeeper.exe
 
 deps:
-	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.42.1
+	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.46.1
 	@go mod tidy
 
 format:
@@ -21,7 +21,7 @@ format:
 lint:
 	@golangci-lint run ./...
 
-build: format lint
+build:
 	@go build -ldflags="-X '$(MODULE)/cmd.Build=$(BUILD)' -X '$(MODULE)/cmd.Version=$(VERSION)'" .
 
 test: build
