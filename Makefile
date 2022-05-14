@@ -3,33 +3,27 @@ BUILD = $(shell git rev-parse --short HEAD)
 VERSION = $(file < VERSION)
 .PHONY = all build format test
 
-.PHONY: all
+.PHONY: all clean deps format lint build test
 all: clean build format test
 
-.PHONY: clean
 clean:
 	-$(RM) -r ./tmp
 	-$(RM) ./homekeeper
 	-$(RM) ./homekeeper.exe
 
-.PHONY: deps
 deps:
 	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.42.1
 	@go mod tidy
 
-.PHONY: format
 format:
 	@gofmt -w -s cmd
 	@gofmt -w -s pkg
 
-.PHONY: lint
 lint:
 	@golangci-lint run ./...
 
-.PHONY: build
 build: format lint
 	@go build -ldflags="-X '$(MODULE)/cmd.Build=$(BUILD)' -X '$(MODULE)/cmd.Version=$(VERSION)'" .
 
-.PHONY: test
 test: build
 	@go test -v ./...
