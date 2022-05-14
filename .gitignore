@@ -1,3 +1,4 @@
-/homekeeper
-/homekeeper.exe
-/tmp
+tmp/
+dist/
+homekeeper
+homekeeper.exe
