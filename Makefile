@@ -1,9 +1,8 @@
 MODULE = github.com/retiman/homekeeper
 BUILD = $(shell git rev-parse --short HEAD)
 VERSION = $(file < VERSION)
-.PHONY = all build format test
-
 .PHONY: all clean deps format lint build test
+
 all: clean build format test
 
 clean:
