@@ -50,6 +50,8 @@ jobs:
 
       - name: Release
         uses: goreleaser/goreleaser-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           install-only: ${{ github.event_name == 'pull_request' }}
           distribution: goreleaser
