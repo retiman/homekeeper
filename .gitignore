@@ -1,12 +1,4 @@
-/build/
-/docs/_build/
-/homekeeper.egg-info/
-/htmlcov/
-/venv/
-/.mypy_cache/
-/.pytest_cache/
-/.tox/
-/.coverage
-/**/__pycache__/
-homekeeper-testlogs.txt
-*.pyc
+tmp/
+dist/
+homekeeper
+homekeeper.exe

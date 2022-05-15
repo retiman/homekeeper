@@ -1,0 +1,8 @@
+directories:
+- /home/johndoe/d1
+- /home/johndoe/d2
+- /home/johndoe/d3
+ignores:
+- file1
+- file2
+- file3
