@@ -2,6 +2,11 @@ name: Build and Package
 
 on:
   pull_request:
+    paths:
+      - .github/workflows/build-and-release.yml
+      - go.mod
+      - go.sum
+      - '**/*.go'
   push:
     branches:
       - main
