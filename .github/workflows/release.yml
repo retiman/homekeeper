@@ -1,0 +1,38 @@
+name: Release
+
+on:
+  pull_request:
+  push:
+    tags:
+      - v*
+
+jobs:
+  release:
+    name: release
+    runs-on: [ ubuntu-latest ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.18
+          check-latest: true
+
+      - nane: Setup cache
+        uses: actions/cache@v3
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: ${{ runner.os }}-go-
+
+      - name: Release
+        uses: goreleaser/goreleaser-action@v2
+        with:
+          install_only: ${{ github.event_name == 'pull_request' }}
+          distribution: goreleaser
+          version: 1.8.3
+          args: release --rm-dist
