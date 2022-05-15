@@ -67,3 +67,11 @@ ignores:
 Add additional directories to the configuration file to have other dotfiles take precendence.  Any ignored files won't be symlinked (by default the `.git` directory is ignored).
 
 Run `homekeeper keep` to refresh the symlinks if you add new files, or `homekeeper unkeep` to reverse this process.
+
+## Contributing
+
+To release:
+
+1. Bump the version in `VERSION`.
+1. Run `make tag` to tag the release.
+1. Run `git push origin --tags` to push the tags and trigger the `release` workflow.

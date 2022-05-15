@@ -27,3 +27,6 @@ build:
 
 test: build
 	@go test -v ./...
+
+tag: format lint build
+	git tag -a v${VERSION} -m "v${VERSION}"
