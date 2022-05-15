@@ -32,7 +32,7 @@ jobs:
       - name: Release
         uses: goreleaser/goreleaser-action@v2
         with:
-          install_only: ${{ github.event_name == 'pull_request' }}
+          install-only: ${{ github.event_name == 'pull_request' }}
           distribution: goreleaser
           version: 1.8.3
           args: release --rm-dist
