@@ -33,3 +33,4 @@ test: build
 .PHONY: tag
 tag: format lint build test
 	@git tag -a v${VERSION} -m "v${VERSION}"
+	@echo "Now git push --tags to create a release."

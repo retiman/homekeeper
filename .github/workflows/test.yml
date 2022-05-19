@@ -1,9 +1,9 @@
-name: Build and Package
+name: Test
 
 on:
   pull_request:
     paths:
-      - .github/workflows/build-and-release.yml
+      - .github/workflows/test.yml
       - go.mod
       - go.sum
       - '**/*.go'
@@ -34,9 +34,6 @@ jobs:
         with:
           version: v1.46.1
 
-      - name: Check
-        run: make check
-
       - name: Build
         run: make build
 
@@ -47,7 +44,7 @@ jobs:
         if: ${{ runner.os != 'Windows' }}
         shell: bash
         run: |
-          cp ${{ github.workspace }}/homekeeper ${{ runner.temp }}
+          cp ./homekeeper ${{ runner.temp }}
           cd ${{ runner.temp }}
           ./homekeeper init --debug --git https://github.com/retiman/dotfiles.git
 
@@ -55,6 +52,6 @@ jobs:
         if: ${{ runner.os == 'Windows' }}
         shell: pwsh
         run: |
-          Copy-Item ${{ github.workspace }}\homekeeper.exe ${{ runner.temp }}
+          Copy-Item .\homekeeper.exe ${{ runner.temp }}
           Set-Location ${{ runner.temp }}
           .\homekeeper.exe init --debug --git https://github.com/retiman/dotfiles.git
