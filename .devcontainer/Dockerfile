@@ -2,14 +2,9 @@
 ARG VARIANT="1.18-bullseye"
 FROM mcr.microsoft.com/vscode/devcontainers/go:0-${VARIANT}
 
-WORKDIR /home/dev
-ENV HOME /home/vscode
+WORKDIR /home/${USER}
 ADD prompt.sh prompt.sh
 RUN <<EOF
-# Fixes files owned by root user.
-addgroup --gid 1000 vscode
-adduser --disabled-password --gecos "" --uid 1000 --gid 1000 vscode
-
 # Add a custom prompt to the image because the default one is a bit too noisy.
 cat prompt.sh >> .bashrc && rm prompt.sh
 

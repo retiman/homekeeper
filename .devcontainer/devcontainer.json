@@ -12,7 +12,7 @@
     "go.lintTool": "golangci-lint",
     "go.gopath": "/go",
     "go.toolsManagement.checkForUpdates": "local",
-    "go.useLanguageServer": true,
+    "go.useLanguageServer": true
   },
   "extensions": [
     "EditorConfig.EditorConfig",
@@ -21,5 +21,6 @@
     "medo64.render-crlf"
   ],
   "postCreateCommand": "go version",
-  "remoteUser": "vscode"
+  "remoteUser": "vscode",
+  "updateRemoteUserUID": true
 }
