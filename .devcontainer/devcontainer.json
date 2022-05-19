@@ -21,6 +21,5 @@
     "medo64.render-crlf"
   ],
   "postCreateCommand": "go version",
-  "remoteUser": "vscode",
-  "updateRemoteUserUID": true
+  "remoteUser": "vscode"
 }
