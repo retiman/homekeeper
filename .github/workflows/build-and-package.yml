@@ -34,6 +34,9 @@ jobs:
         with:
           version: v1.46.1
 
+      - name: Check
+        run: make check
+
       - name: Build
         run: make build
 
