@@ -11,8 +11,8 @@ clean:
 	-$(RM) ./homekeeper
 	-$(RM) ./homekeeper.exe
 
-.PHONY: check
-check:
+.PHONY: lint
+lint:
 	@go mod verify
 	@golangci-lint run ./...
 	@goreleaser check
