@@ -13,6 +13,7 @@ clean:
 
 .PHONY: check
 check:
+	@go mod verify
 	@golangci-lint run ./...
 	@goreleaser check
 
@@ -31,4 +32,4 @@ test: build
 
 .PHONY: tag
 tag: format lint build test
-	git tag -a v${VERSION} -m "v${VERSION}"
+	@git tag -a v${VERSION} -m "v${VERSION}"
