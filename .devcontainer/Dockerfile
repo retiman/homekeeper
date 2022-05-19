@@ -2,11 +2,13 @@
 ARG VARIANT="1.18-bullseye"
 FROM mcr.microsoft.com/vscode/devcontainers/go:0-${VARIANT}
 
-WORKDIR /home/${USER}
-ADD prompt.sh prompt.sh
+USER vscode
+WORKDIR /home/vscode
+COPY .bash_aliases .bash_aliases
+COPY .bash_local .bash_local
 RUN <<EOF
-# Add a custom prompt to the image because the default one is a bit too noisy.
-cat prompt.sh >> .bashrc && rm prompt.sh
+echo "source ~/.bash_aliases" >> .bashrc
+echo "source ~/.bash_local" >> .bashrc
 
 # See https://golangci-lint.run/usage/install/
 # See https://goreleaser.com/install/
