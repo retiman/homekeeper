@@ -19,8 +19,7 @@ lint:
 
 .PHONY: format
 format:
-	@gofmt -w -s cmd
-	@gofmt -w -s pkg
+	@gofmt -w -s .
 
 .PHONY: build
 build:
