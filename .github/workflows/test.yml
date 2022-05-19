@@ -1,9 +1,9 @@
-name: Build and Package
+name: Test
 
 on:
   pull_request:
     paths:
-      - .github/workflows/build-and-release.yml
+      - .github/workflows/test.yml
       - go.mod
       - go.sum
       - '**/*.go'
