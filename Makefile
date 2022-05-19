@@ -15,6 +15,7 @@ clean:
 check:
 	@go mod verify
 	@golangci-lint run ./...
+	@goreleaser check
 
 .PHONY: format
 format:

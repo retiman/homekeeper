@@ -29,9 +29,6 @@ jobs:
       - name: Install dependencies
         run: go mod tidy
 
-      - name: Check
-        run: make check
-
       - name: Lint
         uses: golangci/golangci-lint-action@v3
         with:
