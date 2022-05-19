@@ -1,29 +1,34 @@
 MODULE = github.com/retiman/homekeeper
 BUILD = $(shell git rev-parse --short HEAD)
 VERSION = $(file < VERSION)
-.PHONY: all clean deps format lint build test
 
-all: clean build format test
+.PHONY: all
+all: clean check format build test
 
+.PHONY: clean
 clean:
 	-$(RM) -r ./tmp
 	-$(RM) ./homekeeper
 	-$(RM) ./homekeeper.exe
 
+.PHONY: check
+check:
+	@golangci-lint run ./...
+	@goreleaser check
+
+.PHONY: format
 format:
 	@gofmt -w -s cmd
 	@gofmt -w -s pkg
 
-check:
-	@golangci-lint run ./...
-	@goreleaser check
-	
-
+.PHONY: build
 build:
 	@go build -ldflags="-X '$(MODULE)/cmd.Build=$(BUILD)' -X '$(MODULE)/cmd.Version=$(VERSION)'" .
 
+.PHONY: test
 test: build
 	@go test -v ./...
 
-tag: format lint build
+.PHONY: tag
+tag: format lint build test
 	git tag -a v${VERSION} -m "v${VERSION}"
