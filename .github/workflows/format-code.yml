@@ -1,4 +1,4 @@
-name: Test
+name: Format Code
 
 on:
   pull_request:
@@ -24,3 +24,4 @@ jobs:
           author_name: github-actions[bot]
           author_email: github-actions[bot]@github.com
           message: Auto-format commit via GitHub Actions
+        continue-on-error: true
