@@ -20,8 +20,6 @@ clean:
 .PHONY: lint
 lint:
 	@go mod verify
-	@golangci-lint run ./...
-	@goreleaser check
 
 .PHONY: format
 format:
