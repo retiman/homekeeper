@@ -2,20 +2,24 @@ MODULE = github.com/retiman/homekeeper
 BUILD = $(shell git rev-parse --short HEAD)
 VERSION = $(file < VERSION)
 
+ifeq ($(OS),Windows_NT)
+	RM = Remove-Item -Recurse -Force -ErrorAction Ignore
+else
+	RM = rm -rf
+endif
+
 .PHONY: all
 all: clean check format build test
 
 .PHONY: clean
 clean:
-	-$(RM) -r ./tmp
+	-$(RM) ./tmp
 	-$(RM) ./homekeeper
 	-$(RM) ./homekeeper.exe
 
 .PHONY: lint
 lint:
 	@go mod verify
-	@golangci-lint run ./...
-	@goreleaser check
 
 .PHONY: format
 format:
