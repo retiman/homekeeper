@@ -3,7 +3,7 @@ package common
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"path/filepath"
 	"testing"
@@ -201,7 +201,7 @@ func createTestSymlinks() (symlinks []string) {
 }
 
 func readFileAsString(file string) string {
-	content, err := ioutil.ReadFile(file)
+	content, err := io.ReadFile(file)
 	if err != nil {
 		panic(err)
 	}

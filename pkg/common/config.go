@@ -1,7 +1,7 @@
 package common
 
 import (
-	"io/ioutil"
+	"io"
 
 	"gopkg.in/yaml.v3"
 )
@@ -14,7 +14,7 @@ type Config struct {
 func readConfig(ctx *Context, file string) (config *Config, err error) {
 	log.Debugf("Reading config file: %s", file)
 
-	content, err := ioutil.ReadFile(file)
+	content, err := io.ReadFile(file)
 	if err != nil {
 		Writeln(ctx, "Couldn't read config file: %s", file)
 		log.Errorf("Couldn't read config file: %+v", err)
@@ -43,7 +43,7 @@ func writeConfig(ctx *Context, file string, config *Config) (err error) {
 		return
 	}
 
-	err = ioutil.WriteFile(file, bytes, 0644)
+	err = io.WriteFile(file, bytes, 0644)
 	if err != nil {
 		Writeln(ctx, "Couldn't write config file: %s", file)
 		log.Errorf("Couldn't write config file: %+v", err)
