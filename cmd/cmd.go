@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"io/ioutil"
+	"io"
 	"strings"
 
 	logger "github.com/apsdehal/go-logger"
@@ -22,7 +22,7 @@ var (
 func init() {
 	Build = strings.TrimSpace(Build)
 	Version = strings.TrimSpace(Version)
-	log = common.NewLogger("cmd", ioutil.Discard)
+	log = common.NewLogger("cmd", io.Discard)
 
 	setup()
 }
