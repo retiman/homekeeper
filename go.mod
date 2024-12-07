@@ -2,8 +2,6 @@ module github.com/retiman/homekeeper
 
 go 1.23.4
 
-toolchain go1.23.4
-
 require (
 	github.com/apsdehal/go-logger v0.0.0-20190515212710-b0d6ccfee0e6
 	github.com/go-git/go-git/v5 v5.12.0
