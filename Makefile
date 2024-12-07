@@ -36,10 +36,14 @@ test: build
 	@go test -v ./...
 
 .PHONY: tag
-tag: format lint build test
+tag: lint format build test
 	@git tag -a v${VERSION} -m "v${VERSION}"
 	@echo "Now git push --tags to create a release."
 
 .PHONY: deps
 deps:
 	@go get -u ./...
+
+.PHONY: tidy
+tidy:
+	@go mod tidy
