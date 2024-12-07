@@ -1,15 +1,17 @@
-MODULE = github.com/retiman/homekeeper
+MODULE := github.com/retiman/homekeeper
 BUILD = $(shell git rev-parse --short HEAD)
 VERSION = $(file < VERSION)
 
 ifeq ($(OS),Windows_NT)
-	RM = Remove-Item -Recurse -Force -ErrorAction Ignore
+	SHELL := powershell.exe
+	.SHELLFLAGS := -COMMAND
+	RM := Remove-Item -Recurse -Force -ErrorAction Ignore
 else
-	RM = rm -rf
+	RM := rm -rf
 endif
 
 .PHONY: all
-all: clean check format build test
+all: clean lint format build test
 
 .PHONY: clean
 clean:
