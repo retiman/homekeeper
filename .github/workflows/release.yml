@@ -11,7 +11,13 @@ on:
 jobs:
   release:
     name: release
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.platform }}
+    strategy:
+      matrix:
+        platform:
+         - ubuntu-latest
+         - macos-latest
+         - windows-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -45,7 +51,24 @@ jobs:
       - name: Test
         run: make test
 
+      - name: Run (Linux and MacOS)
+        if: ${{ runner.os != 'Windows' }}
+        shell: bash
+        run: |
+          cp ./homekeeper ${{ runner.temp }}
+          cd ${{ runner.temp }}
+          ./homekeeper init --debug --git https://github.com/retiman/dotfiles.git
+
+      - name: Run (Windows)
+        if: ${{ runner.os == 'Windows' }}
+        shell: pwsh
+        run: |
+          Copy-Item .\homekeeper.exe ${{ runner.temp }}
+          Set-Location ${{ runner.temp }}
+          .\homekeeper.exe init --debug --git https://github.com/retiman/dotfiles.git
+
       - name: Release
+        if: ${{ runner.os == 'Linux' }}
         uses: goreleaser/goreleaser-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
