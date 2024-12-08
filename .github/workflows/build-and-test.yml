@@ -21,8 +21,18 @@ jobs:
     #      - macos-latest
     runs-on: ubuntu-latest
     steps:
+      - name: Generate token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_KEY }}
+
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ steps.generate-token.outputs.token }}
 
       - name: Setup Go
         uses: actions/setup-go@v5
@@ -40,7 +50,17 @@ jobs:
       - name: Build
         run: make build
 
+      - name: Commit
+        if: ${{ github.ref != 'refs/heads/main' }}
+        id: commit
+        uses: EndBug/add-and-commit@v9
+        with:
+          author_name: github-actions[bot]
+          author_email: github-actions[bot]@github.com
+          message: Automatic commit via GitHub Actions
+
       - name: Test
+        if: ${{ steps.commit.outputs.committed == 'false' }}
         run: make test
 
       - name: Run (Linux and MacOS)
