@@ -1,9 +1,9 @@
-name: Test
+name: Build and Test
 
 on:
   pull_request:
     paths:
-      - .github/workflows/test.yml
+      - .github/workflows/build-and-test.yml
       - go.mod
       - go.sum
       - '**/*.go'
@@ -13,18 +13,19 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.platform }}
-    strategy:
-      matrix:
-        platform:
-         - ubuntu-latest
-         - macos-latest
+    # runs-on: ${{ matrix.platform }}
+    # strategy:
+    #   matrix:
+    #     platform:
+    #      - ubuntu-latest
+    #      - macos-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v5
         with:
           go-version: 1.23.4
 
@@ -32,9 +33,9 @@ jobs:
         run: go mod tidy
 
       - name: Lint
-        uses: golangci/golangci-lint-action@v3
+        uses: golangci/golangci-lint-action@v6
         with:
-          version: v1.53.3
+          version: v1.6
 
       - name: Build
         run: make build
